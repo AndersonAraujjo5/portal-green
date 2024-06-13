@@ -1,22 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Animated } from 'react-native-maps';
+import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { Button } from "react-native-elements";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import Mapbox from "@rnmapbox/maps";
 
-type CordProps = {
-    coordinate: {
-        latitude: string
-        longitude: string
-    }
-    cliente: string,
-    pppoe: string
+Mapbox.setAccessToken('pk.eyJ1IjoiYW5kZXJzb25hcmF1ampvIiwiYSI6ImNseGFhMGhiYTFtaWgya3B6Mm92bjNsdGgifQ.G5bMnaxQZvZYKEmfnhkaww');
 
 
-}
-
-export default function Map() {
-    const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-    const [points, setPoints] = useState<CordProps[]>([]);
+export default function MakerPoint() {
+    const [location, setLocation] = useState<number[] | [number, number]>();
+    const [point, setPoint] = useState<number[] | [number, number]>()
 
     useEffect(() => {
         (async () => {
@@ -25,55 +19,43 @@ export default function Map() {
                 console.log('Permission to access location was denied');
                 return;
             }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location.coords);
-            // console.log(location)
+            let getLocation = await Location.getCurrentPositionAsync({});
+            setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
         })();
     }, []);
 
-    if (!location) return <View className='flex-1 justify-center items-center'><Text>Carregando</Text></View>
+    if(!location){
+        return(
+            <View className="flex-1 justify-center items-center">
+                <Text>Carregando</Text>
+            </View>
+        )
+    }
 
     return (
-        <View style={styles.container}>
-             
-            <MapView
-                mapType='hybrid'
-                showsUserLocation={true}
-                style={styles.map}
-                onPress={(e) => {
-                    const cord = [...points,{ coordinate: e.nativeEvent.coordinate, pppoe:"teste@greenet.net.br", cliente:"Raimundo castro" }]
-                    setPoints(cord)
-                }}
-                initialRegion={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                }}
-            >
-                {points.map((e,i) => (
-                    <Marker
-                    key={i}
-                    onPress={() => console.log("t") }
-                    pinColor='#0a90f7'    
-                    coordinate={e.coordinate}
-                        title={e.cliente}
-                        description={`PPPOE: ${e.pppoe}`} />
-                ))}
-            </MapView>
-        </View>
-    );
-}
 
-const styles = StyleSheet.create({
-    container: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        marginTop: 56,
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-    },
-});
+        <View className="flex-1 relative pt-14">
+            <View className="flex-1 justify-center content-center">
+                <View className="w-full h-full">
+                    <Mapbox.MapView
+                        onPress={({ geometry }) => setPoint(geometry.coordinates)}
+                        style={{ flex: 1 }} >
+                        <Mapbox.Camera zoomLevel={15} centerCoordinate={location} />
+                        <Mapbox.UserLocation
+                            animated={true}
+                            visible={true} />
+                        {point && <Mapbox.PointAnnotation
+                            title="Teste"
+                            snippet="Teste"
+                            selected={true}
+                            key="pointAnnotation"
+                            id="pointAnnotation"
+                            coordinate={point}
+                        />}
+                    </Mapbox.MapView>
+                </View>
+            </View>
+        </View>
+
+    )
+}

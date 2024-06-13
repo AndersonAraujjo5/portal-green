@@ -1,4 +1,4 @@
-import ButtonGetLocalizacao from "@/components/ButtonGetLocalizacao";
+import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
 import { Input } from "@/components/Input";
 import { StatusBar } from "expo-status-bar";
@@ -9,8 +9,9 @@ import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
 import { useForm } from "react-hook-form";
 import * as yup from 'yup'
-import {yupResolver} from '@hookform/resolvers/yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import CadastroBD from "@/database/CadastroBD";
+import MakerAtual from "@/components/MakerAtual";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -75,6 +76,15 @@ const schema = yup.object({
   velocidade: yup.string().required("infome a velocidade")
 })
 
+type FormData2 = {
+  plano?: string
+  fidelidade?: string
+  vencimento?: string
+  info?: string
+  localizacao?: { latitude: number, altitude: number }
+  foto?: string[]
+}
+
 export default function TabHomeScreen() {
   const [checkPlano, setCheckPlano] = useState(true)
   const [checkFidelidade, setCheckFidelidade] = useState(true)
@@ -88,9 +98,33 @@ export default function TabHomeScreen() {
     setCamera(false)
   }
 
-  const handleSave = (data: FormData) => {
-    alert( CadastroBD.addCadastro(data))
+  const verificaPlanos = () => {
+    let plano = '';
+    if (checkPlano) plano = "Fibra"
+    else plano = "Rádio"
+    return plano;
   }
+
+  const verificaFidelidade = () => {
+    let fidelidade = '';
+    if (checkFidelidade) fidelidade = "Com fidelidade"
+    else fidelidade = "Sem fidelidade"
+    return fidelidade;
+  }
+
+
+
+  const handleSave = (data: FormData) => {
+    let obj: FormData2 = {};
+    obj.plano = verificaPlanos();
+    obj.fidelidade = verificaFidelidade();
+    alert(CadastroBD.addCadastro(data))
+  }
+
+  useEffect(() => {
+    if (checkFidelidade) alert('Com fidelidade')
+    else alert("sem fidelidade")
+  }, [checkFidelidade])
 
 
   return (
@@ -125,7 +159,7 @@ export default function TabHomeScreen() {
             </View>
 
             <View className="flex flex-row gap-2">
-              <ControllerInput className="flex-1" control={control} label="E-mail" name="email"  error={errors.email}/>
+              <ControllerInput className="flex-1" control={control} label="E-mail" name="email" error={errors.email} />
               <ControllerInput className="flex-1" control={control} label="Telefone" name="telefone" />
             </View>
 
@@ -136,15 +170,15 @@ export default function TabHomeScreen() {
 
           <View className="flex flex-row gap-2">
             <ControllerInput className="flex-1" control={control} label="CEP" name="cep" />
-            <ControllerInput className="flex-1" control={control} label="Cidade" name="cidade"  error={errors.cidade} />
+            <ControllerInput className="flex-1" control={control} label="Cidade" name="cidade" error={errors.cidade} />
           </View>
 
           <View className="flex flex-row gap-2">
             <ControllerInput className="w-2/3 flex-1" control={control} label="Endereço" name="endereco" error={errors.endereco} />
-            <ControllerInput className="w-1/3" control={control} label="Bairro" name="bairro"  error={errors.bairro} />
+            <ControllerInput className="w-1/3" control={control} label="Bairro" name="bairro" error={errors.bairro} />
           </View>
           <View className="flex flex-row gap-2">
-            <ControllerInput className="w-1/3" control={control} label="Nº da casa" name="casa"  error={errors.casa} />
+            <ControllerInput className="w-1/3" control={control} label="Nº da casa" name="casa" error={errors.casa} />
             <ControllerInput className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="ref" />
           </View>
 
@@ -226,11 +260,15 @@ export default function TabHomeScreen() {
           </View>
 
           <View className="w-full my-10 flex items-center">
-            <View className="flex-row justify-around w-full">
-              <ButtonGetLocalizacao />
-              <Button title="Camera" onPress={() => { setCamera(true) }} />
+            <View className="flex-row gap-2
+             justify-around w-full align-baseline">
+              <MakerAtual />
+              <MakerPoint />
+              <View className="w-1/3 auto">
+                <Button title="Camera" onPress={() => { setCamera(true) }} />
+              </View>
             </View>
-            <View className="w-1/2 mt-10">
+            <View className="w-1/3 mt-10">
               <Button onPress={handleSubmit(handleSave)} title="Enviar" />
             </View>
           </View>

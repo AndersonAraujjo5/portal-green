@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { Button } from "react-native-elements";
+import { View } from "react-native";
 
-export default function ButtonGetLocalizacao(){
+export default function MakerAtual() {
     const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-    
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -20,7 +21,9 @@ export default function ButtonGetLocalizacao(){
         alert(`Altitude:${location.coords.altitude} \n\nLatitude${location.coords.latitude}`)
     }
 
-   return(
-        <Button onPress={handleLocalAtual} title={"localização atual"} />
-   )
+    return (
+        <View className="w-1/3 ">
+            <Button onPress={handleLocalAtual} title={"localização atual"} />
+        </View>
+    )
 }

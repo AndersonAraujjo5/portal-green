@@ -35,6 +35,7 @@ export default function TabLayout() {
         name="clientes"
         options={{
           title: 'Clientes',
+          headerShown: false,
           tabBarIcon: ({ color }) => <Feather name="align-left" size={25} color={color} />,
         }}
       />
@@ -42,6 +43,7 @@ export default function TabLayout() {
         name="perfil"
         options={{
           title: 'Perfil',
+          headerShown: false,
           tabBarIcon: ({ color }) => <AntDesign name="user" size={25} color={color} />,
         }}
       />
