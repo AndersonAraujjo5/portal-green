@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
-import { MMKV, useMMKVObject } from 'react-native-mmkv'
 import ControllerInput from "@/components/ControllerInput";
 import { useForm } from "react-hook-form";
 import * as yup from 'yup'
 import {yupResolver} from '@hookform/resolvers/yup'
+import CadastroBD from "@/database/CadastroBD";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -43,7 +43,6 @@ const validarCPF = (cpf: string) => {
   return true;
 }
 
-export const storage = new MMKV({id:"teste"})
 type FormData = {
   nome: string
   nomePai: string
@@ -90,13 +89,9 @@ export default function TabHomeScreen() {
   }
 
   const handleSave = (data: FormData) => {
-    storage.set('cadastro', JSON.stringify(data));
-    alert(JSON.stringify(data))
+    alert( CadastroBD.addCadastro(data))
   }
 
-  useEffect(() => {
-    alert(storage.getString('cadastro'))
-  },[])
 
   return (
 
