@@ -15,7 +15,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@hookform/resolvers": "^3.6.0",
-    "@react-native-community/netinfo": "^11.3.2",
+    "@react-native-community/netinfo": "11.3.1",
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.0.2",
     "@rnmapbox/maps": "^10.1.25",
@@ -49,7 +49,8 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.10",
     "tailwindcss": "^3.4.4",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "@react-native-async-storage/async-storage": "1.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

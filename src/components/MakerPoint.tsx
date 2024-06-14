@@ -3,10 +3,7 @@ import * as Location from 'expo-location';
 import { Button } from "react-native-elements";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import Mapbox from "@rnmapbox/maps";
-
-Mapbox.setAccessToken('pk.eyJ1IjoiYW5kZXJzb25hcmF1ampvIiwiYSI6ImNseGFhMGhiYTFtaWgya3B6Mm92bjNsdGgifQ.G5bMnaxQZvZYKEmfnhkaww');
-
+import Mapbox from "@/components/MapBox";
 
 export default function MakerPoint() {
     const [isVisible, setIsVisible] = useState(false)
