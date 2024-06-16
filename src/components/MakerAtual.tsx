@@ -3,9 +3,7 @@ import * as Location from 'expo-location';
 import { Button } from "react-native-elements";
 import { View } from "react-native";
 
-export default function MakerAtual() {
-    const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-
+export default function MakerAtual({setLocaction}) {
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -18,7 +16,9 @@ export default function MakerAtual() {
 
     const handleLocalAtual = async () => {
         let location = await Location.getCurrentPositionAsync({});
-        alert(`Altitude:${location.coords.altitude} \n\nLatitude${location.coords.latitude}`)
+        setLocaction([location.coords.latitude, location.coords.longitude])
+        console.log(`https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`)
+        alert(`Localização atual selecionada!\n\n${location.coords.latitude},${location.coords.longitude}`)
     }
 
     return (

@@ -1,10 +1,10 @@
-import { TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
 import { Text } from "react-native";
 import { View } from "react-native";
 
 function Clientes(){
     return(
-        <View className="w-full my-1 bg-yellow-200">
+        <Link href={'/clienteInfo/10'} className="w-full bg-white my-2">
             <View className="flex-row justify-around items-center p-4">
                 <View className="flex-1 w-full">
                     <Text className="text-2xl font-bold">Anderson Tailon</Text>
@@ -13,7 +13,7 @@ function Clientes(){
                     <Text>Pendente para sincronização</Text>
                 </View>
             </View>
-        </View> 
+        </Link> 
     )
 }
 

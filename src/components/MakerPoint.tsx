@@ -5,9 +5,9 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Mapbox from "@/components/MapBox";
 
-export default function MakerPoint() {
+export default function MakerPoint({ setLocation }) {
     const [isVisible, setIsVisible] = useState(false)
-    const [location, setLocation] = useState<number[] | [number, number]>([]);
+    const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
     const [point, setPoint] = useState<number[] | [number, number]>()
 
     useEffect(() => {
@@ -18,8 +18,7 @@ export default function MakerPoint() {
                 return;
             }
             let getLocation = await Location.getCurrentPositionAsync({});
-            setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
-            console.log(getLocation)
+            setLocationAtual([getLocation.coords.longitude, getLocation.coords.latitude])
         })();
     }, []);
 
@@ -42,9 +41,15 @@ export default function MakerPoint() {
                         <View className="w-full h-full">
 
                             <Mapbox.MapView
-                                onPress={({ geometry }) => setPoint(geometry.coordinates)}
+                                onPress={({ geometry }) => {
+                                    setPoint(geometry.coordinates)
+                                    setLocation(geometry.coordinates)
+                                    alert(`Localização atual selecionada!
+                                        \n\n${geometry.coordinates}`)
+
+                                }}
                                 style={{ flex: 1 }} >
-                                <Mapbox.Camera zoomLevel={15} centerCoordinate={location} />
+                                <Mapbox.Camera zoomLevel={15} centerCoordinate={locationAtual} />
 
                                 <Mapbox.UserLocation
                                     animated={true}

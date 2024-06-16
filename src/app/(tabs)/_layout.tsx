@@ -42,8 +42,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="perfil"
         options={{
-          title: 'Perfil',
-          headerShown: false,
+          title: 'Anderson Tailon',
           tabBarIcon: ({ color }) => <AntDesign name="user" size={25} color={color} />,
         }}
       />

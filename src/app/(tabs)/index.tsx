@@ -1,9 +1,8 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
-import { Input } from "@/components/Input";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, Image, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
@@ -61,8 +60,11 @@ type FormData = {
   ref: string
   velocidade: string
   tipo: string
+  vencimento?: string
+  info?:string
   cordenadas: string
-  localizacao: string
+  localizacao: string,
+  fotos?:string[]
 }
 
 const schema = yup.object({
@@ -91,6 +93,8 @@ export default function TabHomeScreen() {
   const [camera, setCamera] = useState(false)
   const [info, setInfo] = useState('')
   const [vencimento, setVencimento] = useState('')
+  const [cordenadas, setCordenadas] = useState();
+  const [fotos, setFotos] = useState();
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   });
@@ -128,7 +132,6 @@ export default function TabHomeScreen() {
 
 
   return (
-
     <View className="flex-1 pt-14 p-4">
       <StatusBar style='dark' />
       {
@@ -262,8 +265,8 @@ export default function TabHomeScreen() {
           <View className="w-full my-10 flex items-center">
             <View className="flex-row gap-2
              justify-around w-full align-baseline">
-              <MakerAtual />
-              <MakerPoint />
+              <MakerAtual setLocaction={setCordenadas}/>
+              <MakerPoint setLocation={setCordenadas}/>
               <View className="w-1/3 auto">
                 <Button title="Camera" onPress={() => { setCamera(true) }} />
               </View>

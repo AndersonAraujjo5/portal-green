@@ -1,6 +1,6 @@
 import MapDownload from "@/components/MapDownload";
 
-export default function index(){
+export default function downloadMap(){
     return(
         <MapDownload />
     )
