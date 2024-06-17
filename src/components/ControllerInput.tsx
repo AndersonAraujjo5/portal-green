@@ -21,10 +21,11 @@ export default function ControllerInput({ control, name, label, className, requi
                 rules={{
                     required: required,
                 }}
-                render={({ field: { onChange, value } }: any) => (
+                render={({ field: { onChange, onBlur,value } }: any) => (
                     <View className="w-full h-14 bg-gray-200 rounded-md ps-2 mt-4">
                         <Text className="text-gray-400">{label}</Text>
                         <TextInput
+                            onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
                             {...rest}

@@ -2,15 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
-
-
-const { width, height } = Dimensions.get('window');
+import CamadaMap from '@/components/CamadaMap';
+import MapaBD from '@/database/MapaBD';
 
 function MapDownload() {
   const mapRef = useRef(null);
   const [visibleBounds, setVisibleBounds] = useState(null);
-
   const [location, setLocation] = useState<number[] | [number, number]>();
+  const [typeMap, setTypeMap] = useState(MapaBD.find().type)
+
 
   useEffect(() => {
     (async () => {
@@ -22,6 +22,10 @@ function MapDownload() {
       handleLocalAtual();
     })();
   }, []);
+  
+  useEffect(() => {
+    MapaBD.add(typeMap);
+  },[typeMap])
 
   const handleLocalAtual = async () => {
     let location = await Location.getCurrentPositionAsync({})
@@ -48,7 +52,7 @@ function MapDownload() {
       if (bounds) {
         await Mapbox.offlineManager.createPack({
           name: "mapOffline",
-          styleURL: Mapbox.StyleURL.Street,
+          styleURL: typeMap,
           bounds,
           minZoom: 12,
           maxZoom: 18,
@@ -82,7 +86,7 @@ function MapDownload() {
       <Mapbox.MapView
         ref={mapRef}
         style={styles.map}
-        styleURL={Mapbox.StyleURL.SatelliteStreet}
+        styleURL={typeMap}
         onMapLoadingError={() => console.log("mapa offilne")}
       >
         <Mapbox.UserLocation visible={true} animated={true} />
@@ -114,6 +118,7 @@ function MapDownload() {
           <Text style={styles.infoText}>Longitude máxima: {visibleBounds[1][0]}</Text>
         </View>
       )}
+      <CamadaMap setType={setTypeMap} />
     </View>
   );
 };
@@ -132,7 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
-    zIndex: 1000,
+    zIndex: 1,
   },
   buttonText: {
     color: 'white',

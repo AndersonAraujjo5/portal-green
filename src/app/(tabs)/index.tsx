@@ -83,8 +83,9 @@ type FormData2 = {
   fidelidade?: string
   vencimento?: string
   info?: string
-  localizacao?: { latitude: number, altitude: number }
-  foto?: string[]
+  localizacao?: string
+  foto?: string[],
+  cordenadas?: string[]
 }
 
 export default function TabHomeScreen() {
@@ -122,13 +123,13 @@ export default function TabHomeScreen() {
     let obj: FormData2 = {};
     obj.plano = verificaPlanos();
     obj.fidelidade = verificaFidelidade();
-    alert(CadastroBD.addCadastro(data))
-  }
+    obj.info = info
+    obj.vencimento = vencimento
+    obj.cordenadas = cordenadas
+    obj.localizacao = `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}`
 
-  useEffect(() => {
-    if (checkFidelidade) alert('Com fidelidade')
-    else alert("sem fidelidade")
-  }, [checkFidelidade])
+    alert(JSON.stringify({...data, ...obj}))
+  }
 
 
   return (

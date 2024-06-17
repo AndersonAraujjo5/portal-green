@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { Dimensions, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
-import { AntDesign, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import CamadaMap from "@/components/CamadaMap";
+import MapaBD from "@/database/MapaBD";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -38,7 +40,8 @@ export default function MakerPoint() {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [point, setPoint] = useState<number[] | [number, number]>()
     const [onModal, setOnModal] = useState()
-
+    const [typeMap, setTypeMap] = useState(MapaBD.find().type);
+    
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -51,6 +54,10 @@ export default function MakerPoint() {
         })();
     }, []);
 
+    useEffect(() => {
+        MapaBD.add(typeMap);
+    },[typeMap])
+
     if (!location) {
         return (
             <View className="flex-1 justify-center items-center">
@@ -58,20 +65,6 @@ export default function MakerPoint() {
             </View>
         )
     }
-
-    const fetchRoute = async (origin, destination) => {
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${destination[1]},${destination[0]}`;
-        console.log(url)
-        //     try {
-        //       const response = await fetch(url);
-        //       const data = await response.json();
-        //       if (data.routes && data.routes.length > 0) {
-        //         setRoute(data.routes[0].geometry);
-        //       }
-        //     } catch (error) {
-        //       console.error(error);
-        //     }
-    };
 
     const imagesItem = [
         {
@@ -182,6 +175,7 @@ export default function MakerPoint() {
             <View className="flex-1 justify-center content-center relative">
                 <View className="w-full h-full">
                     <Mapbox.MapView
+                        styleURL={typeMap}
                         rotateEnabled={true}
                         onPress={({ geometry }) => {
                             setPoint(geometry.coordinates)
@@ -225,6 +219,7 @@ export default function MakerPoint() {
                 {
                     onModal && <>{onModal}</>
                 }
+                <CamadaMap setType={setTypeMap} />
             </View>
         </View>
 
