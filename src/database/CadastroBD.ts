@@ -1,7 +1,7 @@
 import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
-type FormData = {
+export type FormData = {
   id: number
   nome: string
   nomePai: string
@@ -17,9 +17,11 @@ type FormData = {
   bairro: string
   casa: string
   ref: string
+  info: string
+  vencimento: string
   velocidade: string
   tipo: string
-  cordenadas: string
+  cordenadas: number[] | string
   localizacao: string
 }
 
@@ -69,4 +71,19 @@ export default new class CadastroBD {
   
     return [];
   };
+
+  public getFindById(id?:string | number): FormData{
+    if(!id) return null;
+     // Recupera o array de cadastros por id
+     const cadastros = storage.getString('cadastros');
+     if (cadastros) {
+       const cadastrosArray = JSON.parse(cadastros);
+ 
+       // Encontra o cadastro pelo nome
+       const cadastro = cadastrosArray.find(item => item.id == id);
+       return cadastro;
+     }
+ 
+     return null;
+  }
 }

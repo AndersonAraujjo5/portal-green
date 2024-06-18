@@ -2,7 +2,7 @@ import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Button, Image, ScrollView, Text, TextInput, View } from "react-native";
+import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
@@ -11,6 +11,9 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import CadastroBD from "@/database/CadastroBD";
 import MakerAtual from "@/components/MakerAtual";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { ClienteStatus } from "@/components/ButtonActions";
+import NetInfo from "@react-native-community/netinfo";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -61,10 +64,10 @@ type FormData = {
   velocidade: string
   tipo: string
   vencimento?: string
-  info?:string
+  info?: string
   cordenadas: string
   localizacao: string,
-  fotos?:string[]
+  fotos?: string[]
 }
 
 const schema = yup.object({
@@ -86,9 +89,12 @@ type FormData2 = {
   localizacao?: string
   foto?: string[],
   cordenadas?: string[]
+  status: string
 }
 
 export default function TabHomeScreen() {
+  const { width } = Dimensions.get('window');
+  const [refreshing, setRefreshing] = useState(false);
   const [checkPlano, setCheckPlano] = useState(true)
   const [checkFidelidade, setCheckFidelidade] = useState(true)
   const [camera, setCamera] = useState(false)
@@ -96,7 +102,8 @@ export default function TabHomeScreen() {
   const [vencimento, setVencimento] = useState('')
   const [cordenadas, setCordenadas] = useState();
   const [fotos, setFotos] = useState();
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const[key, setKey] = useState(0)
+  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   });
   const handleClosedCamera = () => {
@@ -126,21 +133,48 @@ export default function TabHomeScreen() {
     obj.info = info
     obj.vencimento = vencimento
     obj.cordenadas = cordenadas
+    obj.foto = fotos;
+    obj.status = ClienteStatus.CadastroEnviado
     obj.localizacao = `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}`
+    const dados = { ...data, ...obj };
 
-    alert(JSON.stringify({...data, ...obj}))
+    NetInfo.fetch().then(state => {
+      if (state.isConnected) {
+        // envia os dados para a api
+        // caso de algum erro ao enviar os dados, tratar para salvar
+        // as informações local
+      } else {
+        // Caso não tenha internet, salvar altomaticamente 
+        // no dispositivo
+       // CadastroBD.addCadastro(dados);
+      }
+    })
+    CadastroBD.addCadastro(dados);
+
+  }
+
+  const handleTrash = (index) => {
+    setFotos(e => e.toSpliced(index, 1));
+  }
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    reset();
+    setRefreshing(false)
   }
 
 
   return (
-    <View className="flex-1 pt-14 p-4">
+    <View className="flex-1 pt-14 p-4" key={key}>
       <StatusBar style='dark' />
       {
-        camera && <Camera closed={handleClosedCamera} />
+        camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
       }
 
       {
-        camera || <ScrollView>
+        camera || <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} 
+        onRefresh={onRefresh}/>}>
           <Text className="font-bold text-2xl">
             Dados Pessoais
           </Text>
@@ -266,12 +300,44 @@ export default function TabHomeScreen() {
           <View className="w-full my-10 flex items-center">
             <View className="flex-row gap-2
              justify-around w-full align-baseline">
-              <MakerAtual setLocaction={setCordenadas}/>
-              <MakerPoint setLocation={setCordenadas}/>
-              <View className="w-1/3 auto">
-                <Button title="Camera" onPress={() => { setCamera(true) }} />
+              <MakerAtual setLocaction={setCordenadas} />
+              <MakerPoint setLocation={setCordenadas} />
+
+              <View className="w-1/3 auto p-1">
+                <Pressable className="flex items-center justify-center w-full h-20 bg-gray-300 p-2 rounded-lg"
+                  onPress={() => { setCamera(true) }}>
+                  <Feather name="camera" size={20} color={"blue"} />
+                  <Text>
+                    Camera
+                  </Text>
+                </Pressable>
+
               </View>
             </View>
+            <FlatList
+              className="px-2 my-5"
+              horizontal={true}
+              data={fotos}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item, index }) => {
+                return (
+                  <View className="relative">
+                    <Pressable onLongPress={() => alert("isso")}>
+                      <Image
+                        className=" my-2 rounded-lg mx-2"
+                        width={width / 2} height={200}
+                        source={{ uri: item.uri }}
+                        resizeMode="cover"
+                      />
+                    </Pressable>
+                    <Pressable onPress={() => handleTrash(index)} className="right-5 top-5 absolute">
+                      <AntDesign name="close" size={20} color={'white'} />
+                    </Pressable>
+                  </View>
+                )
+              }}
+              keyExtractor={(item) => item.fileName}
+            />
             <View className="w-1/3 mt-10">
               <Button onPress={handleSubmit(handleSave)} title="Enviar" />
             </View>

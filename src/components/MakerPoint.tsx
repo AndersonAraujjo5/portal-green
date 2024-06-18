@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Button } from "react-native-elements";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import Mapbox from "@/components/MapBox";
 
 export default function MakerPoint({ setLocation }) {
@@ -26,8 +25,15 @@ export default function MakerPoint({ setLocation }) {
 
     return (
         <>
-            <View className="w-1/3 ">
-                <Button className="" onPress={() => setIsVisible(!isVisible)} title={"Selecionar no Mapa"} />
+            <View className="w-1/3 p-1">
+                <Pressable className="flex items-center w-full bg-gray-300 p-2 rounded-lg"
+                 onPress={() => setIsVisible(!isVisible)}>
+                    <Entypo name="location" size={20} color={"blue"} />
+                    <Text>
+                        Selecinar 
+                    </Text>
+                    <Text>no Mapa</Text>
+                </Pressable>
             </View>
 
             <View className="flex-1 relative">
@@ -44,7 +50,7 @@ export default function MakerPoint({ setLocation }) {
                                 onPress={({ geometry }) => {
                                     setPoint(geometry.coordinates)
                                     setLocation(geometry.coordinates)
-                                    alert(`Localização atual selecionada!
+                                    alert(`Localização selecionada!
                                         \n\n${geometry.coordinates}`)
 
                                 }}
@@ -77,28 +83,3 @@ export default function MakerPoint({ setLocation }) {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    map: {
-        flex: 1,
-    },
-    annotationContainer: {
-        width: 30,
-        height: 30,
-        backgroundColor: 'transparent',
-        borderWidth: 1,
-        borderColor: 'white',
-        borderRadius: 15,
-        overflow: 'hidden',
-    },
-    annotationFill: {
-        width: 30,
-        height: 30,
-        backgroundColor: 'blue',
-        transform: [{ scale: 0.6 }],
-        borderRadius: 15,
-    },
-});

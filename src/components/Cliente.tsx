@@ -1,19 +1,32 @@
+import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { Text } from "react-native";
-import { View } from "react-native";
+import { View, Text, Pressable } from "react-native";
+import ButtonAction from "@/components/ButtonActions";
 
-function Clientes(){
-    return(
-        <Link href={'/clienteInfo/10'} className="w-full bg-white my-2">
+function Clientes({ data }: any) {
+    const { nome, endereco, casa, bairro, cidade, status, id }: any = data;
+    const vars = ["pppoe",
+        "telefone", "email", "plano", "fidelidade", "vencimento"];
+
+    return (
+        <Link href={{
+            pathname: `/clienteInfo/[id]`,
+            params: {id}
+        }} className="w-full bg-white my-2">
             <View className="flex-row justify-around items-center p-4">
                 <View className="flex-1 w-full">
-                    <Text className="text-2xl font-bold">Anderson Tailon</Text>
-                    <Text>Tv. Quatorze de Março, 442 – Dom Joao VI Capanema – PA </Text>
-                    <Text>PPPOE:teste@greenet.net.br</Text>
-                    <Text>Pendente para sincronização</Text>
+                    <Text className="text-xl font-bold">{nome}</Text>
+                    <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
+                    {
+                        vars.map((item, index) => (
+                            data[item] && <Text key={`${item}-${index}`}>{data[item]}</Text>
+                        ))
+                    }
+                    <Text className="text-xl text-yellow-400">{status}</Text>
+                    <ButtonAction cordenadas={[-1.1964, -47.1816]} status={"Cadastro Enviado"} />
                 </View>
             </View>
-        </Link> 
+        </Link>
     )
 }
 

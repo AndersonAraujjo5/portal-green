@@ -41,8 +41,6 @@ export default function CamadaMap({ setType }:any) {
                             width={64} height={64} alt="mapa relevo" />
                         <Text className="text-sm text-center">Livre</Text>
                     </Pressable>
-
-
                 </View>
             </View>
         </>

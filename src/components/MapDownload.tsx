@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
-import CamadaMap from '@/components/CamadaMap';
+import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import MapaBD from '@/database/MapaBD';
 
 function MapDownload() {
   const mapRef = useRef(null);
   const [visibleBounds, setVisibleBounds] = useState(null);
   const [location, setLocation] = useState<number[] | [number, number]>();
-  const [typeMap, setTypeMap] = useState(MapaBD.find().type)
+  const [typeMap, setTypeMap] = useState(StyleURL.Street)
 
 
   useEffect(() => {
@@ -21,16 +21,20 @@ function MapDownload() {
       }
       handleLocalAtual();
     })();
+    const getTypeMap = MapaBD.find().type
+    if (getTypeMap) {
+      setTypeMap(getTypeMap)
+    }
   }, []);
-  
-  useEffect(() => {
-    MapaBD.add(typeMap);
-  },[typeMap])
+
+  const handleTypeMap = (styleUrl: string) => {
+    MapaBD.add(styleUrl);
+    setTypeMap(styleUrl)
+  }
 
   const handleLocalAtual = async () => {
     let location = await Location.getCurrentPositionAsync({})
     setLocation([location.coords.longitude, location.coords.latitude])
-
   }
 
 
@@ -64,12 +68,12 @@ function MapDownload() {
         }))
 
       }
-    }catch(e){
+    } catch (e) {
       console.log(e)
       alert(`Não foi possivel fazer o download, tente novamente mais tarde, ou entre em contato com o desenvolvedor
-        \n\n`+e)
+        \n\n`+ e)
     }
-   
+
 
   };
 
@@ -118,7 +122,7 @@ function MapDownload() {
           <Text style={styles.infoText}>Longitude máxima: {visibleBounds[1][0]}</Text>
         </View>
       )}
-      <CamadaMap setType={setTypeMap} />
+      <CamadaMap setType={handleTypeMap} />
     </View>
   );
 };

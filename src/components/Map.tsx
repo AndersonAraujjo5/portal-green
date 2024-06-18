@@ -4,8 +4,10 @@ import { Dimensions, FlatList, Image, Pressable, ScrollView, Text, View } from "
 import Mapbox from "@/components/MapBox";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import CamadaMap from "@/components/CamadaMap";
+import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import MapaBD from "@/database/MapaBD";
+import NetInfo from "@react-native-community/netinfo";
+import CadastroBD from "@/database/CadastroBD";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -40,8 +42,9 @@ export default function MakerPoint() {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [point, setPoint] = useState<number[] | [number, number]>()
     const [onModal, setOnModal] = useState()
-    const [typeMap, setTypeMap] = useState(MapaBD.find().type);
-    
+    const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
+    const [clientesData, setClientesData] = useState()
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -52,11 +55,31 @@ export default function MakerPoint() {
             let getLocation = await Location.getCurrentPositionAsync({});
             setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
         })();
+        const getTypeMap = MapaBD.find().type
+        if (getTypeMap) {
+            setTypeMap(getTypeMap)
+        }
+
     }, []);
 
-    useEffect(() => {
-        MapaBD.add(typeMap);
-    },[typeMap])
+    // NetInfo.fetch().then(state => {
+    //     if (state.isConnected) {
+    //         // envia os dados para a api
+    //         // caso de algum erro ao enviar os dados, tratar para salvar
+    //         // as informações local
+    //         setClientesData(CadastroBD.getAllCadastros());
+    //     } else {
+    //         //setClientesData(CadastroBD.getAllCadastros());
+    //         // Caso não tenha internet, salvar altomaticamente 
+    //         // no dispositivo
+
+    //     }
+    // })
+
+    const handleTypeMap = (styleUrl: string) => {
+        MapaBD.add(styleUrl);
+        setTypeMap(styleUrl)
+    }
 
     if (!location) {
         return (
@@ -186,40 +209,28 @@ export default function MakerPoint() {
                         <Mapbox.UserLocation
                             animated={true}
                             visible={true} />
-                        <Mapbox.PointAnnotation
-                            title="Teste"
-                            snippet="Teste"
-                            selected={true}
-                            key="pointAnnotation"
-                            id="pointAnnotation"
-                            onSelected={() => {
-                                const data = {
-                                    nome: "Anderson tailon",
-                                    bairro: "caixa d'agua",
-                                    casa: "sem numero",
-                                    cep: "687000000",
-                                    cidade: "Capanema",
-                                    email: "andersonaraujjo5@gmail.com",
-                                    endereco: "rua sergio bruto ucuuba",
-                                    fidelidade: "Com fidelidade",
-                                    localizacao: "ooo",
-                                    pppoe: "anderson@gmail.com",
-                                    telefone: "91996031077",
-                                    velocidade: 200,
-                                    cordenadas: '-1.184255, -47.149697'.split(','),
-                                    status: 'Usuário Criado'
-                                }
-                                setOnModal(modalInfo(data))
-                            }}
-                            coordinate={[-47.149697, -1.184255]}
-                        />
+                        {/* {
+                            clientesData && clientesData.map((item) => (
+                                <Mapbox.PointAnnotation
+                                    title="Teste"
+                                    snippet="Teste"
+                                    selected={true}
+                                    key={item.id.toString()}
+                                    id="pointAnnotation"
+                                    onSelected={() => {
 
+                                        setOnModal(modalInfo(item))
+                                    }}
+                                    coordinate={item.cordenadas}
+                                />
+                            ))
+                        } */}
                     </Mapbox.MapView>
                 </View>
                 {
                     onModal && <>{onModal}</>
                 }
-                <CamadaMap setType={setTypeMap} />
+                <CamadaMap setType={handleTypeMap} />
             </View>
         </View>
 

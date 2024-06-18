@@ -1,15 +1,15 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'
+import * as MediaLibrary from 'expo-media-library'
 
-
-export default function Camera({closed}:any) {
+export default function Camera({ closed, setFotos }: any) {
   const camRef = useRef(null)
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedPhoto, setCapturedPhoto] = useState();
-  const [viewPhoto, setViewPhoto] = useState(false)
   if (!permission) {
     return <View />;
   }
@@ -23,10 +23,36 @@ export default function Camera({closed}:any) {
     );
   }
 
+  async function createAlbum(uri: any) {
+    try {
+      const asset = await MediaLibrary.createAssetAsync(uri)
+      await MediaLibrary.createAlbumAsync('pre-cadastro', asset, false);
+    } catch (error) {
+      console.log('Erro ao escolher ou salvar foto:', error);
+    }
+
+  }
+
   async function takePicture() {
     if (camRef) {
-      const data = await camRef.current.takePictureAsync()
-      setCapturedPhoto(data.uri)
+      const { uri } = await camRef.current.takePictureAsync()
+      createAlbum(uri)
+      setCapturedPhoto(uri)
+    }
+  }
+
+  async function launchImageLibrary() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === 'granted') {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsMultipleSelection: true
+      });
+      if (!result.canceled) {
+        setFotos(result.assets);
+        setCapturedPhoto(result.assets[0].uri);
+      }
+    } else {
+      alert("Permita acesso a sua galeria")
     }
   }
 
@@ -37,8 +63,7 @@ export default function Camera({closed}:any) {
   return (
     <View style={styles.container}>
       {
-        viewPhoto || <CameraView style={styles.camera} facing={facing}
-        
+        <CameraView style={styles.camera} facing={facing}
           ref={camRef}>
           <View className='items-end m-5'>
             <TouchableOpacity onPress={() => closed(false)}>
@@ -52,29 +77,14 @@ export default function Camera({closed}:any) {
             <TouchableOpacity style={styles.button} onPress={takePicture}>
               <Text style={styles.text}><AntDesign name='camera' size={40} /></Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setViewPhoto(true)}>
-              <Image source={{ uri: capturedPhoto }} width={40} height={40} />
+            <TouchableOpacity style={styles.button} onPress={launchImageLibrary}>
+              <Entypo name='images' size={40}  color='white'/>
             </TouchableOpacity>
           </View>
         </CameraView>
 
       }
-      {
-        viewPhoto &&
-        <Modal
-          animationType='slide'
-          transparent={false}
-          visible={viewPhoto}>
-          <View className='items-end m-5'>
-            <TouchableOpacity onPress={() => setViewPhoto(false)}>
-              <AntDesign name='close' size={30} />
-            </TouchableOpacity>
-          </View>
-          <View className='flex-1 justify-center items-center m-4'>
-            <Image source={{ uri: capturedPhoto }} width={400} height={500} />
-          </View>
-        </Modal>
-      }
+
     </View>
   );
 }
