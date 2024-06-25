@@ -8,6 +8,7 @@ import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import MapaBD from "@/database/MapaBD";
 import NetInfo from "@react-native-community/netinfo";
 import CadastroBD from "@/database/CadastroBD";
+import ButtonAction from "./ButtonActions";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -40,10 +41,9 @@ type infoCliente = {
 export default function MakerPoint() {
     const { width } = Dimensions.get('window');
     const [location, setLocation] = useState<number[] | [number, number]>();
-    const [point, setPoint] = useState<number[] | [number, number]>()
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
-    const [clientesData, setClientesData] = useState()
+    const [clientesData, setClientesData] = useState<any>([])
 
     useEffect(() => {
         (async () => {
@@ -60,7 +60,12 @@ export default function MakerPoint() {
             setTypeMap(getTypeMap)
         }
 
+        if (CadastroBD.findByExistCordenadas()) {
+            setClientesData(CadastroBD.findByExistCordenadas())
+        }
+
     }, []);
+
 
     // NetInfo.fetch().then(state => {
     //     if (state.isConnected) {
@@ -100,58 +105,30 @@ export default function MakerPoint() {
         }
     ]
 
-    const modalInfo: any = ({ nome, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
-        cep, email, telefone, cordenadas, status
+    const modalInfo: any = ({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
+        cep, email, telefone, cordenadas, status, associado, plano, vencimento, Comentarios, Fotos
     }: infoCliente) => {
+        const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento"];
+        const obj = { pppoe, telefone, email, plano, fidelidade, vencimento, };
         return (
             <View className="w-full h-96 rounded-t-lg bg-white bottom-48 py-5">
                 <ScrollView className="px-2"
                     showsVerticalScrollIndicator={false}>
-                    <Text className="text-xl my-2 font-bold">{nome}</Text>
-                    <Text>PPPOE: {pppoe}</Text>
-                    <Text>{email}</Text>
-                    <Text>{telefone}</Text>
+                    <Text className="text-xl my-2 font-bold">{cliente}</Text>
+                    <Text>Status: {status}</Text>
+                    <Text>Vendedor: {associado}</Text>
                     <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
-                    <Text>Plano de {velocidade} megas</Text>
-                    <Text>{fidelidade}</Text>
+                    {
+                        vars.map((item, index) => (
+                            obj[item] && <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
+                        ))
+                    }
                     <Text>Mais info: {info}</Text>
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="my-5 ">
-                        <View className="flex-row">
-                            <Link className="bg-blue-400 px-4 py-3 rounded-full flex-row items-center gap-2"
-                                href={`https://www.google.com/maps/dir/?api=1&destination=${cordenadas[0]},${cordenadas[1]}`}>
-                                <FontAwesome name="location-arrow" size={20} color="black" />
-                                <Text>Rotas</Text>
-                            </Link>
-                            {
-                                status == ClienteStatus.UsuarioCriado &&
-                                <Pressable className="border-2 mx-3 px-4 py-3 rounded-full">
-                                    <Text>iniciar atendimento</Text>
-                                </Pressable>
-                            }
-                            {
-                                status == ClienteStatus.TecnicoACaminho &&
-                                <>
-                                    <Pressable className="border-2 mx-3 px-4 py-3 rounded-full">
-                                        <Text>Finalizar</Text>
-                                    </Pressable>
-                                    <Pressable className="border-2 mx-3 px-4 py-3 rounded-full">
-                                        <Text>Pausar</Text>
-                                    </Pressable>
-                                    <Pressable className="border-2 mx-3 px-4 py-3 rounded-full">
-                                        <Text>Cancelar instalação</Text>
-                                    </Pressable>
-                                </>
-                            }
-                            <Pressable className="border-2 mx-3 px-4 py-3 rounded-full">
-                                <Text>Comentar</Text>
-                            </Pressable>
-
-                        </View>
-                    </ScrollView>
+                    <ButtonAction cordenadas={cordenadas} status='Usuário Criado' />
                     <FlatList
                         className="px-2 my-5"
                         horizontal={true}
-                        data={imagesItem}
+                        data={Fotos}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({ item }) => {
                             return (
@@ -159,34 +136,37 @@ export default function MakerPoint() {
                                     <Image
                                         className=" my-2 rounded-lg mx-2"
                                         width={width / 2} height={200}
-                                        source={{ uri: item.img }}
+                                        source={{ uri: item.url }}
                                         resizeMode="cover"
                                     />
                                 </Pressable>
                             )
                         }}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item.fileName}
                     />
-                    <View className="border-b-2 my-2">
-                        <View className="flex-row items-center gap-3">
-                            <AntDesign className="rounded-full bg-slate-200" name="user" size={25} />
-                            <View className="">
-                                <Text>Usuário</Text>
-                                <Text>90/03/2024</Text>
+                    {
+                        Comentarios.map(item => (
+                            <View className="border-b-2 my-2" key={`${item.id}-comentario`}>
+                                <View className="flex-row items-center gap-3">
+                                    <AntDesign className="rounded-full bg-slate-200" name="user" size={25} />
+                                    <View className="">
+                                        <Text>{item.associado}</Text>
+                                        <Text>{item.createAt}</Text>
+                                    </View>
+                                </View>
+                                {
+                                    (item.type == 'image' || item.type == 'file') &&
+                                    <Image
+                                        className=" my-2 rounded-lg mx-2"
+                                        width={width / 2} height={200}
+                                        source={{ uri: item.url }}
+                                        resizeMode="cover"
+                                    />
+                                }
+                                <Text className="my-2">{item.body}</Text>
                             </View>
-                        </View>
-                        <Text className="my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor amet expedita tempore molestias. Labore corporis numquam blanditiis illo sequi repellendus quidem saepe, culpa a laboriosam dolores cum. Autem, quidem distinctio?</Text>
-                    </View>
-                    <View className="border-b-2 my-2">
-                        <View className="flex-row items-center gap-3">
-                            <AntDesign className="rounded-full" name="user" size={25} />
-                            <View className="">
-                                <Text>Usuário</Text>
-                                <Text>90/03/2024</Text>
-                            </View>
-                        </View>
-                        <Text className="my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor amet expedita tempore molestias. Labore corporis numquam blanditiis illo sequi repellendus quidem saepe, culpa a laboriosam dolores cum. Autem, quidem distinctio?</Text>
-                    </View>
+                        ))
+                    }
 
                 </ScrollView>
             </View>
@@ -200,31 +180,27 @@ export default function MakerPoint() {
                     <Mapbox.MapView
                         styleURL={typeMap}
                         rotateEnabled={true}
-                        onPress={({ geometry }) => {
-                            setPoint(geometry.coordinates)
-                            setOnModal(null)
-                        }}
+                        onPress={() => setOnModal(null)}
                         style={{ flex: 1 }} >
                         <Mapbox.Camera zoomLevel={15} centerCoordinate={location} />
                         <Mapbox.UserLocation
                             animated={true}
                             visible={true} />
-                        {/* {
+                        {
                             clientesData && clientesData.map((item) => (
                                 <Mapbox.PointAnnotation
-                                    title="Teste"
-                                    snippet="Teste"
+                                    title={item.cliente}
+                                    snippet={item.cliente}
                                     selected={true}
                                     key={item.id.toString()}
-                                    id="pointAnnotation"
+                                    id={item.id.toString()}
                                     onSelected={() => {
-
                                         setOnModal(modalInfo(item))
                                     }}
-                                    coordinate={item.cordenadas}
+                                    coordinate={item.cordenadas.split(',')}
                                 />
                             ))
-                        } */}
+                        }
                     </Mapbox.MapView>
                 </View>
                 {

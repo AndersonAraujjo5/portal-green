@@ -3,11 +3,23 @@ import Clientes from "@/components/Cliente";
 import CadastroBD from "@/database/CadastroBD";
 import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "expo-router";
+import NetInfo from "@react-native-community/netinfo";
+import { api } from "@/service/api";
 export default function tabClientesScreen() {
     const [data, setData] = useState([]);
 
     useFocusEffect(useCallback(() => {
-        setData(CadastroBD.getAllCadastros())
+        NetInfo.fetch().then(async state => {
+            if (state.isConnected) {
+               const {data} = await api.get('/v1/cliente');
+               console.log(data.data)
+               setData(data.data)
+               CadastroBD.addAll(data.data)
+            } else {
+             setData(CadastroBD.getAllCadastros())
+            }
+          })
+
     },[])) 
 
     return (

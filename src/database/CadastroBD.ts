@@ -26,6 +26,11 @@ export type FormData = {
 }
 
 export default new class CadastroBD {
+  public addAll(cadastro: FormData) {
+    storage.set('cadastros', JSON.stringify(cadastro));
+    return JSON.stringify(cadastro);
+  };
+
   public addCadastro(cadastro: FormData) {
     // Recupera o array atual de cadastros
     const cadastros = storage.getString('cadastros');
@@ -78,12 +83,28 @@ export default new class CadastroBD {
      const cadastros = storage.getString('cadastros');
      if (cadastros) {
        const cadastrosArray = JSON.parse(cadastros);
- 
+  
        // Encontra o cadastro pelo nome
        const cadastro = cadastrosArray.find(item => item.id == id);
+       
        return cadastro;
      }
  
+     return null;
+  }
+
+  public findByExistCordenadas(): FormData{
+   
+     // Recupera o array de cadastros por id
+     const cadastros = storage.getString('cadastros');
+     if (cadastros) {
+       const cadastrosArray = JSON.parse(cadastros);
+       // Encontra o cadastro pelo nome
+       const cadastro = cadastrosArray.filter(item => item.cordenadas !== '' 
+        && item.cordenadas !== null);
+       
+       return cadastro;
+     }
      return null;
   }
 }

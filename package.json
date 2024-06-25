@@ -20,6 +20,7 @@
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.0.2",
     "@rnmapbox/maps": "^10.1.25",
+    "axios": "^1.7.2",
     "expo": "~51.0.12",
     "expo-av": "~14.0.5",
     "expo-camera": "~15.0.10",

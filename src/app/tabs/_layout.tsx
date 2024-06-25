@@ -2,6 +2,7 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {  Tabs } from 'expo-router';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
+import LoginBD from '@/database/LoginBD';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -16,7 +17,7 @@ export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name="cadastro"
         options={{
           headerShown: false,
           title: 'Cadastro',
@@ -42,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="perfil"
         options={{
-          title: 'Anderson Tailon',
+          title: LoginBD.find()?.usuario.nome,
           tabBarIcon: ({ color }) => <AntDesign name="user" size={25} color={color} />,
         }}
       />
