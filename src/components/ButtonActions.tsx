@@ -10,6 +10,7 @@ import { Pressable, Text, View } from "react-native";
 // { status: "Instalação Concluída", color:'bg-primary-subtle' },
 // { status: "Cliente Desistiu",  color: 'bg-danger-subtle' }
 export enum ClienteStatus {
+    SincronizacaoPendente = "Sincronização Pendente",
     CadastroPendente = "Cadastro Pendente",
     CadastroEnviado = "Cadastro Enviado",
     UsuarioCriado = "Usuário Criado",

@@ -18,9 +18,8 @@ export default function MakerAtual({setLocaction}) {
 
     const handleLocalAtual = async () => {
         let location = await Location.getCurrentPositionAsync({});
-        setLocaction([location.coords.latitude, location.coords.longitude])
-        console.log(`https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`)
-        alert(`Localização atual selecionada!\n\n${location.coords.latitude},${location.coords.longitude}`)
+        setLocaction([location.coords.longitude, location.coords.latitude])
+        alert(`Localização atual selecionada!\n\n${location.coords.longitude},${location.coords.latitude}`)
     }
 
     return (

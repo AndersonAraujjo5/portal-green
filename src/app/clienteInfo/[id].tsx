@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { Dimensions, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";

@@ -1,19 +1,21 @@
-import { Text, View, TextInput, Button, Alert } from "react-native";
-import { Control, Controller, FieldError, FieldValues } from "react-hook-form";
-import { InputProps } from "react-native-elements";
+import { Text, View } from "react-native";
+import { Control, Controller, FieldError } from "react-hook-form";
+import { TextInputProps } from "react-native";
+import  MaskInput from 'react-native-mask-input' ;
 
-type Props = {
+type Props = TextInputProps | {
     control: Control<any>
     name: string
     label: string
     className?: string
     required?: boolean
     error?: FieldError | undefined
+    mask?:any
 }
 
-export default function ControllerInput({ control, name, label, className, required=false, error, ...rest }: Props) {
-
-    return (
+export default function ControllerInput({ control, name, label, className, 
+    required=false, error, mask, inputRef, onSubmitEditing, ...rest }: any) {
+        return (
         <View className={className}>
             <Controller
                 name={name}
@@ -24,10 +26,15 @@ export default function ControllerInput({ control, name, label, className, requi
                 render={({ field: { onChange, onBlur,value } }: any) => (
                     <View className="w-full h-14 bg-gray-200 rounded-md ps-2 mt-4">
                         <Text className="text-gray-400">{label}</Text>
-                        <TextInput
+                        <MaskInput
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
+                            mask={mask}
+                            ref={inputRef}
+                            returnKeyType={onSubmitEditing ? 'next' :'done'}
+                            blurOnSubmit={onSubmitEditing ? false : true}
+                            onSubmitEditing={() => onSubmitEditing && onSubmitEditing.current.focus()}
                             {...rest}
                         />
                     </View>

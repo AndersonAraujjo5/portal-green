@@ -37,7 +37,7 @@ export default function Camera({ closed, setFotos }: any) {
     if (camRef) {
       const { uri } = await camRef.current.takePictureAsync()
       createAlbum(uri)
-      setCapturedPhoto(uri)
+      // setCapturedPhoto(uri)
     }
   }
 
@@ -49,7 +49,7 @@ export default function Camera({ closed, setFotos }: any) {
       });
       if (!result.canceled) {
         setFotos(result.assets);
-        setCapturedPhoto(result.assets[0].uri);
+        // setCapturedPhoto(result.assets[0].uri);
       }
     } else {
       alert("Permita acesso a sua galeria")

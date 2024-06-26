@@ -1,7 +1,7 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
@@ -14,8 +14,12 @@ import MakerAtual from "@/components/MakerAtual";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { ClienteStatus } from "@/components/ButtonActions";
 import NetInfo from "@react-native-community/netinfo";
+import { api } from "@/service/api";
+import { Masks } from "react-native-mask-input";
+import { router } from "expo-router";
 
 const validarCPF = (cpf: string) => {
+  if (cpf.length > 14) return true;
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
     return false;
@@ -46,22 +50,21 @@ const validarCPF = (cpf: string) => {
   return true;
 }
 
-type FormData = {
+type FormData1 = {
   nome: string
   nomePai: string
   nomeMae: string
   cpf: string
   rg: string
-  nascimento: string
+  dataNascimento: string
   email: string
   telefone: string
   cep: string
   cidade: string
   endereco: string
   bairro: string
-  casa: string
-  ref: string
-  velocidade: string
+  numero: string
+  complemento: string
   tipo: string
   vencimento?: string
   info?: string
@@ -76,9 +79,8 @@ const schema = yup.object({
   email: yup.string().email("E-mail invalido"),
   endereco: yup.string().required("Informe o endereco"),
   bairro: yup.string().required("Informe o bairro"),
-  casa: yup.string().required("Informe o numero da casa"),
+  numero: yup.string().required("Informe o numero da casa"),
   cidade: yup.string().required("Informe a cidade"),
-  velocidade: yup.string().required("infome a velocidade")
 })
 
 type FormData2 = {
@@ -94,63 +96,135 @@ type FormData2 = {
 
 export default function TabHomeScreen() {
   const { width } = Dimensions.get('window');
+  const [checkPlanAndVenci, setCheckPlanAndVenci] = useState()
   const [refreshing, setRefreshing] = useState(false);
-  const [checkPlano, setCheckPlano] = useState(true)
+  const [plano, setPlano] = useState();
   const [checkFidelidade, setCheckFidelidade] = useState(true)
   const [camera, setCamera] = useState(false)
   const [info, setInfo] = useState('')
   const [vencimento, setVencimento] = useState('')
-  const [cordenadas, setCordenadas] = useState();
-  const [fotos, setFotos] = useState();
-  const[key, setKey] = useState(0)
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const [cordenadas, setCordenadas] = useState(null);
+  const [fotos, setFotos] = useState(null);
+  const scrollViewRef = useRef(null)
+
+  const inputs = {
+    nome: useRef(null),
+    nomePai: useRef(null),
+    nomeMae: useRef(null),
+    cpf: useRef(null),
+    rg: useRef(null),
+    dataNascimento: useRef(null),
+    email: useRef(null),
+    telefone: useRef(null),
+    cep: useRef(null),
+    cidade: useRef(null),
+    endereco: useRef(null),
+    bairro: useRef(null),
+    numero: useRef(null),
+    ref: useRef(null),
+  }
+
+  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData1>({
     resolver: yupResolver(schema)
   });
   const handleClosedCamera = () => {
     setCamera(false)
   }
 
-  const verificaPlanos = () => {
-    let plano = '';
-    if (checkPlano) plano = "Fibra"
-    else plano = "Rádio"
-    return plano;
-  }
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  };
+
+  useEffect(() => {
+    scrollToTop();
+    checkFormIsEmptyPlanAndVenci()
+  }, [errors])
+
+
 
   const verificaFidelidade = () => {
     let fidelidade = '';
-    if (checkFidelidade) fidelidade = "Com fidelidade"
-    else fidelidade = "Sem fidelidade"
+    if (checkFidelidade) fidelidade = "Sem fidelidade"
+    else fidelidade = "Com fidelidade"
     return fidelidade;
   }
 
+  const checkFormIsEmptyPlanAndVenci = () => {
+    let errors: any = {}
+    if (!plano) errors.planos = "Selecione um plano";
+    if (!vencimento) errors.vencimento = "Selecione uma data de vencimento"
 
+    setCheckPlanAndVenci(errors)
+  }
 
-  const handleSave = (data: FormData) => {
-    let obj: FormData2 = {};
-    obj.plano = verificaPlanos();
-    obj.fidelidade = verificaFidelidade();
-    obj.info = info
-    obj.vencimento = vencimento
-    obj.cordenadas = cordenadas
-    obj.foto = fotos;
-    obj.status = ClienteStatus.CadastroEnviado
-    obj.localizacao = `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}`
-    const dados = { ...data, ...obj };
+  const handleSave = (data: FormData1) => {
+    try {
+      let obj: FormData2 = {};
+      obj.plano = plano
+      obj.fidelidade = verificaFidelidade();
+      obj.info = info
+      obj.vencimento = vencimento
+      obj.cordenadas = cordenadas ? cordenadas.toString() : ''
+      obj.foto = fotos ? fotos : ''
+      obj.status = ClienteStatus.CadastroEnviado
+      obj.localizacao = `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}`
+      const dados = { ...data, ...obj };
 
-    NetInfo.fetch().then(state => {
-      if (state.isConnected) {
-        // envia os dados para a api
-        // caso de algum erro ao enviar os dados, tratar para salvar
-        // as informações local
-      } else {
-        // Caso não tenha internet, salvar altomaticamente 
-        // no dispositivo
-       // CadastroBD.addCadastro(dados);
-      }
-    })
-    CadastroBD.addCadastro(dados);
+      NetInfo.fetch().then(async state => {
+        try {
+          if (state.isConnected) {
+            const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
+              "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
+              'cordenadas', 'fidelidade', 'info']
 
+            const formData = new FormData()
+            arr.map(e => {
+              formData.append(e, dados[e]);
+            })
+
+            if (fotos) {
+              fotos.map((e, i) => {
+                formData.append('foto', {
+                  uri: fotos[i].uri,
+                  type: fotos[i].mimeType,
+                  name: fotos[i].fileName
+                })
+              })
+            }
+
+            const data = await api.post('/v1/cliente', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            })
+            alert("Cadastro Enviado com sucesso")
+            router.replace('/')
+
+          } else {
+            alert('sem internet')
+
+            // Caso não tenha internet, salvar altomaticamente 
+            // no dispositivo
+            dados.status = ClienteStatus.SincronizacaoPendente
+            CadastroBD.addPreCadastro(dados);
+            alert("Cadastro Salva com sucesso")
+            router.replace('/')
+          }
+        } catch (error) {
+          console.log(error)
+          dados.status = ClienteStatus.SincronizacaoPendente
+          CadastroBD.addPreCadastro(dados);
+          alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
+          router.replace('/')
+
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   const handleTrash = (index) => {
@@ -158,6 +232,9 @@ export default function TabHomeScreen() {
   }
 
   const onRefresh = () => {
+    setCordenadas(null)
+    setFotos(null)
+
     setRefreshing(true);
     reset();
     setRefreshing(false)
@@ -165,40 +242,40 @@ export default function TabHomeScreen() {
 
 
   return (
-    <View className="flex-1 pt-14 p-4" key={key}>
-      <StatusBar style='dark' />
+    <View className="flex-1 pt-14 p-4">
+      <StatusBar style='dark ' />
       {
         camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
       }
 
       {
-        camera || <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} 
-        onRefresh={onRefresh}/>}>
+        camera || <ScrollView ref={scrollViewRef}
+          refreshControl={<RefreshControl refreshing={refreshing}
+            onRefresh={onRefresh} />}>
           <Text className="font-bold text-2xl">
             Dados Pessoais
           </Text>
           <View>
-            <ControllerInput control={control} label="Nome Completo" name="nome" error={errors.nome} />
+            <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
 
 
             <View className="flex flex-row gap-2">
-              <ControllerInput className="flex-1" control={control} label="Nome do pai" name="nomaPai" />
-              <ControllerInput className="flex-1" control={control} label="Nome da Mae" name="nomeMae" />
+              <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae} className="flex-1" control={control} label="Nome do pai" name="nomePai" />
+              <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} className="flex-1" control={control} label="Nome da Mae" name="nomeMae" />
             </View>
 
             <View className="flex flex-row gap-2">
-              <ControllerInput className="w-2/3 flex-1" control={control} label="CPF" name="cpf" error={errors.cpf} />
-              <ControllerInput className="w-1/3" control={control} label="RG" name="rg" />
+              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} className="w-2/3 flex-1" mask={Masks.BRL_CPF_CNPJ} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
+              <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} className="w-1/3" keyboardType="numeric" control={control} label="RG" name="rg" />
             </View>
 
             <View className="flex ">
-              <ControllerInput className="flex-1" control={control} label="Data de nascimento" name="dataNascimento" />
+              <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} className="flex-1" mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
             </View>
 
             <View className="flex flex-row gap-2">
-              <ControllerInput className="flex-1" control={control} label="E-mail" name="email" error={errors.email} />
-              <ControllerInput className="flex-1" control={control} label="Telefone" name="telefone" />
+              <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} className="flex-1" keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
+              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} className="flex-1" mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" />
             </View>
 
           </View>
@@ -207,49 +284,53 @@ export default function TabHomeScreen() {
           </Text>
 
           <View className="flex flex-row gap-2">
-            <ControllerInput className="flex-1" control={control} label="CEP" name="cep" />
-            <ControllerInput className="flex-1" control={control} label="Cidade" name="cidade" error={errors.cidade} />
+            <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} className="flex-1" mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
+            <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} className="flex-1" control={control} label="Cidade" name="cidade" error={errors.cidade} />
           </View>
 
           <View className="flex flex-row gap-2">
-            <ControllerInput className="w-2/3 flex-1" control={control} label="Endereço" name="endereco" error={errors.endereco} />
-            <ControllerInput className="w-1/3" control={control} label="Bairro" name="bairro" error={errors.bairro} />
+            <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} className="w-2/3 flex-1" control={control} label="Endereco" name="endereco" error={errors.endereco} />
+            <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} className="w-1/3" control={control} label="Bairro" name="bairro" error={errors.bairro} />
           </View>
           <View className="flex flex-row gap-2">
-            <ControllerInput className="w-1/3" control={control} label="Nº da casa" name="casa" error={errors.casa} />
-            <ControllerInput className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="ref" />
+            <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} className="w-1/3" keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
+            <ControllerInput inputRef={inputs.ref} className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="complemento" />
           </View>
 
           <Text className="font-bold text-2xl mt-5">
             Plano Escolhido
           </Text>
-          <ControllerInput className="flex-1" control={control} label="Velocidade" name="velocidade" error={errors.velocidade} />
+          <View className="w-full my-5">
+            <View className=" bg-gray-200 rounded-md ps-2">
+              <Text className="text-gray-400">
+                Planos
+              </Text>
+              <View className="w-full ">
+                <RNPickerSelect
+                  items={[
+                    { label: "Ligth Green - 200MB", value: "Ligth Green - 200MB" },
+                    { label: "Conexão Verde - 400MB", value: "Conexão Verde - 400MB" },
+                    { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
+                    { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
+                  ]}
+                  placeholder={{ label: "Selecione uma dos Planos", value: null }}
+                  onValueChange={(value) => setPlano(value)}
 
-          <View className="flex flex-row gap-2">
-            <View className="w-1/2">
-              <CheckBox
-                checked={checkPlano}
-                onPress={() => setCheckPlano(!checkPlano)}
-                containerStyle={{
-                  backgroundColor: "rgba(0,0,0,0)",
-                }}
-                title={"Fibra"} />
+                />
+              </View>
             </View>
-            <View className="w-1/2">
-              <CheckBox
-                checked={!checkPlano}
-                onPress={() => setCheckPlano(!checkPlano)}
-                containerStyle={{
-                  backgroundColor: "rgba(0,0,0,0)"
-                }}
-                title={"Rádio"} />
-            </View>
+            {
+              checkPlanAndVenci &&
+              checkPlanAndVenci.planos &&
+              <Text className="color-red-600 ps-2">{checkPlanAndVenci.planos}</Text>
+            }
           </View>
 
+
           <View className="flex flex-row gap-2">
             <View className="w-1/2">
               <CheckBox
-                checked={checkFidelidade}
+                checked={!checkFidelidade}
                 onPress={() => setCheckFidelidade(!checkFidelidade)}
                 containerStyle={{
                   backgroundColor: "rgba(0,0,0,0)",
@@ -258,7 +339,7 @@ export default function TabHomeScreen() {
             </View>
             <View className="w-1/2">
               <CheckBox
-                checked={!checkFidelidade}
+                checked={checkFidelidade}
                 onPress={() => setCheckFidelidade(!checkFidelidade)}
                 containerStyle={{
                   backgroundColor: "rgba(0,0,0,0)"
@@ -267,22 +348,28 @@ export default function TabHomeScreen() {
             </View>
           </View>
 
-          <View className="w-full h-16 my-5 bg-gray-200 rounded-md ps-2">
-            <Text className="text-gray-400">
-              Data do vencimento
-            </Text>
-            <View className="w-full ">
-              <RNPickerSelect
-                items={[
-                  { label: "5", value: "5" },
-                  { label: "10", value: "10" },
-                  { label: "15", value: "15" }
-                ]}
-                placeholder={{ label: "Selecione uma das opções", value: null }}
-                onValueChange={(value) => setVencimento(value)}
-                style={{}}
-              />
+          <View className="w-full my-5  ">
+            <View className="ps-2 bg-gray-200 rounded-md">
+              <Text className="text-gray-400">
+                Data do vencimento
+              </Text>
+              <View className="w-full m-0 p-0">
+                <RNPickerSelect
+                  items={[
+                    { label: "5", value: "5" },
+                    { label: "10", value: "10" },
+                    { label: "15", value: "15" }
+                  ]}
+                  placeholder={{ label: "Selecione uma das opções", value: null }}
+                  onValueChange={(value) => setVencimento(value)}
+                />
+              </View>
             </View>
+            {
+              checkPlanAndVenci &&
+              checkPlanAndVenci.vencimento &&
+              <Text className="color-red-600 ps-2">{checkPlanAndVenci.vencimento}</Text>
+            }
           </View>
 
           <View className="w-full flex-1">
@@ -298,6 +385,9 @@ export default function TabHomeScreen() {
           </View>
 
           <View className="w-full my-10 flex items-center">
+            {
+              cordenadas && <Text >Cordenadas: {cordenadas}</Text>
+            }
             <View className="flex-row gap-2
              justify-around w-full align-baseline">
               <MakerAtual setLocaction={setCordenadas} />
