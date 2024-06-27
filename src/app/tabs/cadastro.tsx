@@ -392,7 +392,7 @@ export default function TabHomeScreen() {
               cordenadas && <Text >Cordenadas: {cordenadas}</Text>
             }
             <View className="flex-row gap-2
-             justify-around w-full align-baseline">
+             justify-around w-full ">
               <MakerAtual setLocaction={setCordenadas} />
               <MakerPoint setLocation={setCordenadas} />
 

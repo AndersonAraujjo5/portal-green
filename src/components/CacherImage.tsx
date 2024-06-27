@@ -10,7 +10,6 @@ type CacherProps = {
 export default function CacherImage({ url, width }: CacherProps) {
     const [uri, setUri] = useState<string>();
     Images.getImageStorage(url).then(item => {
-        console.log(item)
         setUri(item)
     })
     return (

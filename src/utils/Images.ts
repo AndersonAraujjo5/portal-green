@@ -1,6 +1,5 @@
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import CadastroBD from '@/database/CadastroBD';
 export default new class Images {
     public async saveStorage(url: string) {
         const fileUri = `${FileSystem.cacheDirectory}${url.split('/').pop()}`;

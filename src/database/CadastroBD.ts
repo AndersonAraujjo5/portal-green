@@ -122,7 +122,7 @@ export default new class CadastroBD {
     const cadastros = storage.getString('pre-cadastros');
     if (cadastros) {
       const dados = JSON.parse(cadastros);
-      // console.log(dados)
+  
       try {
         dados.map(async (item, index) => {
           const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
@@ -137,7 +137,6 @@ export default new class CadastroBD {
 
           if (item.foto) {
             item.foto.map((e, i) => {
-              // console.log(e, item.nome)
               formData.append('foto', {
                 uri: item.foto[i].uri,
                 type: item.foto[i].mimeType,
