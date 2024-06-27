@@ -22,7 +22,7 @@ export default function tabClientesScreen() {
 
                     CadastroBD.addAll(data.data)
                     setDataPre(CadastroBD.getAllPreCadastros());
-                    // console.log(CadastroBD.getAllPreCadastros())
+                    console.log(CadastroBD.getAllPreCadastros())
                 } else {
                     setData(CadastroBD.getAllCadastros())
                     setDataPre(CadastroBD.getAllPreCadastros());
@@ -61,15 +61,6 @@ export default function tabClientesScreen() {
                     </View>
                 }
             </ScrollView>
-            {/* <FlatList
-                data={data}
-                renderItem={({ item }) => {
-                    return (
-                        <Clientes data={item} />
-                    )
-                }}
-                keyExtractor={item => item.id.toString()}
-            /> */}
         </View>
     )
 }

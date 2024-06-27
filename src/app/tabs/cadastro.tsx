@@ -139,6 +139,7 @@ export default function TabHomeScreen() {
 
   useEffect(() => {
     scrollToTop();
+
     checkFormIsEmptyPlanAndVenci()
   }, [errors])
 
@@ -296,7 +297,6 @@ export default function TabHomeScreen() {
             <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} className="w-1/3" keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
             <ControllerInput inputRef={inputs.ref} className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="complemento" />
           </View>
-
           <Text className="font-bold text-2xl mt-5">
             Plano Escolhido
           </Text>
@@ -315,7 +315,6 @@ export default function TabHomeScreen() {
                   ]}
                   placeholder={{ label: "Selecione uma dos Planos", value: null }}
                   onValueChange={(value) => setPlano(value)}
-
                 />
               </View>
             </View>
@@ -329,22 +328,26 @@ export default function TabHomeScreen() {
 
           <View className="flex flex-row gap-2">
             <View className="w-1/2">
-              <CheckBox
-                checked={!checkFidelidade}
-                onPress={() => setCheckFidelidade(!checkFidelidade)}
-                containerStyle={{
-                  backgroundColor: "rgba(0,0,0,0)",
-                }}
-                title={"Com Fidelidade"} />
+              <View className="flex justify-center items-center">
+                <CheckBox
+                  checked={!checkFidelidade}
+                  onPress={() => setCheckFidelidade(!checkFidelidade)}
+                  containerStyle={{
+                    backgroundColor: "rgba(0,0,0,0)",
+                  }} />
+                  <Text>Com Fidelidade</Text>
+              </View>
             </View>
             <View className="w-1/2">
-              <CheckBox
-                checked={checkFidelidade}
-                onPress={() => setCheckFidelidade(!checkFidelidade)}
-                containerStyle={{
-                  backgroundColor: "rgba(0,0,0,0)"
-                }}
-                title={"Sem Fidelidade"} />
+              <View className="flex justify-center items-center">
+                <CheckBox
+                  checked={checkFidelidade}
+                  onPress={() => setCheckFidelidade(!checkFidelidade)}
+                  containerStyle={{
+                    backgroundColor: "rgba(0,0,0,0)"
+                  }} className="item-center" />
+                <Text>Sem Fidelidade</Text>
+              </View>
             </View>
           </View>
 

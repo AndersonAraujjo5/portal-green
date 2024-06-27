@@ -8,6 +8,7 @@ import { TextInput, View } from "react-native";
 import { api } from '@/service/api'
 import LoginBD, { LoginProps } from "@/database/LoginBD";
 import { Redirect, router } from "expo-router";
+import CadastroBD from "@/database/CadastroBD";
 
 
 export default function login() {
@@ -31,6 +32,8 @@ export default function login() {
     }
 
     if(LoginBD.find()){
+        CadastroBD.synchronize(); // sincroniza os dados envia/recebe
+
         return <Redirect href={'/tabs/cadastro'} />
     }
 

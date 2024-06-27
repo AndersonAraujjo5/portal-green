@@ -55,7 +55,10 @@ export default function MakerPoint({ setLocation }) {
 
                                 }}
                                 style={{ flex: 1 }} >
-                                <Mapbox.Camera zoomLevel={15} centerCoordinate={locationAtual} />
+                                <Mapbox.Camera 
+                                zoomLevel={15} 
+                                centerCoordinate={locationAtual} 
+                                animationMode="none"/>
 
                                 <Mapbox.UserLocation
                                     animated={true}

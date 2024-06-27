@@ -95,6 +95,7 @@ function MapDownload() {
       >
         <Mapbox.UserLocation visible={true} animated={true} />
         <Mapbox.Camera
+          animationMode='none'
           zoomLevel={12}
           maxZoomLevel={18}
           minZoomLevel={12}

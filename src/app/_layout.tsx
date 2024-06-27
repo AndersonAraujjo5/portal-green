@@ -51,7 +51,7 @@ function RootLayoutNav() {
         <Stack.Screen name="tabs" options={{ headerShown: false }} />
         <Stack.Screen name="donwloadMapa" options={{ 
           presentation: 'modal',
-          title:"Baixar mapa"
+          title:"Baixar mapa",
          }} />
       </Stack>
     </>

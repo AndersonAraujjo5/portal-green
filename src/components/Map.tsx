@@ -182,7 +182,7 @@ export default function MakerPoint() {
                         rotateEnabled={true}
                         onPress={() => setOnModal(null)}
                         style={{ flex: 1 }} >
-                        <Mapbox.Camera zoomLevel={15} centerCoordinate={location} />
+                        <Mapbox.Camera zoomLevel={15} centerCoordinate={location} animationMode="none" />
                         <Mapbox.UserLocation
                             animated={true}
                             visible={true} />
