@@ -1,4 +1,4 @@
-rootProject.name = 'portal-green'
+rootProject.name = 'Portal Green'
 
 dependencyResolutionManagement {
   versionCatalogs {

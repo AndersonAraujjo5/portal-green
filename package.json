@@ -55,7 +55,8 @@
     "tailwindcss": "^3.4.4",
     "yup": "^1.4.0",
     "expo-image": "~1.12.12",
-    "expo-file-system": "~17.0.1"
+    "expo-file-system": "~17.0.1",
+    "react-native-svg": "15.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

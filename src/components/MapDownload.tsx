@@ -4,13 +4,15 @@ import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
 import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import MapaBD from '@/database/MapaBD';
+import Loader from '@/components/Loader';
 
 function MapDownload() {
   const mapRef = useRef(null);
   const [visibleBounds, setVisibleBounds] = useState(null);
   const [location, setLocation] = useState<number[] | [number, number]>();
   const [typeMap, setTypeMap] = useState(StyleURL.Street)
-
+  const [loading, setLoading] = useState(false);
+  const [statusDown, setStatusDown] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -48,8 +50,11 @@ function MapDownload() {
 
   // Função para iniciar o download do mapa da área visível
   const downloadMapData = async () => {
+    setLoading(true)
+    setStatusDown(0)
     try {
       const bounds = await captureVisibleBounds()
+      console.log(bounds)
       const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
       if (offlinePack) await Mapbox.offlineManager.deletePack('mapOffline')
 
@@ -63,10 +68,16 @@ function MapDownload() {
           metadata: {
             name: "Offline region"
           }
-        }, (offlinePack => {
-          console.log('Pacote offline criado:', offlinePack)
+        }, ((offlinePack, status) => {
+          setStatusDown(status.percentage.toFixed(2))
+          if (status.percentage === 100) {
+            setLoading(false);
+            alert("Mapa baixado com sucesso")
+          }
+        }), ((offlinePack, error) => {
+          setLoading(false);
+          alert("Algo deu errado, tente novamente mais tarde.")
         }))
-
       }
     } catch (e) {
       console.log(e)
@@ -87,11 +98,13 @@ function MapDownload() {
 
   return (
     <View style={styles.container}>
+      {
+        loading && <Loader show={loading} text={`Baixando ${statusDown}%`} />
+      }
       <Mapbox.MapView
         ref={mapRef}
         style={styles.map}
         styleURL={typeMap}
-        onMapLoadingError={() => console.log("mapa offilne")}
       >
         <Mapbox.UserLocation visible={true} animated={true} />
         <Mapbox.Camera
@@ -106,8 +119,8 @@ function MapDownload() {
       {/* Botão para capturar a área visível */}
       {/* <TouchableOpacity className='mb-96' style={styles.button} onPress={captureVisibleBounds}>
           <Text style={styles.buttonText}>Capturar Área Visível</Text>
-        </TouchableOpacity>
-   */}
+        </TouchableOpacity> */}
+
       {/* Botão para iniciar o download do mapa */}
       <TouchableOpacity style={styles.button} onPress={downloadMapData}>
         <Text style={styles.buttonText}>Baixar Mapa da Área Visível</Text>

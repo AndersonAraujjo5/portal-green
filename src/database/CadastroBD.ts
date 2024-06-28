@@ -30,29 +30,33 @@ export type FormData = {
 export default new class CadastroBD {
 
   public synchronize() {
-    // enviar cadastros não sincronizados
-    this.enviarPreCadastros();
+    try {
+      // enviar cadastros não sincronizados
+      this.enviarPreCadastros();
 
-    // pega os dados da api e salva local
-    api.get('/v1/cliente').then(({ data }) => {
-      this.addAll(data.data)
+      // pega os dados da api e salva local
+      api.get('/v1/cliente').then(({ data }) => {
+        this.addAll(data.data)
 
-      // pega os dados da api
-      data.data.map((item: any) => {
-        if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
-          this.saveImageStorage(url); // salva as imagens no dispositivo
-          Images.saveStorage(url);    // salva as url em uma lista
+        // pega os dados da api
+        data.data.map((item: any) => {
+          if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
+            this.saveImageStorage(url); // salva as imagens no dispositivo
+            Images.saveStorage(url);    // salva as url em uma lista
+          })
         })
+      }).catch(error => {
+        console.log("Algo deu errado", error)
       })
-    }).catch(error => {
+
+
+
+      const urls = this.getAllImagesStorage(); // pega todas as url
+      Images.cleanUpOldImages(urls) // deleta as iamgens que não estão na lista
+    } catch (error) {
       console.log(error)
-      console.log("Algo deu errado")
-    })
+    }
 
-
-
-    const urls = this.getAllImagesStorage(); // pega todas as url
-    Images.cleanUpOldImages(urls) // deleta as iamgens que não estão na lista
   }
 
   public addAll(cadastro: FormData) {
@@ -69,8 +73,8 @@ export default new class CadastroBD {
       cadastrosArray = JSON.parse(cadastros);
     }
 
-    cadastro.id = cadastrosArray.length == 0 ? 0 : cadastrosArray.length + 1
-
+    cadastro.id = cadastrosArray.length == 0 ? 0 : cadastrosArray.length
+    console.log("4654654", cadastro)
     // Adiciona o novo cadastro ao array
     cadastrosArray.push(cadastro);
 
@@ -110,8 +114,10 @@ export default new class CadastroBD {
     // Recupera o array de cadastros
     const cadastros = storage.getString('pre-cadastros');
 
-    if (cadastros) {
-      return JSON.parse(cadastros);
+    if (cadastros?.length !== 0) {
+      const dados = JSON.parse(cadastros)
+      if (dados.length === 0) return;
+      return dados;
     }
 
     return;
@@ -122,9 +128,9 @@ export default new class CadastroBD {
     const cadastros = storage.getString('pre-cadastros');
     if (cadastros) {
       const dados = JSON.parse(cadastros);
-  
+
       try {
-        dados.map(async (item, index) => {
+        dados.map((item, index) => {
           const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
             "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
             'cordenadas', 'fidelidade', 'info']
@@ -144,18 +150,13 @@ export default new class CadastroBD {
               })
             })
           }
-          // verificar o porque as imagens não estão sendo enviadas
-          try {
-            await api.post('/v1/cliente', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
 
-            this.delete(index, 'pre-cadastros')
-          } catch (e) {
-            console.log('error', e)
-          }
+          api.post('/v1/cliente', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(e => this.delete(index, 'pre-cadastros'))
+            .catch()
 
         })
       } catch (error) {
@@ -195,6 +196,7 @@ export default new class CadastroBD {
   }
 
   public delete(index: number, database: string) {
+    console.log(index)
     const cadastros = storage.getString(database);
     if (cadastros) {
       const cadastrosArray = JSON.parse(cadastros);

@@ -17,9 +17,9 @@ import NetInfo from "@react-native-community/netinfo";
 import { api } from "@/service/api";
 import { Masks } from "react-native-mask-input";
 import { router } from "expo-router";
+import Loader from "@/components/Loader";
 
 const validarCPF = (cpf: string) => {
-  if (cpf.length > 14) return true;
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
     return false;
@@ -105,6 +105,7 @@ export default function TabHomeScreen() {
   const [vencimento, setVencimento] = useState('')
   const [cordenadas, setCordenadas] = useState(null);
   const [fotos, setFotos] = useState(null);
+  const [showLoader, setShowLoader] = useState(false);
   const scrollViewRef = useRef(null)
 
   const inputs = {
@@ -131,18 +132,15 @@ export default function TabHomeScreen() {
     setCamera(false)
   }
 
-  const scrollToTop = () => {
+  const scrollToTop = (y=0) => {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      scrollViewRef.current.scrollTo({ y, animated: true });
     }
   };
 
-  useEffect(() => {
-    scrollToTop();
-
-    checkFormIsEmptyPlanAndVenci()
-  }, [errors])
-
+  if(Object.keys(errors).length != 0){
+    scrollToTop()
+  }
 
 
   const verificaFidelidade = () => {
@@ -157,75 +155,93 @@ export default function TabHomeScreen() {
     if (!plano) errors.planos = "Selecione um plano";
     if (!vencimento) errors.vencimento = "Selecione uma data de vencimento"
 
+    if(Object.keys(errors).length != 0){
+      scrollToTop(400)
+      setCheckPlanAndVenci(errors)
+      return false;
+    }
     setCheckPlanAndVenci(errors)
+
+    return true;
+  }
+
+  const checkCordenadas = ()=> {
+    if(!cordenadas){
+      alert("Selecione a localização da casa do cliente")
+      return false;
+    }
+    return true;
   }
 
   const handleSave = (data: FormData1) => {
-    try {
-      let obj: FormData2 = {};
-      obj.plano = plano
-      obj.fidelidade = verificaFidelidade();
-      obj.info = info
-      obj.vencimento = vencimento
-      obj.cordenadas = cordenadas ? cordenadas.toString() : ''
-      obj.foto = fotos ? fotos : ''
-      obj.status = ClienteStatus.CadastroEnviado
-      obj.localizacao = `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}`
-      const dados = { ...data, ...obj };
+    if(!checkFormIsEmptyPlanAndVenci()) return;
+    if(!checkCordenadas()) return;
+    setShowLoader(true);
+    let obj: FormData2 = {};
+    obj.plano = `${plano} - ${verificaFidelidade()}`
+    obj.info = info
+    obj.vencimento = vencimento
+    obj.cordenadas = cordenadas ? cordenadas.toString() : ''
+    obj.foto = fotos ? fotos : ''
+    obj.status = ClienteStatus.CadastroEnviado
+    obj.localizacao = cordenadas ? `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}` : ''
+    const dados = { ...data, ...obj };
+   
+    NetInfo.fetch().then(state => {
+      try {
+        if (state.isConnected) {
+          const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
+            "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
+            'cordenadas', 'fidelidade', 'info']
 
-      NetInfo.fetch().then(async state => {
-        try {
-          if (state.isConnected) {
-            const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
-              "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-              'cordenadas', 'fidelidade', 'info']
+          const formData = new FormData()
+          arr.map(e => {
+            dados[e] && formData.append(e, dados[e]);
+          })
 
-            const formData = new FormData()
-            arr.map(e => {
-              formData.append(e, dados[e]);
-            })
-
-            if (fotos) {
-              fotos.map((e, i) => {
-                formData.append('foto', {
-                  uri: fotos[i].uri,
-                  type: fotos[i].mimeType,
-                  name: fotos[i].fileName
-                })
+          if (fotos) {
+            fotos.map((e, i) => {
+              formData.append('foto', {
+                uri: fotos[i].uri,
+                type: fotos[i].mimeType,
+                name: fotos[i].fileName
               })
-            }
-
-            const data = await api.post('/v1/cliente', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
             })
+          }
+
+          api.post('/v1/cliente', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(e => {
+            setShowLoader(false)
             alert("Cadastro Enviado com sucesso")
             router.replace('/')
-
-          } else {
-            alert('sem internet')
-
-            // Caso não tenha internet, salvar altomaticamente 
-            // no dispositivo
+          }).catch(e => {
             dados.status = ClienteStatus.SincronizacaoPendente
             CadastroBD.addPreCadastro(dados);
+            setShowLoader(false)
             alert("Cadastro Salva com sucesso")
             router.replace('/')
-          }
-        } catch (error) {
-          console.log(error)
+          })
+
+        } else {
+          // Caso não tenha internet, salvar altomaticamente 
+          // no dispositivo
           dados.status = ClienteStatus.SincronizacaoPendente
           CadastroBD.addPreCadastro(dados);
-          alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
+          setShowLoader(false)
+          alert("Cadastro Salva com sucesso")
           router.replace('/')
-
         }
-      })
-
-    } catch (e) {
-      console.log(e)
-    }
+      } catch (error) {
+        dados.status = ClienteStatus.SincronizacaoPendente
+        CadastroBD.addPreCadastro(dados);
+        setShowLoader(false)
+        alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
+        router.replace('/')
+      }
+    })
   }
 
   const handleTrash = (index) => {
@@ -244,7 +260,7 @@ export default function TabHomeScreen() {
 
   return (
     <View className="flex-1 pt-14 p-4">
-      <StatusBar style='dark ' />
+      <Loader show={showLoader} />
       {
         camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
       }
@@ -260,21 +276,21 @@ export default function TabHomeScreen() {
             <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
 
 
-            <View className="flex flex-row gap-2">
+            <View className="flex flex-row gap-2 w-full">
               <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae} className="flex-1" control={control} label="Nome do pai" name="nomePai" />
               <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} className="flex-1" control={control} label="Nome da Mae" name="nomeMae" />
             </View>
 
-            <View className="flex flex-row gap-2">
-              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} className="w-2/3 flex-1" mask={Masks.BRL_CPF_CNPJ} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
+            <View className="flex flex-row gap-2 w-full">
+              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} className="w-2/3 flex-1" mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
               <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} className="w-1/3" keyboardType="numeric" control={control} label="RG" name="rg" />
             </View>
 
-            <View className="flex ">
-              <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} className="flex-1" mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
+            <View className="flex flex-row w-full">
+              <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} keyboardType="numeric" className="flex-1" mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
             </View>
 
-            <View className="flex flex-row gap-2">
+            <View className="flex flex-row gap-2 w-full">
               <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} className="flex-1" keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
               <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} className="flex-1" mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" />
             </View>
@@ -284,16 +300,16 @@ export default function TabHomeScreen() {
             Endereço
           </Text>
 
-          <View className="flex flex-row gap-2">
+          <View className="flex flex-row gap-2 w-full">
             <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} className="flex-1" mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
             <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} className="flex-1" control={control} label="Cidade" name="cidade" error={errors.cidade} />
           </View>
 
-          <View className="flex flex-row gap-2">
+          <View className="flex flex-row gap-2 w-full">
             <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} className="w-2/3 flex-1" control={control} label="Endereco" name="endereco" error={errors.endereco} />
             <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} className="w-1/3" control={control} label="Bairro" name="bairro" error={errors.bairro} />
           </View>
-          <View className="flex flex-row gap-2">
+          <View className="flex flex-row gap-2 w-full">
             <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} className="w-1/3" keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
             <ControllerInput inputRef={inputs.ref} className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="complemento" />
           </View>
@@ -326,7 +342,7 @@ export default function TabHomeScreen() {
           </View>
 
 
-          <View className="flex flex-row gap-2">
+          <View className="flex flex-row gap-2 w-full">
             <View className="w-1/2">
               <View className="flex justify-center items-center">
                 <CheckBox
@@ -335,7 +351,7 @@ export default function TabHomeScreen() {
                   containerStyle={{
                     backgroundColor: "rgba(0,0,0,0)",
                   }} />
-                  <Text>Com Fidelidade</Text>
+                <Text>Com Fidelidade</Text>
               </View>
             </View>
             <View className="w-1/2">
