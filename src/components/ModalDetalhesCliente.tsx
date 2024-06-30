@@ -1,8 +1,6 @@
 import ButtonAction from "@/components/ButtonActions";
-import { Dimensions, FlatList, Pressable, View, ScrollView, Text, Image } from "react-native";
-import Images from "@/utils/Images";
+import { Dimensions, View, ScrollView, Text, Image, TextInput } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
 import CacherImage from "./CacherImage";
 
 export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
@@ -23,9 +21,11 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                 <Text>Vendedor: {associado}</Text>
                 <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
                 {
-                    vars.map((item, index) => (
-                        obj[item] && <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
-                    ))
+                    vars.map((item, index) => {
+                        if(obj[item]){
+                            return <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
+                        }
+                    })
                 }
                 <Text>Mais info: {info}</Text>
                 <ButtonAction cordenadas={cordenadas} status='Usuário Criado' />
@@ -62,6 +62,10 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                         </View>
                     ))
                 }
+                <View className="flex-row h-14 w-full items-center">
+                    <AntDesign className="mx-3" name="camera" size={20}/>
+                    <TextInput className="bg-gray-400 w-full" />
+                </View>
 
             </ScrollView>
         </View>

@@ -74,7 +74,6 @@ export default new class CadastroBD {
     }
 
     cadastro.id = cadastrosArray.length == 0 ? 0 : cadastrosArray.length
-    console.log("4654654", cadastro)
     // Adiciona o novo cadastro ao array
     cadastrosArray.push(cadastro);
 

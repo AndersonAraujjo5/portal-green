@@ -3,8 +3,9 @@ import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text } from 're
 import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
 import CamadaMap, { StyleURL } from '@/components/CamadaMap';
-import MapaBD from '@/database/MapaBD';
 import Loader from '@/components/Loader';
+import { useFocusEffect } from 'expo-router';
+import { addEventListener, useNetInfo } from '@react-native-community/netinfo';
 
 function MapDownload() {
   const mapRef = useRef(null);
@@ -13,7 +14,8 @@ function MapDownload() {
   const [typeMap, setTypeMap] = useState(StyleURL.Street)
   const [loading, setLoading] = useState(false);
   const [statusDown, setStatusDown] = useState(0);
-
+  const [mapOffline, setMapOffline] = useState();
+  const { type, isConnected } = useNetInfo();
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -23,14 +25,35 @@ function MapDownload() {
       }
       handleLocalAtual();
     })();
-    const getTypeMap = MapaBD.find().type
-    if (getTypeMap) {
-      setTypeMap(getTypeMap)
-    }
+
+    const unsubscribe = addEventListener(state => {
+      console.log("Connection type", state.type);
+      console.log("Is connected?", state.isConnected);
+    });
+    
+    // Unsubscribe
+    unsubscribe();
   }, []);
 
+  useEffect(()=>{
+    activeMapOffilne();
+  },[isConnected])
+
+  const activeMapOffilne = async () => {
+    console.log(isConnected)
+    if (!isConnected) {
+      const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
+      setMapOffline(offlinePack)
+    }else{
+      setMapOffline(null)
+    }
+  }
+  
+  useFocusEffect(() => {
+    activeMapOffilne();
+  })
+
   const handleTypeMap = (styleUrl: string) => {
-    MapaBD.add(styleUrl);
     setTypeMap(styleUrl)
   }
 
@@ -54,7 +77,6 @@ function MapDownload() {
     setStatusDown(0)
     try {
       const bounds = await captureVisibleBounds()
-      console.log(bounds)
       const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
       if (offlinePack) await Mapbox.offlineManager.deletePack('mapOffline')
 
@@ -101,42 +123,73 @@ function MapDownload() {
       {
         loading && <Loader show={loading} text={`Baixando ${statusDown}%`} />
       }
-      <Mapbox.MapView
-        ref={mapRef}
-        style={styles.map}
-        styleURL={typeMap}
-      >
-        <Mapbox.UserLocation visible={true} animated={true} />
-        <Mapbox.Camera
-          animationMode='none'
-          zoomLevel={12}
-          maxZoomLevel={18}
-          minZoomLevel={12}
-          centerCoordinate={location}
-        />
-      </Mapbox.MapView>
+      {
+        mapOffline ?
+          <>
+            <Mapbox.MapView
+              logoEnabled={false}
+              compassEnabled={true}
+              scaleBarEnabled={false}
+              compassPosition={{ top: 80, right: 10 }}
+              rotateEnabled={true}
+              styleURL={mapOffline?.metadata._rnmapbox.styleURI}
+              style={{flex: 1}}
+            >
+              <Mapbox.UserLocation visible={true} animated={true} />
+              <Mapbox.Camera maxBounds={{
+                ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
+                sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
+              }}
+                minZoomLevel={12}
+                maxZoomLevel={18}
+                animationMode="none" />
+            </Mapbox.MapView>
+          </>
+          :
+          <>
+            <Mapbox.MapView
+              ref={mapRef}
+              logoEnabled={false}
+              compassEnabled={true}
+              scaleBarEnabled={false}
+              compassPosition={{ top: 80, right: 10 }}
+              styleURL={typeMap}
+              rotateEnabled={true}
+              style={styles.map}
+            >
+              <Mapbox.UserLocation visible={true} animated={true} />
+              <Mapbox.Camera
+                animationMode='none'
+                zoomLevel={12}
+                maxZoomLevel={18}
+                minZoomLevel={12}
+                centerCoordinate={location}
+              />
+            </Mapbox.MapView>
 
-      {/* Botão para capturar a área visível */}
-      {/* <TouchableOpacity className='mb-96' style={styles.button} onPress={captureVisibleBounds}>
+            {/* Botão para capturar a área visível */}
+            {/* <TouchableOpacity className='mb-96' style={styles.button} onPress={captureVisibleBounds}>
           <Text style={styles.buttonText}>Capturar Área Visível</Text>
         </TouchableOpacity> */}
 
-      {/* Botão para iniciar o download do mapa */}
-      <TouchableOpacity style={styles.button} onPress={downloadMapData}>
-        <Text style={styles.buttonText}>Baixar Mapa da Área Visível</Text>
-      </TouchableOpacity>
+            {/* Botão para iniciar o download do mapa */}
+            <TouchableOpacity style={styles.button} onPress={downloadMapData}>
+              <Text style={styles.buttonText}>Baixar Mapa da Área Visível</Text>
+            </TouchableOpacity>
 
-      {/* Informações da área visível (opcional para depuração) */}
-      {visibleBounds && (
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>Área visível do mapa:</Text>
-          <Text style={styles.infoText}>Latitude mínima: {visibleBounds[0][1]}</Text>
-          <Text style={styles.infoText}>Longitude mínima: {visibleBounds[0][0]}</Text>
-          <Text style={styles.infoText}>Latitude máxima: {visibleBounds[1][1]}</Text>
-          <Text style={styles.infoText}>Longitude máxima: {visibleBounds[1][0]}</Text>
-        </View>
-      )}
-      <CamadaMap setType={handleTypeMap} />
+            {/* Informações da área visível (opcional para depuração) */}
+            {visibleBounds && (
+              <View style={styles.infoBox}>
+                <Text style={styles.infoText}>Área visível do mapa:</Text>
+                <Text style={styles.infoText}>Latitude mínima: {visibleBounds[0][1]}</Text>
+                <Text style={styles.infoText}>Longitude mínima: {visibleBounds[0][0]}</Text>
+                <Text style={styles.infoText}>Latitude máxima: {visibleBounds[1][1]}</Text>
+                <Text style={styles.infoText}>Longitude máxima: {visibleBounds[1][0]}</Text>
+              </View>
+            )}
+            <CamadaMap setType={handleTypeMap} />
+          </>
+      }
     </View>
   );
 };

@@ -41,9 +41,9 @@ function Clientes({ data, access }: any) {
                                 <Text className="text-xl font-bold">{cliente || nome}</Text>
                                 <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
                                 {
-                                    vars.map((item, index) => (
-                                        data[item] && <Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>
-                                    ))
+                                    vars.map((item, index) => {
+                                        if(data[item]) return (<Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>)
+                                    })
                                 }
                                 <Text className="text-xl">{status}</Text>
                                 {

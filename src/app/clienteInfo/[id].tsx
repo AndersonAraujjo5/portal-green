@@ -1,17 +1,13 @@
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Dimensions, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
-import { AntDesign } from "@expo/vector-icons";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
-import MapaBD from "@/database/MapaBD";
 import CadastroBD from '@/database/CadastroBD';
-import ButtonAction from '@/components/ButtonActions';
 import ModalDetalhesCliente from '@/components/ModalDetalhesCliente';
 
 export default function page() {
-    const { width } = Dimensions.get('window');
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
@@ -30,21 +26,16 @@ export default function page() {
             let getLocation = await Location.getCurrentPositionAsync({});
             setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
         })();
-        const getTypeMap = MapaBD.find().type
-        if (getTypeMap) {
-            setTypeMap(getTypeMap)
-        }
 
-        if(clienteData){
+        if (clienteData) {
             navigation.setOptions({
-                title:""
+                title: ""
             })
         }
     }, []);
 
 
     const handleTypeMap = (styleUrl: string) => {
-        MapaBD.add(styleUrl);
         setTypeMap(styleUrl)
     }
 
@@ -62,13 +53,17 @@ export default function page() {
                     <Mapbox.MapView
                         styleURL={typeMap}
                         rotateEnabled={true}
+                        logoEnabled={false}
+                        compassEnabled={true}
+                        scaleBarEnabled={false}
+                        compassPosition={{ top: 80, right: 10 }}
                         onPress={({ geometry }) => {
                             setOnModal(null)
                         }}
                         style={{ flex: 1 }} >
-                        <Mapbox.Camera zoomLevel={15} 
-                        centerCoordinate={clienteData.cordenadas.split(',')}
-                        animationMode='none' />
+                        <Mapbox.Camera zoomLevel={15}
+                            centerCoordinate={clienteData.cordenadas.split(',')}
+                            animationMode='none' />
                         <Mapbox.UserLocation
                             visible={true} />
                         <Mapbox.PointAnnotation

@@ -1,7 +1,6 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
-import { StatusBar } from "expo-status-bar";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";

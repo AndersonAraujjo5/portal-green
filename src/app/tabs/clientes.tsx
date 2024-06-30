@@ -23,6 +23,7 @@ export default function tabClientesScreen() {
                     }).catch(err => {
                         if (err.errors) {
                             setMsgErro(err.errors)
+                            setData(CadastroBD.getAllCadastros())
                         }
                     })
 

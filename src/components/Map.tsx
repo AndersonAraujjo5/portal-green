@@ -3,10 +3,10 @@ import * as Location from 'expo-location';
 import { Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
-import MapaBD from "@/database/MapaBD";
 import CadastroBD from "@/database/CadastroBD";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
-import NetInfo from '@react-native-community/netinfo'
+import { useNetInfo } from '@react-native-community/netinfo'
+import { useFocusEffect } from "expo-router";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -25,6 +25,7 @@ export default function MakerPoint() {
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
     const [clientesData, setClientesData] = useState<any>([])
     const [mapOffline, setMapOffline] = useState();
+    const { type, isConnected } = useNetInfo();
 
     useEffect(() => {
         (async () => {
@@ -35,40 +36,31 @@ export default function MakerPoint() {
             }
             let getLocation = await Location.getCurrentPositionAsync({});
             setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
-        
-            const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
-            setMapOffline(offlinePack)
-            console.log(offlinePack)
-            console.log(offlinePack?.metadata._rnmapbox.bounds, offlinePack?.metadata._rnmapbox.styleURI)
+
         })();
-        const getTypeMap = MapaBD.find().type
-        if (getTypeMap) {
-            setTypeMap(getTypeMap)
-        }
 
         if (CadastroBD.findByExistCordenadas()) {
             setClientesData(CadastroBD.findByExistCordenadas())
         }
-
-       
-
     }, []);
 
+    const activeMapOffilne = async () => {
+        const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
+        setMapOffline(offlinePack)
+    }
 
-
-    NetInfo.fetch().then(state => {
-        if (state.isConnected) {
-           
+    useFocusEffect(() => {
+        if (!isConnected) {
+            console.log("conexcctado")
+            activeMapOffilne()
         } else {
-            //setClientesData(CadastroBD.getAllCadastros());
-            // Caso não tenha internet, salvar altomaticamente 
-            // no dispositivo
-
+            setMapOffline(null)
         }
     })
 
+
+
     const handleTypeMap = (styleUrl: string) => {
-        MapaBD.add(styleUrl);
         setTypeMap(styleUrl)
     }
 
@@ -85,81 +77,74 @@ export default function MakerPoint() {
             <View className="flex-1 justify-center content-center relative">
                 <View className="w-full h-full">
                     {
-                        mapOffline && 
-                        <>
-                        <Text>Mapa off</Text>
-                        <Mapbox.MapView
-                        
-                        logoEnabled={false}
-                        compassEnabled={true}
-                        scaleBarEnabled={false}
-                        compassPosition={{ top: 80, right: 10 }}
-                        styleURL={mapOffline?.metadata._rnmapbox.styleURI}
-                        rotateEnabled={true}
-                        onPress={() => setOnModal(null)}
-                        style={{ flex: 1 }} >
-                            {/* Falta corrigir o map, offilne não esta renderizando correto */}
-                        <Mapbox.Camera maxBounds={{
-                            ne:[-47.1474827, -47.2092807,-47.2092807, -47.1474827],
-                            sw:[-1.1458476,-1.1458476,-1.2378382,-1.2378382]
-                        }} 
-                        minZoomLevel={12}
-                        maxZoomLevel={18}
-                          centerCoordinate={location}
-                          animationMode="none" />
-                        <Mapbox.UserLocation
-                            animated={true}
-                            visible={true} />
-                        {
-                            clientesData && clientesData.map((item) => (
-                                <Mapbox.PointAnnotation
-                                    title={item.cliente}
-                                    snippet={item.cliente}
-                                    selected={true}
-                                    key={item.id.toString()}
-                                    id={item.id.toString()}
-                                    onSelected={() => {
-                                        setOnModal(ModalDetalhesCliente(item))
-                                    }}
-                                    coordinate={item.cordenadas.split(',')}
-                                />
-                            ))
-                        }
-                    </Mapbox.MapView>
-                        </>
-                    }
-
-                    {
-                    //     mapOffline || 
-                    //     <Mapbox.MapView
-                    //     logoEnabled={false}
-                    //     compassEnabled={true}
-                    //     scaleBarEnabled={false}
-                    //     compassPosition={{ top: 80, right: 10 }}
-                    //     styleURL={typeMap}
-                    //     rotateEnabled={true}
-                    //     onPress={() => setOnModal(null)}
-                    //     style={{ flex: 1 }} >
-                    //     <Mapbox.Camera zoomLevel={12} centerCoordinate={location} animationMode="none" />
-                    //     <Mapbox.UserLocation
-                    //         animated={true}
-                    //         visible={true} />
-                    //     {
-                    //         clientesData && clientesData.map((item) => (
-                    //             <Mapbox.PointAnnotation
-                    //                 title={item.cliente}
-                    //                 snippet={item.cliente}
-                    //                 selected={true}
-                    //                 key={item.id.toString()}
-                    //                 id={item.id.toString()}
-                    //                 onSelected={() => {
-                    //                     setOnModal(ModalDetalhesCliente(item))
-                    //                 }}
-                    //                 coordinate={item.cordenadas.split(',')}
-                    //             />
-                    //         ))
-                    //     }
-                    // </Mapbox.MapView>
+                        mapOffline ?
+                            <Mapbox.MapView
+                                logoEnabled={false}
+                                compassEnabled={true}
+                                scaleBarEnabled={false}
+                                compassPosition={{ top: 80, right: 10 }}
+                                styleURL={mapOffline?.metadata._rnmapbox.styleURI}
+                                rotateEnabled={true}
+                                onPress={() => setOnModal(null)}
+                                style={{ flex: 1 }} >
+                                {/* Falta corrigir o map, offilne não esta renderizando correto */}
+                                <Mapbox.Camera maxBounds={{
+                                    ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
+                                    sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
+                                }}
+                                    minZoomLevel={12}
+                                    maxZoomLevel={18}
+                                    centerCoordinate={location}
+                                    animationMode="none" />
+                                <Mapbox.UserLocation
+                                    animated={true}
+                                    visible={true} />
+                                {
+                                    clientesData && clientesData.map((item) => (
+                                        <Mapbox.PointAnnotation
+                                            title={item.cliente}
+                                            snippet={item.cliente}
+                                            selected={true}
+                                            key={item.id.toString()}
+                                            id={item.id.toString()}
+                                            onSelected={() => {
+                                                setOnModal(ModalDetalhesCliente(item))
+                                            }}
+                                            coordinate={item.cordenadas.split(',')}
+                                        />
+                                    ))
+                                }
+                            </Mapbox.MapView>
+                            :
+                            <Mapbox.MapView
+                                logoEnabled={false}
+                                compassEnabled={true}
+                                scaleBarEnabled={false}
+                                compassPosition={{ top: 80, right: 10 }}
+                                styleURL={typeMap}
+                                rotateEnabled={true}
+                                onPress={() => setOnModal(null)}
+                                style={{ flex: 1 }} >
+                                <Mapbox.Camera zoomLevel={12} centerCoordinate={location} animationMode="none" />
+                                <Mapbox.UserLocation
+                                    animated={true}
+                                    visible={true} />
+                                {
+                                    clientesData && clientesData.map((item) => (
+                                        <Mapbox.PointAnnotation
+                                            title={item.cliente}
+                                            snippet={item.cliente}
+                                            selected={true}
+                                            key={item.id.toString()}
+                                            id={item.id.toString()}
+                                            onSelected={() => {
+                                                setOnModal(ModalDetalhesCliente(item))
+                                            }}
+                                            coordinate={item.cordenadas.split(',')}
+                                        />
+                                    ))
+                                }
+                            </Mapbox.MapView>
                     }
                 </View>
                 {

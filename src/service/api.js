@@ -10,7 +10,6 @@ export const api = axios.create({
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
-    console.log("test",error)
     if(error.response && error.response.status == 401){
         LoginBD.delete();
         router.replace('/')

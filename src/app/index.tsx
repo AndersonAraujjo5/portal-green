@@ -1,8 +1,8 @@
 import { forma } from "@/assets/images";
 import Colors from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
-import { useEffect, useRef, useState } from "react";
-import { Image, Pressable, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import { Image, Pressable, } from "react-native";
 import { Text } from "react-native";
 import { TextInput, View } from "react-native";
 import { api } from '@/service/api'
