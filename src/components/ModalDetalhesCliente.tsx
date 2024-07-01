@@ -1,10 +1,10 @@
 import ButtonAction from "@/components/ButtonActions";
-import { Dimensions, View, ScrollView, Text, Image, TextInput } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { Dimensions, View, ScrollView, Text, Image, TextInput, Pressable } from "react-native";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
 
 export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
-    cep, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado
+    cep, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
 }: any) {
 
 
@@ -22,21 +22,21 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                 <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
                 {
                     vars.map((item, index) => {
-                        if(obj[item]){
+                        if (obj[item]) {
                             return <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
                         }
                     })
                 }
                 <Text>Mais info: {info}</Text>
-                <ButtonAction cordenadas={cordenadas} status='Usuário Criado' />
+                <ButtonAction id={id} cordenadas={cordenadas} status='Usuário Criado' />
                 <ScrollView className="px-2 my-5"
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}>
-                {
-                    Fotos.map((item,index) => (
-                       <CacherImage url={item.url} width={width} key={index}/>
-                    ))
-                }
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}>
+                    {
+                        Fotos.map((item, index) => (
+                            <CacherImage url={item.url} width={width} key={index} />
+                        ))
+                    }
                 </ScrollView>
 
                 {
@@ -55,18 +55,14 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                                     className=" my-2 rounded-lg mx-2"
                                     width={width / 2} height={200}
                                     source={{ uri: item.url }}
-                                    resizeMode="cover"
+                                    resizeMode="contain"
                                 />
                             }
                             <Text className="my-2">{item.body}</Text>
                         </View>
                     ))
                 }
-                <View className="flex-row h-14 w-full items-center">
-                    <AntDesign className="mx-3" name="camera" size={20}/>
-                    <TextInput className="bg-gray-400 w-full" />
-                </View>
-
+              
             </ScrollView>
         </View>
     )

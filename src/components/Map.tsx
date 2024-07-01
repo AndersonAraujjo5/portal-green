@@ -34,9 +34,6 @@ export default function MakerPoint() {
                 console.log('Permission to access location was denied');
                 return;
             }
-            let getLocation = await Location.getCurrentPositionAsync({});
-            setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
-
         })();
 
         if (CadastroBD.findByExistCordenadas()) {
@@ -44,14 +41,20 @@ export default function MakerPoint() {
         }
     }, []);
 
+    const getLocalizacao = async () => {
+        let getLocation = await Location.getCurrentPositionAsync({});
+        setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+    }
+
     const activeMapOffilne = async () => {
         const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
         setMapOffline(offlinePack)
     }
 
     useFocusEffect(() => {
+        getLocalizacao();
+
         if (!isConnected) {
-            console.log("conexcctado")
             activeMapOffilne()
         } else {
             setMapOffline(null)
@@ -74,6 +77,7 @@ export default function MakerPoint() {
 
     return (
         <View className="flex-1 pt-14">
+            
             <View className="flex-1 justify-center content-center relative">
                 <View className="w-full h-full">
                     {
@@ -87,7 +91,7 @@ export default function MakerPoint() {
                                 rotateEnabled={true}
                                 onPress={() => setOnModal(null)}
                                 style={{ flex: 1 }} >
-                                {/* Falta corrigir o map, offilne não esta renderizando correto */}
+                                
                                 <Mapbox.Camera maxBounds={{
                                     ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
                                     sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]

@@ -251,4 +251,57 @@ export default new class CadastroBD {
     }
   }
 
+  public addComentario(cadastro) {
+    // Recupera o array atual de cadastros
+    const cadastros = storage.getString('comentarios');
+    let cadastrosArray = [];
+
+    if (cadastros) {
+      cadastrosArray = JSON.parse(cadastros);
+    }
+
+    cadastro.id = cadastrosArray.length == 0 ? 0 : cadastrosArray.length
+    // Adiciona o novo cadastro ao array
+    cadastrosArray.push(cadastro);
+
+    // Armazena o array atualizado no MMKV
+    storage.set('comentarios', JSON.stringify(cadastrosArray));
+    return JSON.stringify(cadastrosArray);
+  }
+
+  public getAllComentarios(): string[] {
+    // Recupera o array de cadastros
+    const cadastros = storage.getString('comentarios');
+    if (cadastros) {
+      const data = JSON.parse(cadastros)
+      return data;
+    }
+    return [];
+  };
+
+  public enviarComentarios() {
+    const cadastros = storage.getString('comentarios');
+    if (cadastros) {
+      const dados = JSON.parse(cadastros);
+
+      try {
+        dados.map((item, index) => {
+          const formData = new FormData();
+          formData.append('file', {
+            uri: item.foto,
+            type: item.foto.split('.').pop(),
+            name: item.foto.split('/').pop()
+          })
+          formData.append('body', item.body)
+
+          api.post(`/v1/cliente/comentario/${item.clienteId}`, formData)
+          .then(() => {
+            this.delete(item.id, "comentarios")
+          }).catch(e => e)
+        })
+      } catch (error) {
+        console.log("errors", error)
+      }
+    }
+  }
 }

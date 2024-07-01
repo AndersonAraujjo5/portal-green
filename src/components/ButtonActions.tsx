@@ -1,6 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import Comentar from "@/components/Comentar";
 
 // { status: "Cadastro Pendente", color: 'bg-warning-subtle' },
 // { status: "Usuário Criado", color: 'bg-success-subtle' },
@@ -24,9 +25,10 @@ export enum ClienteStatus {
 type ButtonAction = {
     cordenadas: number[]
     status: string
+    id: number
 }
 
-export default function ButtonAction({ cordenadas, status }: ButtonAction) {
+export default function ButtonAction({ cordenadas, status, id }: ButtonAction) {
     return (
         <View className="flex-row my-3">
             <Link className="bg-blue-400 px-4 py-3 rounded-full flex-row items-center gap-2"
@@ -64,6 +66,7 @@ export default function ButtonAction({ cordenadas, status }: ButtonAction) {
                     </Pressable>
                 </>
             }
+            <Comentar id={id} />
 
         </View>
     )

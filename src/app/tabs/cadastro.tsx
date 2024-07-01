@@ -191,7 +191,7 @@ export default function TabHomeScreen() {
         if (state.isConnected) {
           const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
             "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-            'cordenadas', 'fidelidade', 'info']
+            'cordenadas', 'fidelidade','plano', 'info']
 
           const formData = new FormData()
           arr.map(e => {

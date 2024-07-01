@@ -29,7 +29,7 @@ function Clientes({ data, access }: any) {
                                 <Text className="text-xl">{status}</Text>
                                 {
                                     cordenadas &&
-                                    <ButtonAction cordenadas={cordenadas} status={"Cadastro Enviado"} />
+                                    <ButtonAction id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
                                 }
                             </View>
                         </View>
@@ -48,7 +48,7 @@ function Clientes({ data, access }: any) {
                                 <Text className="text-xl">{status}</Text>
                                 {
                                     cordenadas &&
-                                    <ButtonAction cordenadas={cordenadas} status={"Cadastro Enviado"} />
+                                    <ButtonAction id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
                                 }
                             </View>
                         </View>

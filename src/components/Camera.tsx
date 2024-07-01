@@ -5,11 +5,11 @@ import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from '
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 
-export default function Camera({ closed, setFotos }: any) {
+export default function Camera({ closed, setFotos, multipleSelection = true }: any) {
   const camRef = useRef(null)
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [capturedPhoto, setCapturedPhoto] = useState();
+  // const [capturedPhoto, setCapturedPhoto] = useState();
   if (!permission) {
     return <View />;
   }
@@ -45,9 +45,10 @@ export default function Camera({ closed, setFotos }: any) {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status === 'granted') {
       const result = await ImagePicker.launchImageLibraryAsync({
-        allowsMultipleSelection: true
+        allowsMultipleSelection: multipleSelection
       });
-      if (!result.canceled) {
+      if (result) {
+        closed(false)
         setFotos(result.assets);
         // setCapturedPhoto(result.assets[0].uri);
       }
