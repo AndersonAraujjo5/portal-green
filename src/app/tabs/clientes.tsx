@@ -15,7 +15,7 @@ export default function tabClientesScreen() {
         NetInfo.fetch().then(state => {
             try {
                 if (state.isConnected) {
-                    CadastroBD.enviarPreCadastros();
+                    CadastroBD.synchronize()
 
                     api.get('/v1/cliente').then(({ data }) => {
                         setData(data.data)
@@ -25,6 +25,7 @@ export default function tabClientesScreen() {
                             setMsgErro(err.errors)
                             setData(CadastroBD.getAllCadastros())
                         }
+                        return err;
                     })
 
                     setDataPre(CadastroBD.getAllPreCadastros());
@@ -46,11 +47,11 @@ export default function tabClientesScreen() {
             }
             {
                 msgError &&
-                <View className="flex-1 justify-center p-4">
+                <ScrollView className="flex-1 px-4">
                     {
-                        msgError.map((e,i) => <Text key={i} className="text-2xl">{e}</Text>)
+                        msgError.map((e,i) => <Text key={i} className="text-2xl text-center">{e}</Text>)
                     }
-                </View>
+                </ScrollView>
             }
             <ScrollView>
                 {

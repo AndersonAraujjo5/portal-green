@@ -10,13 +10,15 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { api } from "@/service/api";
 import CadastroBD from "@/database/CadastroBD";
 import LoginBD from "@/database/LoginBD";
-import Loader from "./Loader";
+import Loader from "@/components/Loader";
+import { router } from "expo-router";
 
 type ComentarProps = {
     id: number
+    update?: any
 }
 
-export default function Comentar({ id }: ComentarProps) {
+export default function Comentar({ id, update }: ComentarProps) {
     const [camera, setCamera] = useState(false)
     const [foto, setFoto] = useState(null);
     const [comentario, setComentario] = useState();
@@ -27,14 +29,44 @@ export default function Comentar({ id }: ComentarProps) {
         setCamera(false)
     }
 
-    const salvarComentarios = () => {
+    const adicionarComentario = () =>{
+        const cadastros = CadastroBD.getAllCadastros();
 
+        const login = LoginBD.find()?.usuario
+        
+        if(cadastros){
+            cadastros.map(item => {
+                if(item.id == id){
+                    const comen = {
+                        id: item.Comentarios.length,
+                        body: comentario,
+                        associado: login?.nome,
+                        foto: foto ? foto[0].uri : '',
+                        url:foto ? foto[0].uri : '',
+                        clienteId: id,
+                        type:"image"
+                    }
+                    item.Comentarios.reverse()
+                    item.Comentarios.push(comen)
+                    item.Comentarios.reverse()
+
+                }
+            })
+        }
+        CadastroBD.addAll(cadastros)
+       
+    }
+
+    const salvarComentarios = () => {
         const login = LoginBD.find()?.usuario
         const Comentarios = {
             body: comentario,
             associado: login?.nome,
             foto: foto ? foto[0].uri : '',
-            clienteId: id
+            url: foto ? foto[0].uri : '',
+            clienteId: id,
+            type:"image"
+
         }
 
         CadastroBD.addComentario(Comentarios)
@@ -45,6 +77,10 @@ export default function Comentar({ id }: ComentarProps) {
         setComentario('')
         setLoader(false)
         alert("Comentario enviado")
+       
+        if(update){
+            update(item => item+1)
+        }
     }
 
     const handleSendComentario = async () => {
@@ -62,13 +98,11 @@ export default function Comentar({ id }: ComentarProps) {
         
         if (isConnected) {
             try {
-                // api.get('/v1/cliente').then(e=> console.log(e)).catch(e=> console.log(e))
                 await api.post(`/v1/cliente/comentario/${id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                       }
                  })
-                 
             } catch (e) {
                salvarComentarios();
         
@@ -77,8 +111,9 @@ export default function Comentar({ id }: ComentarProps) {
             salvarComentarios();
         }
 
+        adicionarComentario();
         limpar()
-      
+        router.navigate('tabs/mapa')
     }
 
     return (
@@ -106,6 +141,7 @@ export default function Comentar({ id }: ComentarProps) {
                         <ScrollView className="p-5">
                             <View className="w-full h-24 bg-gray-200 rounded-md ps-2 py-2">
                                 <TextInput
+                                defaultValue={comentario}
                                     placeholder="Comentario"
                                     onChangeText={(value) => setComentario(value)}
                                     multiline={true}

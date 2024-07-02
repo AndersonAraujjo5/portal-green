@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from 'expo-location';
 import { Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
@@ -7,6 +7,7 @@ import CadastroBD from "@/database/CadastroBD";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useFocusEffect } from "expo-router";
+import { Entypo } from "@expo/vector-icons";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -19,13 +20,40 @@ export enum ClienteStatus {
     ClienteDesistiu = "Cliente Desistiu"
 }
 
+function LocationPin({status}){
+    return (
+       <>
+        {
+            status === ClienteStatus.UsuarioCriado &&
+            <Entypo name="location-pin" size={40} color={'red'} />
+        }
+        {
+            (status === ClienteStatus.InstalacaoEmAndamento ||
+                status === ClienteStatus.TecnicoACaminho || 
+                status === ClienteStatus.TecnicoDesignado
+            ) &&
+            <Entypo name="location-pin" size={40} color={'orange'} />
+        }
+        {
+            (status === ClienteStatus.InstalacaoConcluida ) &&
+            <Entypo name="location-pin" size={40} color={'blue'} />
+        }
+         {
+            (status === ClienteStatus.ClienteDesistiu ) &&
+            <Entypo name="location-pin" size={40} color={'black'} />
+        }
+       </>
+    )
+}
+
 export default function MakerPoint() {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
     const [clientesData, setClientesData] = useState<any>([])
     const [mapOffline, setMapOffline] = useState();
-    const { type, isConnected } = useNetInfo();
+    const [update, setUpdate] = useState(0)
+    const { isConnected } = useNetInfo();
 
     useEffect(() => {
         (async () => {
@@ -36,10 +64,21 @@ export default function MakerPoint() {
             }
         })();
 
+    }, []);
+
+    useEffect(() => {
+        if(update){
+            setOnModal(null)
+            sincronizar();
+        }
+    },[update])
+
+    const sincronizar = () => {
+        CadastroBD.synchronize();
         if (CadastroBD.findByExistCordenadas()) {
             setClientesData(CadastroBD.findByExistCordenadas())
         }
-    }, []);
+    }
 
     const getLocalizacao = async () => {
         let getLocation = await Location.getCurrentPositionAsync({});
@@ -51,15 +90,16 @@ export default function MakerPoint() {
         setMapOffline(offlinePack)
     }
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
+        setOnModal(null)
         getLocalizacao();
-
+        sincronizar();
         if (!isConnected) {
             activeMapOffilne()
         } else {
             setMapOffline(null)
         }
-    })
+    }, [isConnected]))
 
 
 
@@ -77,7 +117,7 @@ export default function MakerPoint() {
 
     return (
         <View className="flex-1 pt-14">
-            
+
             <View className="flex-1 justify-center content-center relative">
                 <View className="w-full h-full">
                     {
@@ -91,7 +131,7 @@ export default function MakerPoint() {
                                 rotateEnabled={true}
                                 onPress={() => setOnModal(null)}
                                 style={{ flex: 1 }} >
-                                
+
                                 <Mapbox.Camera maxBounds={{
                                     ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
                                     sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
@@ -104,19 +144,27 @@ export default function MakerPoint() {
                                     animated={true}
                                     visible={true} />
                                 {
-                                    clientesData && clientesData.map((item) => (
-                                        <Mapbox.PointAnnotation
-                                            title={item.cliente}
-                                            snippet={item.cliente}
-                                            selected={true}
-                                            key={item.id.toString()}
-                                            id={item.id.toString()}
-                                            onSelected={() => {
-                                                setOnModal(ModalDetalhesCliente(item))
-                                            }}
-                                            coordinate={item.cordenadas.split(',')}
-                                        />
-                                    ))
+                                    clientesData && clientesData.map((item) => {
+                                        if(item.status === ClienteStatus.CadastroEnviado ||
+                                            item.status === ClienteStatus.CadastroPendente
+                                        ) return;
+
+                                        return (
+                                            <Mapbox.PointAnnotation
+                                                title={item.cliente}
+                                                snippet={item.cliente}
+                                                selected={true}
+                                                key={item.id.toString()}
+                                                id={item.id.toString()}
+                                                onSelected={() => {
+                                                    setOnModal(ModalDetalhesCliente(item, setUpdate))
+                                                }}
+                                                coordinate={item.cordenadas.split(',')}
+                                            >
+                                                <LocationPin status={item.status} />
+                                            </Mapbox.PointAnnotation>
+                                        )
+                                    })
                                 }
                             </Mapbox.MapView>
                             :
@@ -134,19 +182,31 @@ export default function MakerPoint() {
                                     animated={true}
                                     visible={true} />
                                 {
-                                    clientesData && clientesData.map((item) => (
-                                        <Mapbox.PointAnnotation
-                                            title={item.cliente}
-                                            snippet={item.cliente}
-                                            selected={true}
-                                            key={item.id.toString()}
-                                            id={item.id.toString()}
-                                            onSelected={() => {
-                                                setOnModal(ModalDetalhesCliente(item))
-                                            }}
-                                            coordinate={item.cordenadas.split(',')}
-                                        />
-                                    ))
+                                    clientesData && clientesData.map((item) => {
+                                        if(item.status === ClienteStatus.CadastroEnviado ||
+                                            item.status === ClienteStatus.CadastroPendente
+                                        ) return;
+
+                                        return (
+                                            <Mapbox.PointAnnotation
+                                                title={item.cliente}
+                                                snippet={item.cliente}
+                                                selected={true}
+                                                key={item.id.toString()}
+                                                id={item.id.toString()}
+                                                onSelected={() => {
+                                                    setOnModal(ModalDetalhesCliente(item, setUpdate))
+                                                }}
+                                                coordinate={item.cordenadas.split(',')}
+                                                style={{
+                                                    backgroundColor:'blue',
+                                                    
+                                                }}
+                                            >
+                                                <LocationPin status={item.status} />
+                                            </Mapbox.PointAnnotation>
+                                        )
+                                    })
                                 }
                             </Mapbox.MapView>
                     }

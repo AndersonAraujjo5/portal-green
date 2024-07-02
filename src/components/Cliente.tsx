@@ -3,7 +3,8 @@ import { View, Text } from "react-native";
 import ButtonAction from "@/components/ButtonActions";
 
 function Clientes({ data, access }: any) {
-    const { cliente, nome, endereco, casa, bairro, cidade, status, id, cordenadas }: any = data;
+    const { cliente, nome, endereco, casa, bairro, cidade, status,
+        id, cordenadas, tecnico }: any = data;
 
     const vars = ["pppoe",
         "telefone", "email", "plano", "fidelidade", "vencimento"];
@@ -29,7 +30,7 @@ function Clientes({ data, access }: any) {
                                 <Text className="text-xl">{status}</Text>
                                 {
                                     cordenadas &&
-                                    <ButtonAction id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
+                                    <ButtonAction tecnico={tecnico} id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
                                 }
                             </View>
                         </View>

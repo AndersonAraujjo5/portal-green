@@ -12,7 +12,7 @@ export default function tabPerfilScreen() {
     }
     return (
         <ScrollView className="flex-1 py-5 mx-2">
-            <ProfileUser />
+            {/* <ProfileUser /> */}
             <Link href={'../donwloadMapa'} className="w-full bg-white py-3 my-5 px-2 rounded-lg">
                 <View className="flex-row  items-center gap-3">
                     <AntDesign name="clouddownload" size={25} />

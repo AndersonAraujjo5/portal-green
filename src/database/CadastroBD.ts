@@ -1,6 +1,7 @@
 import { api } from '@/service/api';
 import Images from '@/utils/Images';
 import { MMKV } from 'react-native-mmkv';
+import LoginBD from './LoginBD';
 
 const storage = new MMKV();
 export type FormData = {
@@ -33,6 +34,12 @@ export default new class CadastroBD {
     try {
       // enviar cadastros não sincronizados
       this.enviarPreCadastros();
+
+      // enviar comentario
+      this.enviarComentarios();
+
+      // atualizar status pendenten
+      this.atualizarStatus();
 
       // pega os dados da api e salva local
       api.get('/v1/cliente').then(({ data }) => {
@@ -155,7 +162,7 @@ export default new class CadastroBD {
               'Content-Type': 'multipart/form-data'
             }
           }).then(e => this.delete(index, 'pre-cadastros'))
-            .catch()
+            .catch(e => e)
 
         })
       } catch (error) {
@@ -179,6 +186,7 @@ export default new class CadastroBD {
 
     return null;
   }
+  
 
   public findByExistCordenadas(): FormData {
     // Recupera o array de cadastros por id
@@ -195,7 +203,6 @@ export default new class CadastroBD {
   }
 
   public delete(index: number, database: string) {
-    console.log(index)
     const cadastros = storage.getString(database);
     if (cadastros) {
       const cadastrosArray = JSON.parse(cadastros);
@@ -285,19 +292,80 @@ export default new class CadastroBD {
       const dados = JSON.parse(cadastros);
 
       try {
-        dados.map((item, index) => {
+        dados.map(async (item, index) => {
           const formData = new FormData();
+         if(item.foto){
           formData.append('file', {
             uri: item.foto,
-            type: item.foto.split('.').pop(),
+            type: `image/${item.foto.split('.').pop()}`,
             name: item.foto.split('/').pop()
           })
+   
+         }
           formData.append('body', item.body)
+         try {
+          await api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          this.delete(item.id, "comentarios")
+          
+         } catch (error) {
+          // console.log("eroo1", error)
+         }
+        })
+      } catch (error) {
+        console.log("errors", error)
+      }
+    }
+  }
 
-          api.post(`/v1/cliente/comentario/${item.clienteId}`, formData)
-          .then(() => {
-            this.delete(item.id, "comentarios")
-          }).catch(e => e)
+  public addStatus(cadastro) {
+    // Recupera o array atual de cadastros
+    const cadastros = storage.getString('status');
+    let cadastrosArray = [];
+
+    if (cadastros) {
+      cadastrosArray = JSON.parse(cadastros);
+    }
+
+    cadastro.id = cadastrosArray.length == 0 ? 0 : cadastrosArray.length
+    // Adiciona o novo cadastro ao array
+    cadastrosArray.push(cadastro);
+
+    // Armazena o array atualizado no MMKV
+    storage.set('status', JSON.stringify(cadastrosArray));
+    return JSON.stringify(cadastrosArray);
+  }
+
+  public atualizarStatus() {
+    const cadastros = storage.getString('status');
+    if (cadastros) {
+      const dados = JSON.parse(cadastros);
+      try {
+        dados.map(async (item, index) => {
+         // falta finalizar a ção de clicar e mudar o status
+         try {
+          api.put(`/v1/cliente/${item.clienteId}`, { status: item.status,
+            tecnico: LoginBD.find()?.usuario.nome
+           
+           })
+          .then(() => this.delete(item.id, "status")).
+          catch(e => console.log("erroreeee", e))
+
+          const formData = new FormData()
+          formData.append('body', item.status)
+
+          api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+
+         } catch (error) {
+          console.log("eroo1", error)
+         }
         })
       } catch (error) {
         console.log("errors", error)

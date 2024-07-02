@@ -1,12 +1,11 @@
 import ButtonAction from "@/components/ButtonActions";
 import { Dimensions, View, ScrollView, Text, Image, TextInput, Pressable } from "react-native";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
 
 export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
-    cep, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
-}: any) {
-
+    cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
+}:any, update: any) {
 
     const { width } = Dimensions.get('window');
     const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento"];
@@ -27,8 +26,8 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                         }
                     })
                 }
-                <Text>Mais info: {info}</Text>
-                <ButtonAction id={id} cordenadas={cordenadas} status='Usuário Criado' />
+                <Text>Mais info: {tecnico} </Text>
+                <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
                 <ScrollView className="px-2 my-5"
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}>
@@ -46,15 +45,16 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                                 <AntDesign className="rounded-full bg-slate-200" name="user" size={25} />
                                 <View className="">
                                     <Text>{item.associado}</Text>
-                                    <Text>{item.createAt}</Text>
+                                    {/* <Text>{item.createAt}</Text> */}
                                 </View>
                             </View>
                             {
                                 (item.type == 'image' || item.type == 'file') &&
+                                item.url.length != 0 &&
                                 <Image
                                     className=" my-2 rounded-lg mx-2"
                                     width={width / 2} height={200}
-                                    source={{ uri: item.url }}
+                                    source={{ uri: item.url}}
                                     resizeMode="contain"
                                 />
                             }
