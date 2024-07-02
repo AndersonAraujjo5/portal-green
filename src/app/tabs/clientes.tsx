@@ -40,7 +40,7 @@ export default function tabClientesScreen() {
     }, []))
 
     return (
-        <View className="flex-1 mt-5">
+        <View className="flex-1 mt-14">
             {
                 (!data && !dataPre && !msgError) && <Loader show={true} />
             }

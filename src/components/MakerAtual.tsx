@@ -4,6 +4,7 @@ import { Button } from "react-native-elements";
 import { Pressable, View } from "react-native";
 import { Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
 
 export default function MakerAtual({setLocaction}) {
     useEffect(() => {
@@ -24,12 +25,12 @@ export default function MakerAtual({setLocaction}) {
 
     return (
         <View className="w-1/3 p-1">
-            <Pressable className="flex items-center w-full bg-gray-300 p-2 rounded-lg" onPress={handleLocalAtual}>
-                <Entypo name="location-pin" size={20} color={"blue"} />
-                <Text>
-                    Localização
+            <Pressable className="flex items-center w-ful p-2 rounded-lg"
+            style={{backgroundColor:Colors.gray}} onPress={handleLocalAtual}>
+                <Entypo name="location-pin" size={20} color={"white"} />
+                <Text className="text-white text-center">
+                    Localização Atual
                 </Text>
-                <Text>Atual</Text>
             </Pressable>
         </View>
     )

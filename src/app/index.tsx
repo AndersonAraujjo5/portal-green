@@ -9,13 +9,16 @@ import { api } from '@/service/api'
 import LoginBD, { LoginProps } from "@/database/LoginBD";
 import { Redirect, router } from "expo-router";
 import CadastroBD from "@/database/CadastroBD";
+import Loader from "@/components/Loader";
 
 
 export default function login() {
     const [login, setLogin] = useState<string>();
     const [password, setPassword] = useState<string>();
     const [error, setError] = useState<string[] | null>();
+    const [loader, setLoader] = useState(false)
     const handleSign = async () => {
+        setLoader(true)
         try {
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
                 login, password,
@@ -23,11 +26,15 @@ export default function login() {
             LoginBD.add(data)
             router.replace('/tabs/cadastro')
         } catch (error) {
+            setLoader(false)
             if (error && error.data) {
                 setError(error.data.errors)
                 return;
             }
-            setError(['Erro desconecido', `${error}`])
+
+            if(error && error?.errors) setError(['Ops, tente novamente mais tarde ou tente em contato com o administrador']) 
+            else setError(['Erro desconecido'])
+            
         }
     }
 
@@ -43,7 +50,7 @@ export default function login() {
 
     return (
         <View className="flex-1 flex justify-center p-5">
-
+            <Loader show={loader} />
             <View className="absolute -top-72 left-36">
                 <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
             </View>

@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import Mapbox from "@/components/MapBox";
+import Colors from "@/constants/Colors";
 
 export default function MakerPoint({ setLocation }) {
     const [isVisible, setIsVisible] = useState(false)
@@ -26,13 +27,15 @@ export default function MakerPoint({ setLocation }) {
     return (
         <>
             <View className="w-1/3 p-1">
-                <Pressable className="flex items-center w-full bg-gray-300 p-2 rounded-lg"
+                <Pressable className="flex items-center w-full p-2 rounded-lg"
+                style={{
+                    backgroundColor: Colors.gray
+                }}
                  onPress={() => setIsVisible(!isVisible)}>
-                    <Entypo name="location" size={20} color={"blue"} />
-                    <Text>
-                        Selecinar 
+                    <Entypo name="location" size={20} color={"white"} />
+                    <Text className="text-center text-white">
+                        Selecinar no Mapa
                     </Text>
-                    <Text>no Mapa</Text>
                 </Pressable>
             </View>
 

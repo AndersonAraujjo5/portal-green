@@ -1,6 +1,6 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
@@ -17,6 +17,7 @@ import { api } from "@/service/api";
 import { Masks } from "react-native-mask-input";
 import { router } from "expo-router";
 import Loader from "@/components/Loader";
+import Colors from "@/constants/Colors";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -73,7 +74,10 @@ type FormData1 = {
 }
 
 const schema = yup.object({
-  nome: yup.string().required("Informe o nome do cliente"),
+  nome: yup.string().required("Informe o nome completo do cliente").test('nome-sobrenome', 'Digite nome e sobrenome', (value) => {
+    const nameParts = value.split(' ');
+    return nameParts.length >= 2 && nameParts.every(part => part.trim().length > 0);
+  }),
   cpf: yup.string().required("CPF e Obrigatorio").test('valid-cpf', 'CPF inválido', (value) => validarCPF(value)),
   email: yup.string().email("E-mail invalido"),
   endereco: yup.string().required("Informe o endereco"),
@@ -257,6 +261,8 @@ export default function TabHomeScreen() {
   }
 
 
+  
+
   return (
     <View className="flex-1 pt-14 p-4">
       <Loader show={showLoader} />
@@ -266,6 +272,7 @@ export default function TabHomeScreen() {
 
       {
         camera || <ScrollView ref={scrollViewRef}
+        showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing}
             onRefresh={onRefresh} />}>
           <Text className="font-bold text-2xl">
@@ -412,10 +419,13 @@ export default function TabHomeScreen() {
               <MakerPoint setLocation={setCordenadas} />
 
               <View className="w-1/3 auto p-1">
-                <Pressable className="flex items-center justify-center w-full h-20 bg-gray-300 p-2 rounded-lg"
+                <Pressable className="flex items-center justify-center w-full h-20 p-2 rounded-lg"
+                  style={{
+                    backgroundColor: Colors.gray
+                  }}
                   onPress={() => { setCamera(true) }}>
-                  <Feather name="camera" size={20} color={"blue"} />
-                  <Text>
+                  <Feather name="camera" size={20} color={"white"} />
+                  <Text className="text-white text-center">
                     Camera
                   </Text>
                 </Pressable>
@@ -446,8 +456,12 @@ export default function TabHomeScreen() {
               }}
               keyExtractor={(item) => item.fileName}
             />
-            <View className="w-1/3 mt-10">
-              <Button onPress={handleSubmit(handleSave)} title="Enviar" />
+            <View className="w-2/4 mt-10">
+              <Pressable className="p-3 rounded-lg" style={{
+                backgroundColor:Colors.green
+              }} onPress={handleSubmit(handleSave)}>
+                <Text className="text-center text-white">Enviar</Text>
+              </Pressable>
             </View>
           </View>
         </ScrollView >
