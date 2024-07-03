@@ -1,22 +1,23 @@
 import Colors from "@/constants/Colors";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from "react-native";
 
 type LoaderProps = {
   show?: boolean
   text?: string
 }
 
+const { width, height } = Dimensions.get('window');
 export default function Loader({ show = false, text }:LoaderProps) {
   return (
     <>
       {
         show &&
-        <View className="flex-1 absolute w-full h-full z-10">
-          <View className="relative">
-            <View className="w-screen h-screen top-0 left-0 bg-gray-400 opacity-35"></View>
-            <View className="absolute w-full h-full justify-center z-20">
+        <View style={styles.container}>
+          <View style={{position: 'relative'}}>
+
+            <View style={styles.box}>
               <ActivityIndicator size={60} color={Colors.green} />
-              {text && <Text className="text-center">{text}</Text>}
+              {text && <Text style={{textAlign: 'center'}}>{text}</Text>}
             </View>
           </View>
         </View>
@@ -24,3 +25,22 @@ export default function Loader({ show = false, text }:LoaderProps) {
     </>
   )
 }
+const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+    position: 'absolute',
+    width: width,
+    height: height,
+    zIndex: 10,
+    backgroundColor: 'rgba(156, 163, 175,0.5)'
+  }, 
+  box:{
+    position: 'absolute',
+    width: width,
+    height:height,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    zIndex: 20,
+  }
+})

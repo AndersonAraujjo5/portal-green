@@ -1,7 +1,7 @@
 import Images from "@/utils/Images";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-import { Modal, Pressable, Text } from "react-native";
+import { Modal, Pressable, StyleSheet, Text } from "react-native";
 import { Image, ScrollView } from "react-native";
 
 type CacherProps = {
@@ -24,12 +24,12 @@ export default function CacherImage({ url, width }: CacherProps) {
                         <Modal visible={modal}>
                             <Pressable
                                 onPress={() => setModal(false)}
-                                className="flex items-end p-5 ">
+                                style={styles.button}>
                                 <AntDesign name="close" size={25} />
                             </Pressable>
                             <ScrollView>
                                 <Image
-                                    className="my-2 rounded-lg mx-2"
+                                    style={styles.image}
                                     width={width} height={500}
                                     source={{ uri }}
                                     resizeMode="contain"
@@ -37,7 +37,7 @@ export default function CacherImage({ url, width }: CacherProps) {
                             </ScrollView>
                         </Modal>
                         <Image
-                            className=" my-2 rounded-lg mx-2"
+                            style={styles.image}
                             width={width / 2} height={200}
                             source={{ uri }}
                             resizeMode="cover"
@@ -49,3 +49,17 @@ export default function CacherImage({ url, width }: CacherProps) {
         </>
     )
 }
+const styles = StyleSheet.create({
+    button:{
+        display: 'flex',
+        alignItems: 'flex-end',
+        padding: 5
+    },
+    image: {
+        marginTop: 8,
+        marginBottom: 8,
+        borderRadius: 8,
+        marginRight: 8,
+        marginLeft: 8
+    }
+})

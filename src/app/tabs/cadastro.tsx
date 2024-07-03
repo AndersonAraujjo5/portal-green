@@ -1,7 +1,7 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
 import { useEffect, useRef, useState } from "react";
-import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
+import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
@@ -135,13 +135,13 @@ export default function TabHomeScreen() {
     setCamera(false)
   }
 
-  const scrollToTop = (y=0) => {
+  const scrollToTop = (y = 0) => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ y, animated: true });
     }
   };
 
-  if(Object.keys(errors).length != 0){
+  if (Object.keys(errors).length != 0) {
     scrollToTop()
   }
 
@@ -158,7 +158,7 @@ export default function TabHomeScreen() {
     if (!plano) errors.planos = "Selecione um plano";
     if (!vencimento) errors.vencimento = "Selecione uma data de vencimento"
 
-    if(Object.keys(errors).length != 0){
+    if (Object.keys(errors).length != 0) {
       scrollToTop(400)
       setCheckPlanAndVenci(errors)
       return false;
@@ -168,8 +168,8 @@ export default function TabHomeScreen() {
     return true;
   }
 
-  const checkCordenadas = ()=> {
-    if(!cordenadas){
+  const checkCordenadas = () => {
+    if (!cordenadas) {
       alert("Selecione a localização da casa do cliente")
       return false;
     }
@@ -177,8 +177,8 @@ export default function TabHomeScreen() {
   }
 
   const handleSave = (data: FormData1) => {
-    if(!checkFormIsEmptyPlanAndVenci()) return;
-    if(!checkCordenadas()) return;
+    if (!checkFormIsEmptyPlanAndVenci()) return;
+    if (!checkCordenadas()) return;
     setShowLoader(true);
     let obj: FormData2 = {};
     obj.plano = `${plano} - ${verificaFidelidade()}`
@@ -189,13 +189,13 @@ export default function TabHomeScreen() {
     obj.status = ClienteStatus.CadastroEnviado
     obj.localizacao = cordenadas ? `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}` : ''
     const dados = { ...data, ...obj };
-   
+
     NetInfo.fetch().then(state => {
       try {
         if (state.isConnected) {
           const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
             "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-            'cordenadas', 'fidelidade','plano', 'info']
+            'cordenadas', 'fidelidade', 'plano', 'info']
 
           const formData = new FormData()
           arr.map(e => {
@@ -261,10 +261,10 @@ export default function TabHomeScreen() {
   }
 
 
-  
+
 
   return (
-    <View className="flex-1 pt-14 p-4">
+    <View style={styles.container}>
       <Loader show={showLoader} />
       {
         camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
@@ -272,62 +272,63 @@ export default function TabHomeScreen() {
 
       {
         camera || <ScrollView ref={scrollViewRef}
-        showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing}
             onRefresh={onRefresh} />}>
-          <Text className="font-bold text-2xl">
+          <Text style={styles.title}>
             Dados Pessoais
           </Text>
           <View>
             <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
 
-
-            <View className="flex flex-row gap-2 w-full">
-              <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae} className="flex-1" control={control} label="Nome do pai" name="nomePai" />
-              <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} className="flex-1" control={control} label="Nome da Mae" name="nomeMae" />
+            <View style={styles.inputGroup}>
+              <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae}
+                style={{ flex: 1 }}
+                control={control} label="Nome do pai" name="nomePai" />
+              <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} style={{ flex: 1 }} control={control} label="Nome da Mae" name="nomeMae" />
             </View>
 
-            <View className="flex flex-row gap-2 w-full">
-              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} className="w-2/3 flex-1" mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
-              <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} className="w-1/3" keyboardType="numeric" control={control} label="RG" name="rg" />
+            <View style={styles.inputGroup}>
+              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} style={{ width: "66.66%", flex: 1 }} mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
+              <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="RG" name="rg" />
             </View>
 
-            <View className="flex flex-row w-full">
-              <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} keyboardType="numeric" className="flex-1" mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
-            </View>
 
-            <View className="flex flex-row gap-2 w-full">
-              <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} className="flex-1" keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
-              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} className="flex-1" mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" />
+            <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} keyboardType="numeric" style={{ flex: 1 }} mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
+
+
+            <View style={styles.inputGroup}>
+              <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} style={{ flex: 1 }} keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
+              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" />
             </View>
 
           </View>
-          <Text className="font-bold text-2xl mt-5">
+          <Text style={styles.title}>
             Endereço
           </Text>
 
-          <View className="flex flex-row gap-2 w-full">
-            <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} className="flex-1" mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
-            <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} className="flex-1" control={control} label="Cidade" name="cidade" error={errors.cidade} />
+          <View style={styles.inputGroup}>
+            <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} style={{ flex: 1 }} mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
+            <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} style={{ flex: 1 }} control={control} label="Cidade" name="cidade" error={errors.cidade} />
           </View>
 
-          <View className="flex flex-row gap-2 w-full">
-            <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} className="w-2/3 flex-1" control={control} label="Endereco" name="endereco" error={errors.endereco} />
-            <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} className="w-1/3" control={control} label="Bairro" name="bairro" error={errors.bairro} />
+          <View style={styles.inputGroup}>
+            <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} style={{ width: "66.66%", flex: 1 }} control={control} label="Endereco" name="endereco" error={errors.endereco} />
+            <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} style={{ width: '33.33%' }} control={control} label="Bairro" name="bairro" error={errors.bairro} />
           </View>
-          <View className="flex flex-row gap-2 w-full">
-            <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} className="w-1/3" keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
-            <ControllerInput inputRef={inputs.ref} className="w-2/3 flex-1" control={control} label="Ponto de Ref" name="complemento" />
+          <View style={styles.inputGroup}>
+            <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
+            <ControllerInput inputRef={inputs.ref} style={{ width: "66.66%", flex: 1 }} control={control} label="Ponto de Ref" name="complemento" />
           </View>
-          <Text className="font-bold text-2xl mt-5">
+          <Text style={styles.title}>
             Plano Escolhido
           </Text>
-          <View className="w-full my-5">
-            <View className=" bg-gray-200 rounded-md ps-2">
-              <Text className="text-gray-400">
+          <View style={styles.selectBox}>
+            <View style={styles.containerSelect}>
+              <Text>
                 Planos
               </Text>
-              <View className="w-full ">
+              <View style={{ width: '100%' }}>
                 <RNPickerSelect
                   items={[
                     { label: "Ligth Green - 200MB", value: "Ligth Green - 200MB" },
@@ -343,14 +344,14 @@ export default function TabHomeScreen() {
             {
               checkPlanAndVenci &&
               checkPlanAndVenci.planos &&
-              <Text className="color-red-600 ps-2">{checkPlanAndVenci.planos}</Text>
+              <Text style={{ color: '#dc2626', paddingRight: 8 }}>{checkPlanAndVenci.planos}</Text>
             }
           </View>
 
 
-          <View className="flex flex-row gap-2 w-full">
-            <View className="w-1/2">
-              <View className="flex justify-center items-center">
+          <View style={styles.inputGroup}>
+            <View style={styles.inputBoxGroup}>
+              <View style={styles.inputCheckBox}>
                 <CheckBox
                   checked={!checkFidelidade}
                   onPress={() => setCheckFidelidade(!checkFidelidade)}
@@ -360,25 +361,26 @@ export default function TabHomeScreen() {
                 <Text>Com Fidelidade</Text>
               </View>
             </View>
-            <View className="w-1/2">
-              <View className="flex justify-center items-center">
+            <View style={styles.inputBoxGroup}>
+              <View style={styles.inputCheckBox}>
                 <CheckBox
                   checked={checkFidelidade}
                   onPress={() => setCheckFidelidade(!checkFidelidade)}
                   containerStyle={{
                     backgroundColor: "rgba(0,0,0,0)"
-                  }} className="item-center" />
+                  }}
+                  style={{ alignItems: "center" }} />
                 <Text>Sem Fidelidade</Text>
               </View>
             </View>
           </View>
 
-          <View className="w-full my-5  ">
-            <View className="ps-2 bg-gray-200 rounded-md">
-              <Text className="text-gray-400">
+          <View style={styles.selectBox}>
+            <View style={styles.containerSelect}>
+              <Text >
                 Data do vencimento
               </Text>
-              <View className="w-full m-0 p-0">
+              <View style={{ width: "100%", padding: 0, margin: 0 }}>
                 <RNPickerSelect
                   items={[
                     { label: "5", value: "5" },
@@ -393,39 +395,36 @@ export default function TabHomeScreen() {
             {
               checkPlanAndVenci &&
               checkPlanAndVenci.vencimento &&
-              <Text className="color-red-600 ps-2">{checkPlanAndVenci.vencimento}</Text>
+              <Text style={{ color: '#dc2626', paddingRight: 8 }} >{checkPlanAndVenci.vencimento}</Text>
             }
           </View>
 
-          <View className="w-full flex-1">
-            <View className="w-full bg-gray-200 rounded-md ps-2 mt-4">
-              <Text className="text-gray-400">Mais informações</Text>
+          <View style={{ width: "100%", flex: 1, marginTop: 12 }} >
+            {/* className="w-full bg-gray-200 rounded-md ps-2 mt-4" */}
+            <View style={styles.containerSelect} >
+              <Text >Mais informações</Text>
               <TextInput
                 onChangeText={setInfo}
                 multiline={true}
                 numberOfLines={10}
-                style={{ textAlignVertical: "top" }}
-                className="flex-1 font-normal text-base text-gray-700 h-36 justify-start " />
+                style={styles.inputInfo}
+              />
             </View>
           </View>
 
-          <View className="w-full my-10 flex items-center">
+          <View style={styles.containerButton}>
             {
               cordenadas && <Text >Cordenadas: {cordenadas}</Text>
             }
-            <View className="flex-row gap-2
-             justify-around w-full ">
+            <View style={styles.buttonAction}>
               <MakerAtual setLocaction={setCordenadas} />
               <MakerPoint setLocation={setCordenadas} />
 
-              <View className="w-1/3 auto p-1">
-                <Pressable className="flex items-center justify-center w-full h-20 p-2 rounded-lg"
-                  style={{
-                    backgroundColor: Colors.gray
-                  }}
+              <View style={{ width: '33.33%', padding: 4 }}>
+                <Pressable style={styles.buttonCamera}
                   onPress={() => { setCamera(true) }}>
                   <Feather name="camera" size={20} color={"white"} />
-                  <Text className="text-white text-center">
+                  <Text style={{ color: 'white', textAlign: 'center' }}>
                     Camera
                   </Text>
                 </Pressable>
@@ -433,22 +432,34 @@ export default function TabHomeScreen() {
               </View>
             </View>
             <FlatList
-              className="px-2 my-5"
+              style={{
+                paddingLeft: 8,
+                paddingRight: 8,
+                marginTop: 20,
+                marginBottom: 20
+              }}
               horizontal={true}
               data={fotos}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) => {
                 return (
-                  <View className="relative">
+                  <View style={{ position: 'relative' }}>
                     <Pressable onLongPress={() => alert("isso")}>
                       <Image
-                        className=" my-2 rounded-lg mx-2"
+                        style={{
+                          marginTop: 8,
+                          marginBottom: 8,
+                          marginLeft: 8,
+                          marginRight: 8,
+                          borderRadius: 8,
+                        }}
                         width={width / 2} height={200}
                         source={{ uri: item.uri }}
                         resizeMode="cover"
                       />
                     </Pressable>
-                    <Pressable onPress={() => handleTrash(index)} className="right-5 top-5 absolute">
+                    <Pressable onPress={() => handleTrash(index)}
+                      style={{ right: 20, top: 20, position: 'absolute' }}>
                       <AntDesign name="close" size={20} color={'white'} />
                     </Pressable>
                   </View>
@@ -456,11 +467,12 @@ export default function TabHomeScreen() {
               }}
               keyExtractor={(item) => item.fileName}
             />
-            <View className="w-2/4 mt-10">
-              <Pressable className="p-3 rounded-lg" style={{
-                backgroundColor:Colors.green
+            <View style={{ width: '50%', marginTop: 40 }} >
+              <Pressable style={{
+                padding: 3, borderRadius: 8,
+                backgroundColor: Colors.green
               }} onPress={handleSubmit(handleSave)}>
-                <Text className="text-center text-white">Enviar</Text>
+                <Text style={{ textAlign: 'center', color: 'white' }}>Enviar</Text>
               </Pressable>
             </View>
           </View>
@@ -471,3 +483,76 @@ export default function TabHomeScreen() {
   )
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    paddingRight: 8,
+    paddingLeft: 8
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 24,
+    lineHeight: 32,
+    marginTop: 16,
+    marginBottom: 8
+  },
+  inputGroup: {
+    // flex flex-row gap-2 w-full
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%'
+  },
+  inputBoxGroup: {
+    width: "50%"
+  },
+  inputCheckBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  selectBox: {
+    width: "100%",
+    marginTop: 20,
+  },
+  containerSelect: {
+    backgroundColor: 'rgba(156, 163, 175, 0.5)',
+    paddingLeft: 8,
+    borderRadius: 6
+  },
+  containerButton: {
+    width: '100%',
+    display: 'flex',
+    marginTop: 40,
+    marginBottom: 40,
+    alignItems: 'center'
+  },
+  buttonAction: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-around',
+    width: '100%'
+  },
+  buttonCamera: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    padding: 8,
+    height:73,
+    borderRadius: 8,
+    backgroundColor: Colors.gray
+  },
+  inputInfo: {
+    // flex-1 font-normal text-base text-gray-700 h-36 justify-start
+    flex: 1,
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#9ca3af',
+    height: 144,
+    justifyContent: 'flex-start',
+    textAlignVertical: "top",
+  }
+})

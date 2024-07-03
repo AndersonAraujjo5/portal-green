@@ -1,19 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Comentar from "@/components/Comentar";
 import CadastroBD from "@/database/CadastroBD";
 import LoginBD from "@/database/LoginBD";
 import { useState } from "react";
 import { ScrollView } from "moti";
+import Colors from "@/constants/Colors";
 
-// { status: "Cadastro Pendente", color: 'bg-warning-subtle' },
-// { status: "Usuário Criado", color: 'bg-success-subtle' },
-// { status: "Técnico Designado", color: 'bg-dark-subtle' },
-// { status: "Técnico a Caminho", color: 'bg-dark-subtle' },
-// { status: "Instalação em Andamento", color: 'bg-dark-subtle' },
-// { status: "Instalação Concluída", color:'bg-primary-subtle' },
-// { status: "Cliente Desistiu",  color: 'bg-danger-subtle' }
 export enum ClienteStatus {
     SincronizacaoPendente = "Sincronização Pendente",
     CadastroPendente = "Cadastro Pendente",
@@ -72,20 +66,19 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
         atualizarStatus(ClienteStatus.ClienteDesistiu)
     }
 
-    console.log(tecnico)
     return (
         <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}>
-            <View className="flex-row my-3 px-4">
-                <Link className="bg-blue-400 px-4 py-3 rounded-full flex-row items-center gap-2"
+            <View style={styles.container}>
+                <Link style={styles.buttonRotas}
                     href={`https://www.google.com/maps/dir/?api=1&destination=${cordenadas.split(',')[1]},${cordenadas.split(',')[0]}`}>
                     <FontAwesome name="location-arrow" size={15} color="black" />
                     <Text> Rotas</Text>
                 </Link>
                 {
-                    statusValue === ClienteStatus.UsuarioCriado &&
-                    <Pressable className="border-2 mx-3 px-4 py-3 bg-red-400 rounded-full"
+                    statusValue == ClienteStatus.UsuarioCriado &&
+                    <Pressable style={styles.buttons}
                         onPress={iniciar}>
                         <Text>iniciar atendimento</Text>
                     </Pressable>
@@ -101,12 +94,12 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                     <>
                         <Pressable
                             onPress={finalizar}
-                            className="border-2 mx-3 px-4 py-3 rounded-full">
+                            style={styles.buttons}>
                             <Text >Finalizar</Text>
                         </Pressable>
                         <Pressable
                             onPress={cancelar}
-                            className="border-2 mx-3 px-4 py-3 rounded-full">
+                            style={styles.buttons}>
                             <Text>Cencelar</Text>
                         </Pressable>
                     </>
@@ -118,3 +111,34 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
         </ScrollView>
     )
 }
+
+const styles = StyleSheet.create({
+    container:{
+        display: 'flex',
+        flexDirection: 'row',
+        paddingRight: 8,
+        paddingLeft: 8
+    },
+
+    buttonRotas:{
+        backgroundColor: Colors.green,
+        paddingRight: 16,
+        paddingLeft:16,
+        paddingTop: 12,
+        paddingBottom: 12,
+        borderRadius: 9999,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2
+    },
+    buttons:{
+        borderWidth: 1,
+        marginRight: 12,
+        marginLeft: 12,
+        paddingRight:12,
+        paddingLeft: 12,
+        borderRadius: 9999,
+        justifyContent: 'center',
+    }
+})

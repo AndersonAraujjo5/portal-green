@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from 'expo-location';
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import CadastroBD from "@/database/CadastroBD";
@@ -8,6 +8,7 @@ import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useFocusEffect } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
+import Loader from "./Loader";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -109,17 +110,15 @@ export default function MakerPoint() {
 
     if (!location) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Carregando</Text>
-            </View>
+           <Loader show={true} /> 
         )
     }
 
     return (
-        <View className="flex-1 pt-14">
+        <View style={styles.container}>
 
-            <View className="flex-1 justify-center content-center relative">
-                <View className="w-full h-full">
+            <View style={styles.box}>
+                <View style={{width: '100%', height: '100%'}}>
                     {
                         mapOffline ?
                             <Mapbox.MapView
@@ -220,3 +219,16 @@ export default function MakerPoint() {
 
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingTop: 56,
+    },
+    box:{
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+        position:'relative',
+    }
+})

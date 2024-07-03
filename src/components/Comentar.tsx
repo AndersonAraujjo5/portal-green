@@ -12,6 +12,7 @@ import CadastroBD from "@/database/CadastroBD";
 import LoginBD from "@/database/LoginBD";
 import Loader from "@/components/Loader";
 import { router } from "expo-router";
+import { StyleSheet } from "react-native";
 
 type ComentarProps = {
     id: number
@@ -119,7 +120,7 @@ export default function Comentar({ id, update }: ComentarProps) {
     return (
         <>
             <Pressable onPress={() => setIsModal(true)}
-                className="border-2 mx-3 px-4 py-3 rounded-full">
+                style={styles.buttom}>
                 <Text>Comentar</Text>
             </Pressable>
             <Modal
@@ -133,33 +134,33 @@ export default function Comentar({ id, update }: ComentarProps) {
                 {
                     camera ||
                     <>
-                        <View className="flex p-5 items-end">
+                        <View style={styles.btnClose}>
                             <Pressable onPress={() => setIsModal(false)}>
                                 <AntDesign name="close" size={25} />
                             </Pressable>
                         </View>
-                        <ScrollView className="p-5">
-                            <View className="w-full h-24 bg-gray-200 rounded-md ps-2 py-2">
+                        <ScrollView style={{padding: 20}}>
+                            <View style={styles.boxInput}>
                                 <TextInput
                                 defaultValue={comentario}
                                     placeholder="Comentario"
                                     onChangeText={(value) => setComentario(value)}
                                     multiline={true}
                                     numberOfLines={10}
-                                    style={{ textAlignVertical: "top" }}
-                                    className="flex-1 font-normal text-base text-gray-700 h-36 justify-start " />
+                                    style={styles.input}
+                                    />
                             </View>
-                            <Pressable className="flex-row gap-3 justify-center p-2 rounded-lg w-full mt-8"
-                                style={{ backgroundColor: Colors.gray }}
+                            <Pressable
+                                style={styles.btnAddImg}
                                 onPress={() => setCamera(true)}>
                                 <AntDesign color={'white'} name="camera" size={20} />
-                                <Text className="text-white">Adicionar imagem</Text>
+                                <Text style={{color:'white'}}>Adicionar imagem</Text>
                             </Pressable>
 
 
                             {
                                 foto &&
-                                <View className="w-full flex items-center mt-10 h-80">
+                                <View style={styles.img}>
                                     {
                                         foto.map((item, index) => (
                                             <Image
@@ -178,12 +179,17 @@ export default function Comentar({ id, update }: ComentarProps) {
                         </ScrollView>
                         {
                             (comentario || foto) &&
-                            <View className="absolute bottom-0 w-full p-4 bg-white">
-                                <Pressable className="w-full py-3 rounded-lg"
-                                    style={{ backgroundColor: Colors.green }}
+                            <View style={styles.btnPostar}>
+                                <Pressable 
+                                    style={{ backgroundColor: Colors.green,
+                                        width: '100%',
+                                        paddingTop: 12,
+                                        paddingBottom: 12,
+                                        borderRadius: 8
+                                     }}
                                     onPress={handleSendComentario}
                                 >
-                                    <Text className="text-center font-bold text-white">Postar</Text>
+                                    <Text style={styles.btnText}>Postar</Text>
                                 </Pressable>
                             </View>
                         }
@@ -195,3 +201,65 @@ export default function Comentar({ id, update }: ComentarProps) {
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    buttom:{
+        borderWidth: 1,
+        marginRight: 12,
+        marginLeft: 12,
+        padding: 12,
+        borderRadius: 9999,
+    },
+    btnClose:{
+        display: 'flex',
+        padding: 20,
+        alignItems: 'flex-end'
+    },
+    boxInput:{
+        width: '100%',
+        height: 96,
+        backgroundColor: '#e5e7eb',
+        borderRadius: 6, 
+        paddingLeft: 8,
+        paddingRight: 8
+    },
+    input:{
+        flex: 1,
+        fontWeight: '400',
+        fontSize: 16,
+        lineHeight: 24,
+        color:'#374151',
+        height: 144,
+        justifyContent: 'flex-start',
+        textAlignVertical: 'top'
+    },
+    btnAddImg: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        padding: 8, 
+        borderRadius: 8,
+        width: '100%',
+        marginTop: 32,
+        backgroundColor: Colors.gray
+    },
+    img: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: 40,
+        height: 320
+    },
+    btnPostar:{
+        position: 'absolute',
+        bottom: 0,
+        width:'100%',
+        padding: 8,
+        backgroundColor: 'white'
+    },
+    btnText:{
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: 'white'
+    }
+})

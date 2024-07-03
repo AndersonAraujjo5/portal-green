@@ -112,9 +112,7 @@ function MapDownload() {
 
   if (!location) {
     return (
-      <View className='flex-1 justify-center items-center'>
-        <Text>Carregando</Text>
-      </View>
+      <Loader show={true}/>
     )
   }
 

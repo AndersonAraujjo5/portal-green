@@ -1,11 +1,12 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import CadastroBD from '@/database/CadastroBD';
 import ModalDetalhesCliente from '@/components/ModalDetalhesCliente';
+import Loader from '@/components/Loader';
 
 export default function page() {
     const [location, setLocation] = useState<number[] | [number, number]>();
@@ -41,15 +42,13 @@ export default function page() {
 
     if (!location) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Carregando</Text>
-            </View>
+           <Loader show={true} />
         )
     }
     return (
-        <View className="flex-1">
-            <View className="flex-1 justify-center content-center relative">
-                <View className="w-full h-full">
+        <View style={{flex: 1}}>
+            <View style={styles.container}>
+                <View style={styles.box}>
                     <Mapbox.MapView
                         styleURL={typeMap}
                         rotateEnabled={true}
@@ -87,3 +86,16 @@ export default function page() {
 
     )
 }
+
+const styles = StyleSheet.create({
+    container:{
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+        position: 'relative'
+    },
+    box: {
+        width: "100%",
+        height: '100%',
+    }
+})

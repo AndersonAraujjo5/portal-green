@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { Button } from "react-native-elements";
-import { Pressable, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
@@ -24,14 +24,32 @@ export default function MakerAtual({setLocaction}) {
     }
 
     return (
-        <View className="w-1/3 p-1">
-            <Pressable className="flex items-center w-ful p-2 rounded-lg"
-            style={{backgroundColor:Colors.gray}} onPress={handleLocalAtual}>
+        <View style={styles.container}>
+            <Pressable style={styles.btn}
+            onPress={handleLocalAtual}>
                 <Entypo name="location-pin" size={20} color={"white"} />
-                <Text className="text-white text-center">
+                <Text style={{
+                    color: 'white',
+                    textAlign: 'center'
+                }}>
                     Localização Atual
                 </Text>
             </Pressable>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        width: '33.33%',
+        padding: 4
+    },
+    btn:{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor:Colors.gray
+    }
+})

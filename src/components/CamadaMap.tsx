@@ -1,5 +1,5 @@
 import { SimpleLineIcons } from "@expo/vector-icons";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { mapaDefault, mapaRelevo, mapaSatellite } from '@/assets/images'
 import { useState } from "react";
 import { MotiView } from 'moti'
@@ -18,7 +18,15 @@ export default function CamadaMap({ setType }: any) {
     const [on, setOn] = useState('hidden');
     return (
         <>
-            <View className={`absolute top-5 right-5 ${on == 'hidden' ? 'bg-white' : 'bg-slate-400'} rounded-full p-3`}>
+            <View
+                style={{
+                    position: 'absolute',
+                    top: 20,
+                    right: 20,
+                    backgroundColor: on === 'hidden' ? 'white' : '#94a3b8',
+                    borderRadius: 9999,
+                    padding: 3
+                }}>
                 <Pressable onPress={() => setOn(e => e == 'hidden' ? '' : 'hidden')}>
                     <SimpleLineIcons name="layers" size={20} color="black" />
                 </Pressable>
@@ -35,25 +43,25 @@ export default function CamadaMap({ setType }: any) {
                         translateY: 0
                     }}
                 >
-                    <View className={` w-full h-40 bg-white rounded-t-lg bottom-0 py-5 items-center absolute z-10`}
+                    <View style={styles.container}
                     >
 
-                        <Text className="items-start">Tipo de mapa</Text>
-                        <View className="flex-wrap gap-16 my-4">
+                        <Text style={styles.title}>Tipo de mapa</Text>
+                        <View style={styles.box}>
                             <Pressable onPress={() => setType(StyleURL.Street)}>
                                 <Image source={mapaDefault}
                                     width={64} height={64} alt="mapa padrão" />
-                                <Text className="text-sm text-center">Padrão</Text>
+                                <Text style={styles.text}>Padrão</Text>
                             </Pressable>
                             <Pressable onPress={() => setType(StyleURL.SatelliteStreet)}>
                                 <Image source={mapaSatellite}
                                     width={64} height={64} alt="mapa do satelite" />
-                                <Text className="text-sm text-center">Satellite</Text>
+                                <Text style={styles.text}>Satellite</Text>
                             </Pressable>
                             <Pressable onPress={() => setType(StyleURL.Outdoors)}>
                                 <Image source={mapaRelevo}
                                     width={64} height={64} alt="mapa relevo" />
-                                <Text className="text-sm text-center">Livre</Text>
+                                <Text style={styles.text}>Livre</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -62,3 +70,31 @@ export default function CamadaMap({ setType }: any) {
         </>
     )
 }
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: 160,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        bottom: 0,
+        alignItems: 'center',
+        position: 'absolute',
+        zIndex: 10,
+    },
+    title: {
+        alignItems: 'flex-start',
+    },
+    box: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 64,
+        marginTop: 4,
+        marginBottom: 4,
+    },
+    text: {
+        textAlign: 'center',
+        fontSize: 14,
+        lineHeight: 20,
+    }
+})

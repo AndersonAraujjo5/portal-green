@@ -1,7 +1,7 @@
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useEffect, useRef, useState } from 'react';
-import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 
@@ -66,7 +66,7 @@ export default function Camera({ closed, setFotos, multipleSelection = true }: a
       {
         <CameraView style={styles.camera} facing={facing}
           ref={camRef}>
-          <View className='items-end m-5'>
+          <View style={{alignItems: 'flex-end', margin: 20}}>
             <TouchableOpacity onPress={() => closed(false)}>
               <AntDesign color={'#fff'} name='close' size={30} />
             </TouchableOpacity>

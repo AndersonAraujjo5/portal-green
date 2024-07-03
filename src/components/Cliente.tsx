@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import ButtonAction from "@/components/ButtonActions";
 
 function Clientes({ data, access }: any) {
@@ -17,40 +17,42 @@ function Clientes({ data, access }: any) {
                         pathname: `/clienteInfo/[id]`,
                         params: { id }
                     }
-                    } className="w-full my-2 bg-white" >
-                        <View className="flex-row justify-around items-center p-4">
-                            <View className="flex-1 w-full">
-                                <Text className="text-xl font-bold">{cliente || nome}</Text>
+                    } style={styles.container} >
+                        <View style={styles.box}>
+                            <View style={{flex: 1, width: '100%'}}>
+                                <Text style={styles.title}>{cliente || nome}</Text>
                                 <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
                                 {
                                     vars.map((item, index) => {
                                         if(data[item]) return (<Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>)
                                     })
                                 }
-                                <Text className="text-xl">{status}</Text>
+                                <Text style={styles.text}>{status}</Text>
                                 {
                                     cordenadas &&
-                                    <ButtonAction tecnico={tecnico} id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
+                                    <ButtonAction tecnico={tecnico} id={id} cordenadas={cordenadas} status={status} />
                                 }
                             </View>
                         </View>
                     </Link >
                     :
-                    <View className="w-full my-2 bg-white" >
-                        <View className="flex-row justify-around items-center p-4">
-                            <View className="flex-1 w-full">
-                                <Text className="text-xl font-bold">{cliente || nome}</Text>
+                    <View style={styles.container} >
+                        <View style={styles.box}>
+                            <View style={{flex: 1, width: '100%'}}>
+                                <Text style={styles.title}>{cliente || nome}</Text>
                                 <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
                                 {
                                     vars.map((item, index) => {
                                         if(data[item]) return (<Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>)
                                     })
                                 }
-                                <Text className="text-xl">{status}</Text>
-                                {
+                                <Text style={styles.text}>{status}</Text>
+                              
+                               {
                                     cordenadas &&
-                                    <ButtonAction id={id} cordenadas={cordenadas} status={"Cadastro Enviado"} />
+                                    <ButtonAction id={id} cordenadas={cordenadas} status={status} />
                                 }
+                               
                             </View>
                         </View>
                     </View>
@@ -59,6 +61,31 @@ function Clientes({ data, access }: any) {
     )
 }
 
+const styles = StyleSheet.create({
+    container:{
+        width: '100%',
+        marginTop: 8,
+        marginBottom: 8,
+        padding:8,
+        backgroundColor: 'white',
+    },
+    box:{
+        flexDirection:'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: 4
+    }, 
+    text:{
+        marginBottom: 10,
+        fontSize: 20,
+        lineHeight: 28,
+    },
+    title:{
+        fontSize: 20,
+        lineHeight: 28,
+        fontWeight: "bold"
+    }
+})
 
 
 

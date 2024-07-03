@@ -4,6 +4,7 @@ import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import Mapbox from "@/components/MapBox";
 import Colors from "@/constants/Colors";
+import { StyleSheet } from "react-native";
 
 export default function MakerPoint({ setLocation }) {
     const [isVisible, setIsVisible] = useState(false)
@@ -26,28 +27,32 @@ export default function MakerPoint({ setLocation }) {
 
     return (
         <>
-            <View className="w-1/3 p-1">
-                <Pressable className="flex items-center w-full p-2 rounded-lg"
-                style={{
-                    backgroundColor: Colors.gray
-                }}
+            <View style={styles.containerBtnSelecionaMap}>
+                <Pressable 
+                style={styles.btnSelecionarMap}
                  onPress={() => setIsVisible(!isVisible)}>
                     <Entypo name="location" size={20} color={"white"} />
-                    <Text className="text-center text-white">
+                    <Text style={{
+                        textAlign: 'center',
+                        color: 'white'
+                    }}>
                         Selecinar no Mapa
                     </Text>
                 </Pressable>
             </View>
 
-            <View className="flex-1 relative">
+            <View style={styles.containerModal}>
                 <Modal
                     animationType='slide'
                     transparent={false}
                     visible={isVisible}>
 
-                    <View className="flex-1 justify-center content-center">
+                    <View style={styles.modal}>
 
-                        <View className="w-full h-full">
+                        <View style={{
+                            width: '100%', 
+                            height:'100%'
+                        }}>
 
                             <Mapbox.MapView
                                 onPress={({ geometry }) => {
@@ -77,8 +82,8 @@ export default function MakerPoint({ setLocation }) {
                             </Mapbox.MapView>
                         </View>
                     </View>
-                    <View className="w-full absolute">
-                        <View className="flex justify-end items-end m-5">
+                    <View style={styles.containerClose}>
+                        <View style={styles.close}>
                             <TouchableOpacity onPress={() => setIsVisible(!isVisible)}>
                                 <AntDesign name="close" size={25} />
                             </TouchableOpacity>
@@ -89,3 +94,38 @@ export default function MakerPoint({ setLocation }) {
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    containerBtnSelecionaMap:{
+        width: '33.33%',
+        padding: 4
+    },
+    btnSelecionarMap:{
+        display: 'flex',
+        alignItems: 'center',
+        width:'100%',
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor: Colors.gray
+    },
+    containerModal:{
+        flex: 1,
+        position: 'relative'
+    },
+    modal:{
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center'
+    },
+    containerClose:{
+        width:'100%',
+        position: 'absolute'
+    },
+    close:{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems:'flex-end',
+        margin: 5
+    }
+
+})

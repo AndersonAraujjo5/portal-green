@@ -2,7 +2,7 @@ import { forma } from "@/assets/images";
 import Colors from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Image, Pressable, } from "react-native";
+import { Image, Pressable, StyleSheet, } from "react-native";
 import { Text } from "react-native";
 import { TextInput, View } from "react-native";
 import { api } from '@/service/api'
@@ -49,64 +49,118 @@ export default function login() {
     },[login, password])
 
     return (
-        <View className="flex-1 flex justify-center p-5">
+        <View style={styles.container}>
             <Loader show={loader} />
-            <View className="absolute -top-72 left-36">
+            <View style={styles.imgTop}>
                 <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
             </View>
-            <View className="absolute -bottom-72 right-0">
+            <View style={styles.imgBottom}>
                 <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
             </View>
-            <Text className="text-2xl font-bold" style={{ color: Colors.green }}>Faça o login</Text>
+            <Text style={styles.title}>Faça o login</Text>
 
-            <View className="my-6 border-b border-gray-600">
+            <View style={styles.containerInput}>
                 {
                     error &&
-                    <View className="bg-red-500 my-5 p-5">
+                    <View style={styles.error}>
                         {
                             error.map((item,index) => (
-                                <Text key={index} className="text-white">{item}</Text>
+                                <Text key={index} style={styles.errorText}>{item}</Text>
 
                             ))
                         }
                     </View>
                 }
 
-                <Text >Usuário</Text>
-                <View className="flex-row mt-2">
+                <Text style={{marginTop:10}}>Usuário</Text>
+                <View style={styles.boxInput}>
                     <AntDesign
-                        className="p-2"
+                        style={styles.icon}
                         name="user"
                         color={Colors.gray}
                         size={18} />
                     <TextInput
-                        className="w-full"
+                        style={styles.input}
                         onChangeText={(text) => setLogin(text)} />
                 </View>
             </View>
-            <View className="border-b border-gray-500">
-                <Text className="text-gray-600">Senha</Text>
-                <View className="flex-row mt-2">
+            <View style={styles.containerInput}>
+                <Text>Senha</Text>
+                <View style={styles.boxInput}>
                     <AntDesign
-                        className="p-2 color-gray-500"
+                        style={styles.icon}
                         name="lock1"
                         color={Colors.gray}
                         size={18} />
                     <TextInput
                         onChangeText={(text) => setPassword(text)}
                         secureTextEntry={true}
-                        className="w-full" />
+                        style={styles.input} />
                 </View>
             </View>
-            <View className="w-full">
-                <Pressable className="w-ull rounded-2xl border-white p-3 mt-11" style={{
-                    backgroundColor: Colors.gray
-                }}
+            <View style={{width: '100%'}}>
+                <Pressable  style={styles.button}
                     onPress={handleSign}
                 >
-                    <Text className="text-center text-white">Entrar</Text>
+                    <Text 
+                    style={{textAlign: 'center', color: 'white'}}>Entrar</Text>
                 </Pressable>
             </View>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container:{
+        flex: 1,
+        display: 'flex',
+        justifyContent:'center',
+        padding: 20
+    },
+    imgTop:{
+        position: 'absolute',
+        top: -288,
+        left: 144
+    },
+    imgBottom:{
+        position: 'absolute',
+        bottom: -288,
+        right:0
+    },
+    title:{
+        fontSize: 24,
+        fontWeight:'bold',
+        color: Colors.green
+    }, 
+    containerInput:{
+        marginBottom: 24,
+        borderBottomWidth: 1,
+        borderColor: '#4b5563'
+    },
+    error:{
+        backgroundColor: '#ef4444',
+        marginBottom: 10,
+        marginTop: 20,
+        padding: 20
+    },
+    errorText:{
+        color: 'white'
+    },
+    boxInput:{
+        flexDirection: 'row',
+        marginTop: 8
+    },
+    icon: {
+        padding: 8
+    },
+    input: {
+        width:'100%'
+    },
+    button:{
+        width:'100%',
+        borderRadius:16,
+        padding: 8,
+        marginTop: 44,
+        backgroundColor: Colors.gray
+    }
+})

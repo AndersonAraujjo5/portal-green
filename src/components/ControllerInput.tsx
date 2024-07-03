@@ -2,21 +2,23 @@ import { Text, View } from "react-native";
 import { Control, Controller, FieldError } from "react-hook-form";
 import { TextInputProps } from "react-native";
 import  MaskInput from 'react-native-mask-input' ;
+import { StyleSheet } from "react-native";
+import Colors from "@/constants/Colors";
 
 type Props = TextInputProps | {
     control: Control<any>
     name: string
     label: string
-    className?: string
+    style?: string
     required?: boolean
     error?: FieldError | undefined
     mask?:any
 }
 
-export default function ControllerInput({ control, name, label, className, 
+export default function ControllerInput({ control, name, label, style, 
     required=false, error, mask, inputRef, onSubmitEditing, ...rest }: any) {
         return (
-        <View className={className}>
+        <View style={style}>
             <Controller
                 name={name}
                 control={control}
@@ -24,8 +26,8 @@ export default function ControllerInput({ control, name, label, className,
                     required: required,
                 }}
                 render={({ field: { onChange, onBlur,value } }: any) => (
-                    <View className="w-full h-14 bg-gray-200 rounded-md ps-2 mt-4">
-                        <Text className="text-gray-400">{label}</Text>
+                    <View style={styles.contianer}>
+                        <Text style={{color: Colors.gray}}>{label}</Text>
                         <MaskInput
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -41,7 +43,21 @@ export default function ControllerInput({ control, name, label, className,
                 )}
 
             />
-            {error && <Text className="color-red-600">{error.message}</Text>}
+            {error && <Text style={styles.textError}>{error.message}</Text>}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    contianer:{
+        width: '100%',
+        height: 56,
+        backgroundColor: 'rgba(156, 163, 175, 0.5)',
+        borderRadius: 6,
+        marginTop: 8,
+        paddingLeft: 8
+    },
+    textError:{
+        color: '#dc2626'
+    }
+})
