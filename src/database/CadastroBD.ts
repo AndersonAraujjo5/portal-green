@@ -350,7 +350,7 @@ export default new class CadastroBD {
           api.put(`/v1/cliente/${item.clienteId}`, { status: item.status,
             tecnico: LoginBD.find()?.usuario.nome
            
-           })
+           }) 
           .then(() => this.delete(item.id, "status")).
           catch(e => console.log("erroreeee", e))
 

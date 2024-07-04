@@ -185,7 +185,7 @@ export default function TabHomeScreen() {
     obj.info = info
     obj.vencimento = vencimento
     obj.cordenadas = cordenadas ? cordenadas.toString() : ''
-    obj.foto = fotos ? fotos : ''
+    obj.foto = fotos ? fotos : []
     obj.status = ClienteStatus.CadastroEnviado
     obj.localizacao = cordenadas ? `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}` : ''
     const dados = { ...data, ...obj };
