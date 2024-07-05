@@ -7,38 +7,47 @@ import NetInfo from "@react-native-community/netinfo";
 import { api } from "@/service/api";
 import Loader from "@/components/Loader";
 import { StyleSheet } from "react-native";
+import Cliente from "@/database/Cliente";
 export default function tabClientesScreen() {
-    const [data, setData] = useState(); // dados que foram baixados da api
+    const [data, setData] = useState<object>(); // dados que foram baixados da api
     const [dataPre, setDataPre] = useState() // dados não sincronizados
     const [msgError, setMsgErro] = useState();
     useFocusEffect(useCallback(() => {
+        
+        setData(Cliente.findAll());
+        console.log(Cliente.findAll())
+        Cliente.syncronize()
+        .then(item =>{
+            console.log('then', item)
+            if(!item) setData(item)
+        }).catch(e => e);
+        console.log("aaaaaaaaaa")
+        // NetInfo.fetch().then(state => {
+        //     try {
+        //         if (state.isConnected) {
+        //             CadastroBD.synchronize()
 
-        NetInfo.fetch().then(state => {
-            try {
-                if (state.isConnected) {
-                    CadastroBD.synchronize()
+        //             api.get('/v1/cliente').then(({ data }) => {
+        //                 setData(data.data)
+        //                 CadastroBD.addAll(data.data)
+        //             }).catch(err => {
+        //                 if (err.errors) {
+        //                     setMsgErro(err.errors)
+        //                     setData(CadastroBD.getAllCadastros())
+        //                 }
+        //                 return err;
+        //             })
 
-                    api.get('/v1/cliente').then(({ data }) => {
-                        setData(data.data)
-                        CadastroBD.addAll(data.data)
-                    }).catch(err => {
-                        if (err.errors) {
-                            setMsgErro(err.errors)
-                            setData(CadastroBD.getAllCadastros())
-                        }
-                        return err;
-                    })
+        //             setDataPre(CadastroBD.getAllPreCadastros());
+        //         } else {
+        //             setData(CadastroBD.getAllCadastros())
+        //             setDataPre(CadastroBD.getAllPreCadastros());
+        //         }
+        //     } catch (error) {
 
-                    setDataPre(CadastroBD.getAllPreCadastros());
-                } else {
-                    setData(CadastroBD.getAllCadastros())
-                    setDataPre(CadastroBD.getAllPreCadastros());
-                }
-            } catch (error) {
-
-                setData(CadastroBD.getAllCadastros())
-            }
-        })
+        //         setData(CadastroBD.getAllCadastros())
+        //     }
+        // })
     }, []))
 
     return (

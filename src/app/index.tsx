@@ -26,6 +26,7 @@ export default function login() {
             LoginBD.add(data)
             router.replace('/tabs/cadastro')
         } catch (error) {
+            console.log(error)
             setLoader(false)
             if (error && error.data) {
                 setError(error.data.errors)

@@ -1,3 +1,11 @@
+type StatusProps = {
+    status: string
+    tecnico: string
+    clienteId: number
+    id: number
+}
+
+
 type ComentariosProps = {
     associado: string
     body: string
@@ -51,7 +59,7 @@ interface ICadastro {
 
     delete(id: number): boolean
 
-    syncronize(): boolean
+    syncronize(): any
 }
 
-export { ICadastro, ClienteProps, ComentariosProps }
+export { ICadastro, ClienteProps, ComentariosProps, StatusProps }

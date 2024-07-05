@@ -1,8 +1,9 @@
-import { ICadastro, ClienteProps, ComentariosProps } from "@/interface/ICadastro";
+import { ICadastro, ClienteProps, ComentariosProps, StatusProps } from "@/interface/ICadastro";
 import { api } from "@/service/api";
 import Images from "@/utils/Images";
 import { MMKV } from "react-native-mmkv";
 import Comentario from "@/database/Comentario";
+import Status from "@/database/Status";
 
 export default new class Cliente implements ICadastro {
     private _storage
@@ -23,23 +24,22 @@ export default new class Cliente implements ICadastro {
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
         cadastrosArray.push(cadastro)
         this._storage.set('cadastros', JSON.stringify(cadastrosArray));
-    
+
         return true;
     }
 
-    addComentario(id: number, comentario: ComentariosProps){
+    addComentario(id: number, comentario: ComentariosProps) {
         if (!id) return;
         const cadastrados = this.findAll();
-        
+
         Comentario.add(comentario)
 
         if (cadastrados) {
             const cadastrosArray = cadastrados;
 
-            const cadastro = cadastrosArray.find((item: ClienteProps) =>{
-                if(item.id === id){
+            const cadastro = cadastrosArray.find((item: ClienteProps) => {
+                if (item.id === id) {
                     item.Comentarios.push(comentario)
-                    Comentario.add(comentario)
                 }
             })
             this.deleteById(id);
@@ -50,6 +50,31 @@ export default new class Cliente implements ICadastro {
         }
         return;
     }
+
+    addStatus(id: number, status: StatusProps) {
+        if (!id) return;
+        const cadastrados = this.findAll();
+
+        Status.add(status)
+
+        if (cadastrados) {
+            const cadastrosArray = cadastrados;
+
+            const cadastro = cadastrosArray.find((item: StatusProps) => {
+                if (item.id === id) {
+                    item.status = status.status
+                }
+            })
+            this.deleteById(id);
+
+            this.add(cadastro)
+
+            return cadastro
+        }
+        return;
+    }
+
+
 
     findAll(): ClienteProps | undefined {
         const cadastros = this._storage.getString('cadastros');
@@ -105,26 +130,26 @@ export default new class Cliente implements ICadastro {
         return JSON.stringify(cadastrado);
     }
 
-    async syncronize(): Promise<boolean>{
-        try {
-            const { data } = await api.get('/v1/cliente');
-            this.addAndRewrite(data.data)
+    async syncronize() {
+        const { data } = await api.get('/v1/cliente');
+        this.addAndRewrite(data.data)
 
-            data.data.map((item: ClienteProps) => {
-                if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
-                    this.saveImageStorage(url); // salva as imagens no dispositivo
-                    Images.saveStorage(url);    // salva as url em uma lista
-                })
+        data.data.map((item: ClienteProps) => {
+            if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
+                this.saveImageStorage(url); // salva as imagens no dispositivo
+                Images.saveStorage(url);    // salva as url em uma lista
             })
 
-            const urls = this.getAllImagesStorage();
-            Images.cleanUpOldImages(urls)
+            if (item.Comentarios.length !== 0) item.Comentarios.map(({ url, type }) => {
+                this.saveImageStorage(url); // salva as imagens no dispositivo
+                Images.saveStorage(url);
+            })
+        })
 
-            return true;
-        } catch (error) {
-            console.log(error);
-            return false
-        }
+        const urls = this.getAllImagesStorage();
+        Images.cleanUpOldImages(urls)
+
+        return data.data
     }
 
     getAllImagesStorage(): string[] {
