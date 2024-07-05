@@ -8,8 +8,8 @@ import { TextInput, View } from "react-native";
 import { api } from '@/service/api'
 import LoginBD, { LoginProps } from "@/database/LoginBD";
 import { Redirect, router } from "expo-router";
-import CadastroBD from "@/database/CadastroBD";
 import Loader from "@/components/Loader";
+import Cliente from "@/database/Cliente";
 
 
 export default function login() {
@@ -23,6 +23,7 @@ export default function login() {
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
                 login, password,
             })
+            api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
             router.replace('/tabs/cadastro')
         } catch (error) {
@@ -40,7 +41,7 @@ export default function login() {
     }
 
     if(LoginBD.find()){
-        CadastroBD.synchronize(); // sincroniza os dados envia/recebe
+        Cliente.syncronize() // sincroniza os dados envia/recebe
 
         return <Redirect href={'/tabs/cadastro'} />
     }

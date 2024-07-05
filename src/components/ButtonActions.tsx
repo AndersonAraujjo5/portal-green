@@ -7,6 +7,7 @@ import LoginBD from "@/database/LoginBD";
 import { useState } from "react";
 import { ScrollView } from "moti";
 import Colors from "@/constants/Colors";
+import Cliente from "@/database/Cliente";
 
 export enum ClienteStatus {
     SincronizacaoPendente = "Sincronização Pendente",
@@ -25,32 +26,20 @@ type ButtonAction = {
     status: string
     id: number
     tecnico: string
-    update: any
+    update?: any
 }
 
 export default function ButtonAction({ cordenadas, status, id, update, tecnico }: ButtonAction) {
     const [statusValue, setStatusValue] = useState<string>(status)
 
-    const atualizar = () => update(item => item + 1)
-
+    const atualizar = () => update && update(item => item + 1)
+    console.log(update)
     const atualizarStatus = (status: string) => {
-        const cadastros = CadastroBD.getAllCadastros();
         setStatusValue(status)
-        if (cadastros) {
-            cadastros.map(item => {
-                if (item.id == id) {
-                    item.status = status
-                    CadastroBD.addStatus({
-                        clienteId: id,
-                        status: status,
-                        tecnico: LoginBD.find()?.usuario.nome
-                    })
-                }
-            })
-        }
-        CadastroBD.addAll(cadastros)
-
-        CadastroBD.synchronize();
+        Cliente.addStatus(id, {
+            clienteId: id,
+            status: status
+        })
 
         atualizar();
     }
@@ -116,8 +105,7 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         flexDirection: 'row',
-        paddingRight: 8,
-        paddingLeft: 8
+        width:'100%'
     },
 
     buttonRotas:{

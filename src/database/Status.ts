@@ -16,12 +16,13 @@ export default new class Status {
         if (typeof cadastro !== 'object') return false
         const cadastros = this.findAll()
         let cadastrosArray: StatusProps[] = [];
-
+        console.log(cadastros)
         if (cadastros) {
             cadastrosArray = cadastros;
         }
 
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
+
         cadastrosArray.push(cadastro)
 
         this._storage.set('status', JSON.stringify(cadastrosArray));
@@ -33,24 +34,30 @@ export default new class Status {
 
      asyncEnviar() {
         const cadastros = this.findAll();
+        console.log(cadastros)
         if (cadastros) {
             const dados = cadastros;
 
             try {
                 dados.map(async (item: StatusProps, index: number) => {
+                  try {
                     await api.put(`/v1/cliente/${item.clienteId}`, { status: item.status,
                         tecnico: LoginBD.find()?.usuario.nome
-                    })   
+                    })
                     
                     this.deleteById(index)
 
                     const formData = new FormData();
+                    formData.append('status', item.status)
 
                     await api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
                         headers: {
                           'Content-Type': 'multipart/form-data'
                         }
                       })
+                  } catch (error) {
+                    console.log('error',error)
+                  }
                 })
             } catch (error) {
                 console.log("errors", error)

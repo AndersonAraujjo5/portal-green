@@ -2,6 +2,7 @@ import ButtonAction from "@/components/ButtonActions";
 import { Dimensions, View, ScrollView, Text, Image, TextInput, Pressable, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
+import { MotiView } from "moti";
 
 export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
     cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
@@ -12,78 +13,89 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
     const obj: any = { pppoe, telefone, email, plano, fidelidade, vencimento };
 
     return (
-        <View style={styles.contianer}>
-            <ScrollView style={{
-                paddingRight: 8, paddingLeft: 8
+        <MotiView
+            from={{
+                opacity: 0,
+                translateY: 40
             }}
-                showsVerticalScrollIndicator={false}>
-                <Text style={styles.title}>{cliente}</Text>
-                <Text>Status: {status}</Text>
-                <Text>Vendedor: {associado}</Text>
-                <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
-                {
-                    vars.map((item, index) => {
-                        if (obj[item]) {
-                            return <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
-                        }
-                    })
-                }
-                <Text>Mais info: {tecnico} </Text>
-                <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
-                <ScrollView
-                    style={{
-                        paddingRight: 8,
-                        paddingLeft: 8,
-                        marginTop: 20,
-                        marginBottom: 20
-                    }}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}>
+            animate={{
+                opacity: 1,
+                translateY: 0
+            }}
+        >
+            <View style={styles.contianer}>
+                <ScrollView style={{
+                    paddingRight: 8, paddingLeft: 8
+                }}
+                    showsVerticalScrollIndicator={false}>
+                    <Text style={styles.title}>{cliente}</Text>
+                    <Text>Status: {status}</Text>
+                    <Text>Vendedor: {associado}</Text>
+                    <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
                     {
-                        Fotos.map((item, index) => (
-                            <CacherImage url={item.url} width={width} key={index} />
+                        vars.map((item, index) => {
+                            if (obj[item]) {
+                                return <Text key={`${item}-${index}`}>{[item].toString().toLowerCase()}: {obj[item]}</Text>
+                            }
+                        })
+                    }
+                    <Text>Mais info: {tecnico} </Text>
+                    <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
+                    <ScrollView
+                        style={{
+                            paddingRight: 8,
+                            paddingLeft: 8,
+                            marginTop: 20,
+                            marginBottom: 20
+                        }}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}>
+                        {
+                            Fotos.map((item, index) => (
+                                <CacherImage url={item.url} width={width} key={index} />
+                            ))
+                        }
+                    </ScrollView>
+
+                    {
+                        Comentarios.map((item: any) => (
+                            <View style={styles.containerComentario} key={`${item.id}-comentario`}>
+                                <View style={styles.associado}>
+                                    <AntDesign style={{
+                                        borderRadius: 9999,
+                                        backgroundColor: '#e2e8f0'
+                                    }}
+                                        name="user" size={25} />
+                                    <View>
+                                        <Text>{item.associado}</Text>
+                                        {/* <Text>{item.createAt}</Text> */}
+                                    </View>
+                                </View>
+                                {
+                                    (item.type == 'image' || item.type == 'file') &&
+                                    item.url.length != 0 &&
+                                    <Image
+                                        style={{
+                                            margin: 8,
+                                            borderRadius: 8,
+                                        }}
+
+                                        width={width / 2} height={200}
+                                        source={{ uri: item.url }}
+                                        resizeMode="contain"
+                                    />
+                                }
+                                <Text style={{
+                                    marginTop: 8,
+                                    marginBottom: 8
+                                }}>{item.body}</Text>
+                            </View>
                         ))
                     }
+
                 </ScrollView>
-
-                {
-                    Comentarios.map((item: any) => (
-                        <View style={styles.containerComentario} key={`${item.id}-comentario`}>
-                            <View style={styles.associado}>
-                                <AntDesign style={{
-                                    borderRadius: 9999,
-                                    backgroundColor: '#e2e8f0'
-                                }}
-                                    name="user" size={25} />
-                                <View>
-                                    <Text>{item.associado}</Text>
-                                    {/* <Text>{item.createAt}</Text> */}
-                                </View>
-                            </View>
-                            {
-                                (item.type == 'image' || item.type == 'file') &&
-                                item.url.length != 0 &&
-                                <Image
-                                    style={{
-                                        margin: 8,
-                                        borderRadius: 8,
-                                    }}
-                                
-                                    width={width / 2} height={200}
-                                    source={{ uri: item.url }}
-                                    resizeMode="contain"
-                                />
-                            }
-                            <Text style={{
-                                marginTop: 8,
-                                marginBottom: 8
-                            }}>{item.body}</Text>
-                        </View>
-                    ))
-                }
-
-            </ScrollView>
-        </View>
+            </View>
+        </MotiView>
     )
 
 }

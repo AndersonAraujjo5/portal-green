@@ -3,12 +3,13 @@ import * as Location from 'expo-location';
 import { StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
-import CadastroBD from "@/database/CadastroBD";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useFocusEffect } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 import Loader from "./Loader";
+import PreCadastro from "@/database/PreCadastro";
+import Cliente from "@/database/Cliente";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -75,9 +76,9 @@ export default function MakerPoint() {
     },[update])
 
     const sincronizar = () => {
-        CadastroBD.synchronize();
-        if (CadastroBD.findByExistCordenadas()) {
-            setClientesData(CadastroBD.findByExistCordenadas())
+        PreCadastro.asyncEnviar();
+        if (Cliente.findAll()) {
+            setClientesData(Cliente.findAll())
         }
     }
 
@@ -223,7 +224,7 @@ export default function MakerPoint() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 56,
+        paddingTop: 25,
     },
     box:{
         flex: 1,

@@ -12,17 +12,19 @@ export default new class Cliente implements ICadastro {
         this._storage = new MMKV();
     }
 
-    add(cadastro: { id: number, nome: string; nomePai?: string; nomeMae?: string; cpf: string; rg?: string; dataNascimento?: string; email: string; telefone: string; cep?: string; cidade: string; endereco: string; bairro: string; numero: string; complemento?: string; plano: string; vencimento: string; info?: string; cordenadas: string; fotos?: string[]; }): boolean {
+    add(cadastro: ClienteProps): boolean {
         if (typeof cadastro !== 'object') return false
-        const cadastros = this._storage.getString('cadastros')
+        const cadastros = this.findAll()
         let cadastrosArray: ClienteProps[] = [];
 
         if (cadastros) {
-            cadastrosArray = JSON.parse(cadastros);
+            cadastrosArray = cadastros;
         }
 
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
+
         cadastrosArray.push(cadastro)
+
         this._storage.set('cadastros', JSON.stringify(cadastrosArray));
 
         return true;
@@ -40,8 +42,10 @@ export default new class Cliente implements ICadastro {
             const cadastro = cadastrosArray.find((item: ClienteProps) => {
                 if (item.id === id) {
                     item.Comentarios.push(comentario)
+                    return item;
                 }
             })
+
             this.deleteById(id);
 
             this.add(cadastro)
@@ -54,15 +58,15 @@ export default new class Cliente implements ICadastro {
     addStatus(id: number, status: StatusProps) {
         if (!id) return;
         const cadastrados = this.findAll();
-
         Status.add(status)
-
+        
         if (cadastrados) {
             const cadastrosArray = cadastrados;
 
-            const cadastro = cadastrosArray.find((item: StatusProps) => {
+            const cadastro = cadastrosArray.find((item: ClienteProps) => {
                 if (item.id === id) {
                     item.status = status.status
+                    return item;
                 }
             })
             this.deleteById(id);
@@ -76,7 +80,7 @@ export default new class Cliente implements ICadastro {
 
 
 
-    findAll(): ClienteProps | undefined {
+    findAll(): ClienteProps[] | undefined {
         const cadastros = this._storage.getString('cadastros');
 
         if (cadastros) {

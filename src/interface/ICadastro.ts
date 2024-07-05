@@ -1,8 +1,8 @@
 type StatusProps = {
     status: string
-    tecnico: string
-    clienteId: number
-    id: number
+    tecnico?: string
+    clienteId?: number
+    id?: number
 }
 
 
@@ -40,6 +40,7 @@ type ClienteProps = {
     endereco: string
     bairro: string
     numero: string
+    status?: string
     complemento?: string
     plano: string
     vencimento: string

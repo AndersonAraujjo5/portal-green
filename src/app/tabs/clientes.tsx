@@ -1,84 +1,67 @@
-import { FlatList, Text, View, ScrollView, RefreshControl } from "react-native";
+import { Text, View, ScrollView, RefreshControl } from "react-native";
 import Clientes from "@/components/Cliente";
-import CadastroBD from "@/database/CadastroBD";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import NetInfo from "@react-native-community/netinfo";
-import { api } from "@/service/api";
 import Loader from "@/components/Loader";
 import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
 export default function tabClientesScreen() {
     const [data, setData] = useState<object>(); // dados que foram baixados da api
-    const [dataPre, setDataPre] = useState() // dados não sincronizados
     const [msgError, setMsgErro] = useState();
+    const [refreshing, setRefreshing] = useState(false);
+
     useFocusEffect(useCallback(() => {
-        
         setData(Cliente.findAll());
-        console.log(Cliente.findAll())
         Cliente.syncronize()
-        .then(item =>{
-            console.log('then', item)
-            if(!item) setData(item)
-        }).catch(e => e);
-        console.log("aaaaaaaaaa")
-        // NetInfo.fetch().then(state => {
-        //     try {
-        //         if (state.isConnected) {
-        //             CadastroBD.synchronize()
+            .then(item => {
+                if (item.length != 0) setData(item)
+                else {
+                    setMsgErro(['Sem usuarios cadastrados'])
+                    setData(null)
+                }
+            }).catch(e => e);
 
-        //             api.get('/v1/cliente').then(({ data }) => {
-        //                 setData(data.data)
-        //                 CadastroBD.addAll(data.data)
-        //             }).catch(err => {
-        //                 if (err.errors) {
-        //                     setMsgErro(err.errors)
-        //                     setData(CadastroBD.getAllCadastros())
-        //                 }
-        //                 return err;
-        //             })
-
-        //             setDataPre(CadastroBD.getAllPreCadastros());
-        //         } else {
-        //             setData(CadastroBD.getAllCadastros())
-        //             setDataPre(CadastroBD.getAllPreCadastros());
-        //         }
-        //     } catch (error) {
-
-        //         setData(CadastroBD.getAllCadastros())
-        //     }
-        // })
     }, []))
+
+    const onRefresh = () => {
+        setRefreshing(true)
+
+        setData(Cliente.findAll());
+        Cliente.syncronize()
+            .then(item => {
+                if (item.length != 0) setData(item)
+                else {
+                    setMsgErro(['Sem usuarios cadastrados'])
+                    setData(null)
+                }
+            }).catch(e => e);
+        setRefreshing(false)
+    }
+
 
     return (
         <View style={styles.container}>
             {
-                (!data && !dataPre && !msgError) && <Loader show={true} />
+                (!data && !msgError) && <Loader show={true} />
             }
             {
                 msgError &&
-                <ScrollView style={{flex: 1, paddingBottom:8, paddingTop:8}}>
+                <ScrollView style={{ flex: 1, paddingBottom: 8, paddingTop: 8 }}>
                     {
-                        msgError.map((e,i) => <Text key={i}
-                        style={{fontSize:24, lineHeight: 32, textAlign: 'center'}}>{e}</Text>)
+                        msgError.map((e, i) => <Text key={i}
+                            style={{
+                                fontSize: 24, lineHeight: 32, textAlign: 'center',
+                                marginTop: 50
+                            }}>{e}</Text>)
                     }
                 </ScrollView>
             }
-            <ScrollView>
-                {
-                    dataPre &&
-                    <View style={{backgroundColor: '#fef08a'}}>
-                        <Text style={styles.title}>Não sincronizados</Text>
-                        {
-                            dataPre.map(item => (
-                                <Clientes key={item.id} data={item} access={false} />
-                            ))
-                        }
-                    </View>
-                }
+            {
+                data &&
+                <ScrollView
+                    refreshControl={<RefreshControl refreshing={refreshing}
+                        onRefresh={onRefresh} />}>
 
-                {
-                    data &&
                     <View>
                         <Text style={styles.title}>Sincronizado</Text>
                         {
@@ -87,21 +70,21 @@ export default function tabClientesScreen() {
                             ))
                         }
                     </View>
-                }
-            </ScrollView>
+
+                </ScrollView>
+            }
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         marginTop: 14
     },
     title: {
-        fontSize:24, 
-        lineHeight: 32, 
-        marginTop:20, 
-        paddingRight: 8 
+        fontSize: 24,
+        lineHeight: 32,
+        padding: 8
     }
 })

@@ -1,7 +1,7 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
-import { useEffect, useRef, useState } from "react";
-import { Button, Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useRef, useState } from "react";
+import { Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
@@ -18,6 +18,7 @@ import { Masks } from "react-native-mask-input";
 import { router } from "expo-router";
 import Loader from "@/components/Loader";
 import Colors from "@/constants/Colors";
+import PreCadastro from "@/database/PreCadastro";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -189,62 +190,72 @@ export default function TabHomeScreen() {
     obj.status = ClienteStatus.CadastroEnviado
     obj.localizacao = cordenadas ? `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}` : ''
     const dados = { ...data, ...obj };
+    dados.status = ClienteStatus.SincronizacaoPendente
 
-    NetInfo.fetch().then(state => {
-      try {
-        if (state.isConnected) {
-          const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
-            "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-            'cordenadas', 'fidelidade', 'plano', 'info']
 
-          const formData = new FormData()
-          arr.map(e => {
-            dados[e] && formData.append(e, dados[e]);
-          })
+   PreCadastro.add(dados)
 
-          if (fotos) {
-            fotos.map((e, i) => {
-              formData.append('foto', {
-                uri: fotos[i].uri,
-                type: fotos[i].mimeType,
-                name: fotos[i].fileName
-              })
-            })
-          }
+    setShowLoader(false)
+    alert("Salvo com sucesso")
+    router.replace('/')
 
-          api.post('/v1/cliente', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          }).then(e => {
-            setShowLoader(false)
-            alert("Cadastro Enviado com sucesso")
-            router.replace('/')
-          }).catch(e => {
-            dados.status = ClienteStatus.SincronizacaoPendente
-            CadastroBD.addPreCadastro(dados);
-            setShowLoader(false)
-            alert("Cadastro Salva com sucesso")
-            router.replace('/')
-          })
+    
 
-        } else {
-          // Caso não tenha internet, salvar altomaticamente 
-          // no dispositivo
-          dados.status = ClienteStatus.SincronizacaoPendente
-          CadastroBD.addPreCadastro(dados);
-          setShowLoader(false)
-          alert("Cadastro Salva com sucesso")
-          router.replace('/')
-        }
-      } catch (error) {
-        dados.status = ClienteStatus.SincronizacaoPendente
-        CadastroBD.addPreCadastro(dados);
-        setShowLoader(false)
-        alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
-        router.replace('/')
-      }
-    })
+    // NetInfo.fetch().then(state => {
+    //   try {
+    //     if (state.isConnected) {
+    //       const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
+    //         "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
+    //         'cordenadas', 'fidelidade', 'plano', 'info']
+
+    //       const formData = new FormData()
+    //       arr.map(e => {
+    //         dados[e] && formData.append(e, dados[e]);
+    //       })
+
+    //       if (fotos) {
+    //         fotos.map((e, i) => {
+    //           formData.append('foto', {
+    //             uri: fotos[i].uri,
+    //             type: fotos[i].mimeType,
+    //             name: fotos[i].fileName
+    //           })
+    //         })
+    //       }
+
+    //       api.post('/v1/cliente', formData, {
+    //         headers: {
+    //           'Content-Type': 'multipart/form-data'
+    //         }
+    //       }).then(e => {
+    //         setShowLoader(false)
+    //         alert("Cadastro Enviado com sucesso")
+    //         router.replace('/')
+    //       }).catch(e => {
+    //         dados.status = ClienteStatus.SincronizacaoPendente
+    //         CadastroBD.addPreCadastro(dados);
+    //         setShowLoader(false)
+    //         alert("Cadastro Salva com sucesso")
+    //         router.replace('/')
+    //       })
+
+    //     } else {
+    //       // Caso não tenha internet, salvar altomaticamente 
+    //       // no dispositivo
+    //       dados.status = ClienteStatus.SincronizacaoPendente
+    //       CadastroBD.addPreCadastro(dados);
+    //       setShowLoader(false)
+    //       alert("Cadastro Salva com sucesso")
+    //       router.replace('/')
+    //     }
+    //   } catch (error) {
+    //     dados.status = ClienteStatus.SincronizacaoPendente
+    //     CadastroBD.addPreCadastro(dados);
+    //     setShowLoader(false)
+    //     alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
+    //     router.replace('/')
+    //   }
+    // })
   }
 
   const handleTrash = (index) => {
@@ -486,7 +497,7 @@ export default function TabHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+    paddingTop: 25,
     paddingRight: 8,
     paddingLeft: 8
   },
@@ -540,7 +551,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: 8,
-    height:73,
+    height: 73,
     borderRadius: 8,
     backgroundColor: Colors.gray
   },

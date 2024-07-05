@@ -2,6 +2,7 @@ import { ICadastro, ClienteProps } from "@/interface/ICadastro";
 import { api } from "@/service/api";
 import { MMKV } from "react-native-mmkv";
 import Cliente from "@/database/Cliente";
+import { ClienteStatus } from "@/components/ButtonActions";
 
 export default new class PreCadastro implements ICadastro {
     private _storage
@@ -15,13 +16,16 @@ export default new class PreCadastro implements ICadastro {
         const cadastros = this._storage.getString('pre-cadastro')
         let cadastrosArray: ClienteProps[] = [];
 
+        Cliente.add(cadastro);
+
         if (cadastros) {
-            Cliente.add(cadastro);
             cadastrosArray = JSON.parse(cadastros);
         }
 
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
         cadastrosArray.push(cadastro)
+
+        console.log(cadastrosArray)
 
         this._storage.set('pre-cadastro', JSON.stringify(cadastrosArray));
 
@@ -31,15 +35,17 @@ export default new class PreCadastro implements ICadastro {
     }
 
     asyncEnviar() {
-        const cadastros = this._storage.getString('pre-cadastros');
+        const cadastros = this.findAll();
+
         if (cadastros) {
-            const dados = JSON.parse(cadastros);
+            const dados = cadastros;
 
             try {
                 dados.map(async (item: ClienteProps, index: number) => {
+                    item.status = ClienteStatus.CadastroEnviado;
                     const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
                         "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-                        'cordenadas', 'fidelidade', 'info']
+                        'cordenadas', 'fidelidade', 'info', 'status', 'plano']
 
                     const formData = new FormData()
                     arr.map((e: string) => {
@@ -57,21 +63,23 @@ export default new class PreCadastro implements ICadastro {
                         })
                     }
 
-                    await api.post('/v1/cliente', formData, {
+
+                    api.post('/v1/cliente', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
-                    })
+                    }).then(() => this.deleteByIndex(index))
+                    .catch(e=> e)
 
-                    this.deleteByIndex(index)
                 })
             } catch (error) {
                 console.log("errors", error)
+                return error;
             }
         }
     }
 
-    findAll(): ClienteProps | undefined {
+    findAll(): ClienteProps[] | undefined {
         const cadastros = this._storage.getString('pre-cadastro');
 
         if (cadastros) {

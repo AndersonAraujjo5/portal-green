@@ -1,12 +1,11 @@
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
-import CadastroBD from '@/database/CadastroBD';
 import ModalDetalhesCliente from '@/components/ModalDetalhesCliente';
-import Loader from '@/components/Loader';
+import Cliente from '@/database/Cliente';
 
 export default function page() {
     const [location, setLocation] = useState<number[] | [number, number]>();
@@ -14,8 +13,8 @@ export default function page() {
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
     const navigation = useNavigation();
     const { id } = useLocalSearchParams<{ id?: string }>();
-
-    const clienteData = CadastroBD.getFindById(id);
+ 
+    const clienteData = Cliente.findById(Number(id));
 
     useEffect(() => {
         (async () => {
@@ -28,11 +27,11 @@ export default function page() {
             setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
         })();
 
-        if (clienteData) {
+
             navigation.setOptions({
                 title: ""
             })
-        }
+        
     }, []);
 
 
@@ -40,10 +39,9 @@ export default function page() {
         setTypeMap(styleUrl)
     }
 
-    if (!location) {
-        return (
-           <Loader show={true} />
-        )
+    if (!clienteData) {
+        router.replace('/tabs/clientes')
+        return <></>
     }
     return (
         <View style={{flex: 1}}>

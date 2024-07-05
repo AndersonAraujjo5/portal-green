@@ -22,13 +22,13 @@ export default function CamadaMap({ setType }: any) {
                 style={{
                     position: 'absolute',
                     top: 20,
-                    right: 20,
+                    right: 15,
                     backgroundColor: on === 'hidden' ? 'white' : '#94a3b8',
                     borderRadius: 9999,
-                    padding: 3
+                    padding: 12
                 }}>
                 <Pressable onPress={() => setOn(e => e == 'hidden' ? '' : 'hidden')}>
-                    <SimpleLineIcons name="layers" size={20} color="black" />
+                    <SimpleLineIcons name="layers" size={25} color="black" />
                 </Pressable>
             </View>
             {
@@ -84,6 +84,8 @@ const styles = StyleSheet.create({
     },
     title: {
         alignItems: 'flex-start',
+        marginBottom: 18,
+        marginTop: 18
     },
     box: {
         display: 'flex',

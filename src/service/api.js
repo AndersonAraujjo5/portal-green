@@ -2,15 +2,15 @@ import LoginBD from "@/database/LoginBD";
 import axios from "axios";
 import { router } from "expo-router";
 
-export const api = axios.create({
-    baseURL:'http://192.168.18.12:3002/api',
+const api = axios.create({
+    baseURL:'http://10.129.0.228:3002/api',
     timeout: 15000, // 5 segundos
 })
 
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
-
+    console.log(error)
     if(error.response && error.response.status == 401){
         LoginBD.delete();
         router.replace('/')
@@ -26,3 +26,6 @@ api.interceptors.response.use((response) => {
 if(LoginBD.find()){
     api.defaults.headers['Authorization'] = `Bearer ${LoginBD.find().token}`;
 }
+
+
+export {api}

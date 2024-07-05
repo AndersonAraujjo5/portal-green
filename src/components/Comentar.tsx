@@ -6,13 +6,10 @@ import { Pressable } from "react-native";
 import Camera from "@/components/Camera";
 import { useState } from "react";
 import Colors from "@/constants/Colors";
-import { useNetInfo } from "@react-native-community/netinfo";
-import { api } from "@/service/api";
-import CadastroBD from "@/database/CadastroBD";
 import LoginBD from "@/database/LoginBD";
 import Loader from "@/components/Loader";
-import { router } from "expo-router";
 import { StyleSheet } from "react-native";
+import Cliente from "@/database/Cliente";
 
 type ComentarProps = {
     id: number
@@ -24,53 +21,22 @@ export default function Comentar({ id, update }: ComentarProps) {
     const [foto, setFoto] = useState(null);
     const [comentario, setComentario] = useState();
     const [isModal, setIsModal] = useState(false);
-    const { isConnected } = useNetInfo();
     const [loader, setLoader] = useState(false)
     const handleClosedCamera = () => {
         setCamera(false)
     }
 
-    const adicionarComentario = () =>{
-        const cadastros = CadastroBD.getAllCadastros();
-
-        const login = LoginBD.find()?.usuario
-        
-        if(cadastros){
-            cadastros.map(item => {
-                if(item.id == id){
-                    const comen = {
-                        id: item.Comentarios.length,
-                        body: comentario,
-                        associado: login?.nome,
-                        foto: foto ? foto[0].uri : '',
-                        url:foto ? foto[0].uri : '',
-                        clienteId: id,
-                        type:"image"
-                    }
-                    item.Comentarios.reverse()
-                    item.Comentarios.push(comen)
-                    item.Comentarios.reverse()
-
-                }
-            })
-        }
-        CadastroBD.addAll(cadastros)
-       
-    }
-
     const salvarComentarios = () => {
-        const login = LoginBD.find()?.usuario
-        const Comentarios = {
+        const associado = LoginBD.find()?.usuario
+        Cliente.addComentario(id, {
             body: comentario,
-            associado: login?.nome,
+            associado: associado?.nome,
             foto: foto ? foto[0].uri : '',
             url: foto ? foto[0].uri : '',
             clienteId: id,
-            type:"image"
+            type: "image"
 
-        }
-
-        CadastroBD.addComentario(Comentarios)
+        })
     }
 
     const limpar = () => {
@@ -78,43 +44,22 @@ export default function Comentar({ id, update }: ComentarProps) {
         setComentario('')
         setLoader(false)
         alert("Comentario enviado")
-       
-        if(update){
-            update(item => item+1)
+
+        if (update) {
+            update(item => item + 1)
         }
+
+        setIsModal(false)
+
     }
 
     const handleSendComentario = async () => {
         setLoader(true)
-
-        const formData = new FormData();
-        if (foto) {
-            formData.append('file', {
-                uri: foto[0].uri,
-                type: foto[0].mimeType,
-                name: foto[0].fileName
-            })
-        }
-        formData.append('body', comentario)
-        
-        if (isConnected) {
-            try {
-                await api.post(`/v1/cliente/comentario/${id}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                      }
-                 })
-            } catch (e) {
-               salvarComentarios();
-        
-            }
-        } else {
+        try {
             salvarComentarios();
-        }
-
-        adicionarComentario();
+        } catch (error) { }
         limpar()
-        router.navigate('tabs/mapa')
+        // router.navigate('tabs/mapa')
     }
 
     return (
@@ -139,22 +84,22 @@ export default function Comentar({ id, update }: ComentarProps) {
                                 <AntDesign name="close" size={25} />
                             </Pressable>
                         </View>
-                        <ScrollView style={{padding: 20}}>
+                        <ScrollView style={{ padding: 20, flex:1 }}>
                             <View style={styles.boxInput}>
                                 <TextInput
-                                defaultValue={comentario}
+                                    defaultValue={comentario}
                                     placeholder="Comentario"
                                     onChangeText={(value) => setComentario(value)}
                                     multiline={true}
                                     numberOfLines={10}
                                     style={styles.input}
-                                    />
+                                />
                             </View>
                             <Pressable
                                 style={styles.btnAddImg}
                                 onPress={() => setCamera(true)}>
                                 <AntDesign color={'white'} name="camera" size={20} />
-                                <Text style={{color:'white'}}>Adicionar imagem</Text>
+                                <Text style={{ color: 'white' }}>Adicionar imagem</Text>
                             </Pressable>
 
 
@@ -180,21 +125,20 @@ export default function Comentar({ id, update }: ComentarProps) {
                         {
                             (comentario || foto) &&
                             <View style={styles.btnPostar}>
-                                <Pressable 
-                                    style={{ backgroundColor: Colors.green,
+                                <Pressable
+                                    style={{
+                                        backgroundColor: Colors.green,
                                         width: '100%',
                                         paddingTop: 12,
                                         paddingBottom: 12,
                                         borderRadius: 8
-                                     }}
+                                    }}
                                     onPress={handleSendComentario}
                                 >
                                     <Text style={styles.btnText}>Postar</Text>
                                 </Pressable>
                             </View>
                         }
-
-
                     </>
                 }
             </Modal>
@@ -203,32 +147,32 @@ export default function Comentar({ id, update }: ComentarProps) {
 }
 
 const styles = StyleSheet.create({
-    buttom:{
+    buttom: {
         borderWidth: 1,
         marginRight: 12,
         marginLeft: 12,
         padding: 12,
         borderRadius: 9999,
     },
-    btnClose:{
+    btnClose: {
         display: 'flex',
         padding: 20,
         alignItems: 'flex-end'
     },
-    boxInput:{
+    boxInput: {
         width: '100%',
         height: 96,
         backgroundColor: '#e5e7eb',
-        borderRadius: 6, 
+        borderRadius: 6,
         paddingLeft: 8,
         paddingRight: 8
     },
-    input:{
+    input: {
         flex: 1,
         fontWeight: '400',
         fontSize: 16,
         lineHeight: 24,
-        color:'#374151',
+        color: '#374151',
         height: 144,
         justifyContent: 'flex-start',
         textAlignVertical: 'top'
@@ -237,7 +181,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        padding: 8, 
+        padding: 8,
         borderRadius: 8,
         width: '100%',
         marginTop: 32,
@@ -250,14 +194,14 @@ const styles = StyleSheet.create({
         marginTop: 40,
         height: 320
     },
-    btnPostar:{
+    btnPostar: {
         position: 'absolute',
         bottom: 0,
-        width:'100%',
+        width: '100%',
         padding: 8,
         backgroundColor: 'white'
     },
-    btnText:{
+    btnText: {
         textAlign: 'center',
         fontWeight: 'bold',
         color: 'white'

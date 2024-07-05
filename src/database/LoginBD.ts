@@ -1,3 +1,4 @@
+import { api } from '@/service/api';
 import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
@@ -17,7 +18,6 @@ export type LoginProps = {
 export default new class LoginBD {
 
   public add(data: object) {
-
     storage.getString('authlogin');
 
     storage.set('authlogin', JSON.stringify(data));
