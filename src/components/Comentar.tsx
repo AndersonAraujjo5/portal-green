@@ -28,6 +28,7 @@ export default function Comentar({ id, update }: ComentarProps) {
 
     const salvarComentarios = () => {
         const associado = LoginBD.find()?.usuario
+
         Cliente.addComentario(id, {
             body: comentario,
             associado: associado?.nome,

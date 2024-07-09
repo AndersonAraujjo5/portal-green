@@ -33,7 +33,7 @@ export default new class Cliente implements ICadastro {
     addComentario(id: number, comentario: ComentariosProps) {
         if (!id) return;
         const cadastrados = this.findAll();
-
+        
         Comentario.add(comentario)
 
         if (cadastrados) {

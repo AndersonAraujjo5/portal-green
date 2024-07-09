@@ -8,12 +8,9 @@ import ControllerInput from "@/components/ControllerInput";
 import { useForm } from "react-hook-form";
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import CadastroBD from "@/database/CadastroBD";
 import MakerAtual from "@/components/MakerAtual";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { ClienteStatus } from "@/components/ButtonActions";
-import NetInfo from "@react-native-community/netinfo";
-import { api } from "@/service/api";
 import { Masks } from "react-native-mask-input";
 import { router } from "expo-router";
 import Loader from "@/components/Loader";
@@ -198,64 +195,6 @@ export default function TabHomeScreen() {
     setShowLoader(false)
     alert("Salvo com sucesso")
     router.replace('/')
-
-    
-
-    // NetInfo.fetch().then(state => {
-    //   try {
-    //     if (state.isConnected) {
-    //       const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
-    //         "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-    //         'cordenadas', 'fidelidade', 'plano', 'info']
-
-    //       const formData = new FormData()
-    //       arr.map(e => {
-    //         dados[e] && formData.append(e, dados[e]);
-    //       })
-
-    //       if (fotos) {
-    //         fotos.map((e, i) => {
-    //           formData.append('foto', {
-    //             uri: fotos[i].uri,
-    //             type: fotos[i].mimeType,
-    //             name: fotos[i].fileName
-    //           })
-    //         })
-    //       }
-
-    //       api.post('/v1/cliente', formData, {
-    //         headers: {
-    //           'Content-Type': 'multipart/form-data'
-    //         }
-    //       }).then(e => {
-    //         setShowLoader(false)
-    //         alert("Cadastro Enviado com sucesso")
-    //         router.replace('/')
-    //       }).catch(e => {
-    //         dados.status = ClienteStatus.SincronizacaoPendente
-    //         CadastroBD.addPreCadastro(dados);
-    //         setShowLoader(false)
-    //         alert("Cadastro Salva com sucesso")
-    //         router.replace('/')
-    //       })
-
-    //     } else {
-    //       // Caso não tenha internet, salvar altomaticamente 
-    //       // no dispositivo
-    //       dados.status = ClienteStatus.SincronizacaoPendente
-    //       CadastroBD.addPreCadastro(dados);
-    //       setShowLoader(false)
-    //       alert("Cadastro Salva com sucesso")
-    //       router.replace('/')
-    //     }
-    //   } catch (error) {
-    //     dados.status = ClienteStatus.SincronizacaoPendente
-    //     CadastroBD.addPreCadastro(dados);
-    //     setShowLoader(false)
-    //     alert("Algo deu errado. Mas não se preocupe os dados foram salvos na memoria e serão enviado reenviado automaticamente...")
-    //     router.replace('/')
-    //   }
-    // })
   }
 
   const handleTrash = (index) => {

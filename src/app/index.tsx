@@ -23,11 +23,11 @@ export default function login() {
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
                 login, password,
             })
+            // console.log(data)
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
             router.replace('/tabs/cadastro')
         } catch (error) {
-            console.log(error)
             setLoader(false)
             if (error && error.data) {
                 setError(error.data.errors)
@@ -41,7 +41,7 @@ export default function login() {
     }
 
     if(LoginBD.find()){
-        Cliente.syncronize() // sincroniza os dados envia/recebe
+        Cliente.syncronize().catch(e => e)
 
         return <Redirect href={'/tabs/cadastro'} />
     }

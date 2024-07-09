@@ -6,7 +6,7 @@ function Clientes({ data, access }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
         id, cordenadas, tecnico }: any = data;
         
-    const vars = ["pppoe",
+    const vars = ["pppoe", 'tecnico',
         "telefone", "email", "plano", "fidelidade", "vencimento"];
 
     return (

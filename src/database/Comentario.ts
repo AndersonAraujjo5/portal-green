@@ -1,6 +1,5 @@
-import { ICadastro, ClienteProps, ComentariosProps } from "@/interface/ICadastro";
+import { ICadastro, ComentariosProps } from "@/interface/ICadastro";
 import { api } from "@/service/api";
-import Images from "@/utils/Images";
 import { MMKV } from "react-native-mmkv";
 
 export default new class Comentario implements ICadastro {
@@ -12,20 +11,24 @@ export default new class Comentario implements ICadastro {
 
     add(cadastro: ComentariosProps): boolean {
         if (typeof cadastro !== 'object') return false
-        const cadastros = this.findAll();
-        let cadastrosArray: ComentariosProps[] = [];
+        try {
+            const cadastros = this.findAll();
+            let cadastrosArray: ComentariosProps[] = [];
 
-        if (cadastros) {
-            cadastrosArray = cadastros;
+            if (cadastros) {
+                cadastrosArray = cadastros;
+            }
+            const index = cadastrosArray.length
+       
+            cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[index-1].id + 1 : 0
+
+            cadastrosArray.push(cadastro)
+
+            this._storage.set('comentarios', JSON.stringify(cadastrosArray));
+            this.asyncEnviar();
+        } catch (error) {
+            console.log("wwwwww", error)
         }
-        const index = cadastrosArray.length
-        cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[index].id = index + 1 : 0
-
-        cadastrosArray.push(cadastro)
-
-        this._storage.set('comentarios', JSON.stringify(cadastrosArray));
-
-        this.asyncEnviar();
 
         return true;
     }

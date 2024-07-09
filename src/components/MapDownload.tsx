@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
@@ -6,6 +6,7 @@ import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import Loader from '@/components/Loader';
 import { useFocusEffect } from 'expo-router';
 import { addEventListener, useNetInfo } from '@react-native-community/netinfo';
+import axios from 'axios';
 
 function MapDownload() {
   const mapRef = useRef(null);
@@ -15,7 +16,8 @@ function MapDownload() {
   const [loading, setLoading] = useState(false);
   const [statusDown, setStatusDown] = useState(0);
   const [mapOffline, setMapOffline] = useState();
-  const { type, isConnected } = useNetInfo();
+  const [msg, setMsg] = useState(null)
+  const { isConnected } = useNetInfo();
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -30,25 +32,25 @@ function MapDownload() {
       console.log("Connection type", state.type);
       console.log("Is connected?", state.isConnected);
     });
-    
+
     // Unsubscribe
     unsubscribe();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     activeMapOffilne();
-  },[isConnected])
+  }, [isConnected])
 
   const activeMapOffilne = async () => {
     console.log(isConnected)
     if (!isConnected) {
       const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
       setMapOffline(offlinePack)
-    }else{
+    } else {
       setMapOffline(null)
     }
   }
-  
+
   useFocusEffect(() => {
     activeMapOffilne();
   })
@@ -61,6 +63,26 @@ function MapDownload() {
     let location = await Location.getCurrentPositionAsync({})
     setLocation([location.coords.longitude, location.coords.latitude])
   }
+
+  const getLocalizacao = async () => {
+    let getLocation = await Location.getCurrentPositionAsync({});
+    setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+  }
+
+  useFocusEffect(useCallback(() => {
+    if (!isConnected) {
+      activeMapOffilne();
+    } else {
+      axios.get('https://google.com', { timeout: 5000 }).then(e => {
+        getLocalizacao();
+      }).catch(e => {
+        activeMapOffilne();
+        console.log("sem internet")
+
+      })
+    }
+  }, [isConnected]))
+
 
 
   // Função para capturar as coordenadas da área visível do mapa
@@ -112,7 +134,18 @@ function MapDownload() {
 
   if (!location) {
     return (
-      <Loader show={true}/>
+      <Loader show={true} />
+    )
+  }
+
+  if (msg) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", padding: 12 }}>
+        <Text style={{
+          fontSize: 20,
+          lineHeight: 28,
+        }}>{msg}</Text>
+      </View>
     )
   }
 
@@ -131,7 +164,7 @@ function MapDownload() {
               compassPosition={{ top: 80, right: 10 }}
               rotateEnabled={true}
               styleURL={mapOffline?.metadata._rnmapbox.styleURI}
-              style={{flex: 1}}
+              style={{ flex: 1 }}
             >
               <Mapbox.UserLocation visible={true} animated={true} />
               <Mapbox.Camera maxBounds={{
