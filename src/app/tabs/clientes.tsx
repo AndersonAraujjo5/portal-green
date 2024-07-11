@@ -5,6 +5,7 @@ import { useFocusEffect } from "expo-router";
 import Loader from "@/components/Loader";
 import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
+import Comentario from "@/database/Comentario";
 export default function tabClientesScreen() {
     const [data, setData] = useState<object>(); // dados que foram baixados da api
     const [msgError, setMsgErro] = useState();
@@ -12,14 +13,18 @@ export default function tabClientesScreen() {
 
     useFocusEffect(useCallback(() => {
         setData(Cliente.findAll());
+        console.log(Comentario.findAll())
         Cliente.syncronize()
             .then(item => {
+                console.log(item)
                 if (item.length != 0) setData(item)
                 else {
                     setMsgErro(['Sem usuarios cadastrados'])
                     setData(null)
                 }
-            }).catch(e => e);
+            }).catch(e => {
+                console.log("errr", e)
+            });
 
     }, []))
 
@@ -65,8 +70,8 @@ export default function tabClientesScreen() {
                     <View>
                         <Text style={styles.title}>Sincronizado</Text>
                         {
-                            data.map(item => (
-                                <Clientes key={item.id} data={item} />
+                            data.map((item, index) => (
+                                <Clientes key={`clientes-${index}`} data={item} />
                             ))
                         }
                     </View>

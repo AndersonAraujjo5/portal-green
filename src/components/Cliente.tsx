@@ -1,6 +1,5 @@
 import { Link } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
-import ButtonAction from "@/components/ButtonActions";
 
 function Clientes({ data, access }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
@@ -24,7 +23,7 @@ function Clientes({ data, access }: any) {
                                 <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
                                 {
                                     vars.map((item, index) => {
-                                        if (data[item]) return (<Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>)
+                                        if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
                                     })
                                 }
                                 <Text style={styles.text}>{status}</Text>
@@ -41,7 +40,7 @@ function Clientes({ data, access }: any) {
                                 <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
                                 {
                                     vars.map((item, index) => {
-                                        if (data[item]) return (<Text key={`${item}-${index}`}>{[item]}: {data[item]}</Text>)
+                                        if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
                                     })
                                 }
                                 <Text style={styles.text}>{status}</Text>

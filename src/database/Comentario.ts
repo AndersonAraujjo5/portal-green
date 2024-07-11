@@ -46,6 +46,7 @@ export default new class Comentario implements ICadastro {
     }
 
     deleteById(id: number): boolean {
+        console.log(id,"========================")
         if (typeof id !== 'number') throw new Error("Valor deve ser do tipo number");
 
         const cadastros = this.findAll();
@@ -76,6 +77,7 @@ export default new class Comentario implements ICadastro {
 
             try {
                 dados.map(async (item: ComentariosProps, index: number) => {
+                    console.log(item.id)
                     try {
                         const formData = new FormData();
                         if (item.foto) {

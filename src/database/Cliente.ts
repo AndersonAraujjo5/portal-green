@@ -135,9 +135,16 @@ export default new class Cliente implements ICadastro {
     }
 
     async syncronize() {
+        try {
         const { data } = await api.get('/v1/cliente');
-        this.addAndRewrite(data.data)
+            console.log("dados",data)
+        } catch (error) {
+            console.log('00000000000',error)   
+        }
+        const { data } = await api.get('/v1/cliente');
 
+        this.addAndRewrite(data.data)
+        console.log("eeeeeeee")
         data.data.map((item: ClienteProps) => {
             if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
                 this.saveImageStorage(url); // salva as imagens no dispositivo
