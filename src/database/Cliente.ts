@@ -135,12 +135,6 @@ export default new class Cliente implements ICadastro {
     }
 
     async syncronize() {
-        try {
-        const { data } = await api.get('/v1/cliente');
-            console.log("dados",data)
-        } catch (error) {
-            console.log('00000000000',error)   
-        }
         const { data } = await api.get('/v1/cliente');
 
         this.addAndRewrite(data.data)

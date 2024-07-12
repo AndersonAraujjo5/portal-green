@@ -46,6 +46,14 @@
         {
           "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiYW5kZXJzb25hcmF1ampvIiwiYSI6ImNseGFjdmxseDFhNjYya3B2bDJvOTY3YWEifQ.bdgQaRlgIQeDwj5ok6nRqQ"
         }
+      ],
+      [
+        "expo-build-properties",
+          {
+            "android": {
+              "usesCleartextTraffic": true
+            }
+          }
       ]
     ],
     "experiments": {

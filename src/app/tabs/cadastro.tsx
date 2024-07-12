@@ -210,9 +210,6 @@ export default function TabHomeScreen() {
     setRefreshing(false)
   }
 
-
-
-
   return (
     <View style={styles.container}>
       <Loader show={showLoader} />

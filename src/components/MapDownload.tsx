@@ -16,6 +16,7 @@ function MapDownload() {
   const [loading, setLoading] = useState(false);
   const [statusDown, setStatusDown] = useState(0);
   const [mapOffline, setMapOffline] = useState();
+  const [stateConnect, setStateConnect] = useState(false)
   const [msg, setMsg] = useState(null)
   const { isConnected } = useNetInfo();
   useEffect(() => {
@@ -25,16 +26,8 @@ function MapDownload() {
         console.log('Permission to access location was denied');
         return;
       }
-      handleLocalAtual();
     })();
 
-    const unsubscribe = addEventListener(state => {
-      console.log("Connection type", state.type);
-      console.log("Is connected?", state.isConnected);
-    });
-
-    // Unsubscribe
-    unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -42,26 +35,41 @@ function MapDownload() {
   }, [isConnected])
 
   const activeMapOffilne = async () => {
-    console.log(isConnected)
-    if (!isConnected) {
-      const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
+    const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
+    if (offlinePack) {
       setMapOffline(offlinePack)
+      getLocalizacao();
+      setMsg(null)
+      setStateConnect(true);
+      return
+    };
+    getLocalizacao();
+    setStateConnect(true);
+    setMsg(`Conecte-se a internet para realizar o download do mapa`)
+  }
+
+
+  const checkIsOffline = () => {
+    setMsg(null)
+    if (!isConnected) {
+      activeMapOffilne();
     } else {
-      setMapOffline(null)
+      axios.get('https://google.com', { timeout: 5000 }).then(e => {
+        getLocalizacao();
+        setStateConnect(true);
+      }).catch(e => {
+        activeMapOffilne();
+      })
     }
   }
 
-  useFocusEffect(() => {
-    activeMapOffilne();
-  })
+  useFocusEffect(useCallback(() => {
+    checkIsOffline();
+  }, [isConnected]))
+
 
   const handleTypeMap = (styleUrl: string) => {
     setTypeMap(styleUrl)
-  }
-
-  const handleLocalAtual = async () => {
-    let location = await Location.getCurrentPositionAsync({})
-    setLocation([location.coords.longitude, location.coords.latitude])
   }
 
   const getLocalizacao = async () => {
@@ -70,17 +78,7 @@ function MapDownload() {
   }
 
   useFocusEffect(useCallback(() => {
-    if (!isConnected) {
-      activeMapOffilne();
-    } else {
-      axios.get('https://google.com', { timeout: 5000 }).then(e => {
-        getLocalizacao();
-      }).catch(e => {
-        activeMapOffilne();
-        console.log("sem internet")
-
-      })
-    }
+    checkIsOffline();
   }, [isConnected]))
 
 
@@ -124,7 +122,6 @@ function MapDownload() {
         }))
       }
     } catch (e) {
-      console.log(e)
       alert(`Não foi possivel fazer o download, tente novamente mais tarde, ou entre em contato com o desenvolvedor
         \n\n`+ e)
     }
@@ -132,7 +129,7 @@ function MapDownload() {
 
   };
 
-  if (!location) {
+  if (!stateConnect) {
     return (
       <Loader show={true} />
     )

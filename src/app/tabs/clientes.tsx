@@ -12,6 +12,7 @@ export default function tabClientesScreen() {
     const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(useCallback(() => {
+        
         setData(Cliente.findAll());
         console.log(Comentario.findAll())
         Cliente.syncronize()

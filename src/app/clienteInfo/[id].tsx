@@ -1,19 +1,29 @@
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useCallback, useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from '@/components/ModalDetalhesCliente';
 import Cliente from '@/database/Cliente';
+import { useNetInfo } from '@react-native-community/netinfo';
+import axios from 'axios';
+import Loader from '@/components/Loader';
 
 export default function page() {
-    const [location, setLocation] = useState<number[] | [number, number]>();
+    const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
+
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
+    const [mapOffline, setMapOffline] = useState();
+    const [msg, setMsg] = useState<string | null>(null)
+    const [stateConnect, setStateConnect] = useState(false)
+    const { isConnected } = useNetInfo();
+
     const navigation = useNavigation();
+
     const { id } = useLocalSearchParams<{ id?: string }>();
- 
+
     const clienteData = Cliente.findById(Number(id));
 
     useEffect(() => {
@@ -23,57 +33,153 @@ export default function page() {
                 console.log('Permission to access location was denied');
                 return;
             }
-            let getLocation = await Location.getCurrentPositionAsync({});
-            setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+
         })();
 
+        navigation.setOptions({
+            title: ""
+        })
 
-            navigation.setOptions({
-                title: ""
-            })
-        
     }, []);
+
+
+    const getLocalizacao = async () => {
+        let getLocation = await Location.getCurrentPositionAsync({});
+        setLocationAtual([getLocation.coords.longitude, getLocation.coords.latitude])
+    }
+
+    const activeMapOffilne = async () => {
+        const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
+        if (offlinePack) {
+            setMapOffline(offlinePack)
+            getLocalizacao();
+            setMsg(null)
+            setStateConnect(true);
+            return
+        };
+        getLocalizacao();
+        setStateConnect(true);
+        setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
+
+    }
+
+    const checkIsOffline = () => {
+        setMsg(null)
+        if (!isConnected) {
+            activeMapOffilne();
+        } else {
+            axios.get('https://google.com', { timeout: 5000 }).then(e => {
+                getLocalizacao();
+                setStateConnect(true);
+            }).catch(e => {
+                activeMapOffilne();
+            })
+        }
+    }
+
+    useFocusEffect(useCallback(() => {
+        checkIsOffline();
+    }, [isConnected]))
 
 
     const handleTypeMap = (styleUrl: string) => {
         setTypeMap(styleUrl)
     }
 
+    if (!stateConnect) {
+        return <Loader show={true} />
+    }
+
     if (!clienteData) {
         router.replace('/tabs/clientes')
         return <></>
     }
+
+    if (msg) {
+        return <View style={{ flex: 1, justifyContent: "center", padding: 12 }}>
+            <Text style={{
+                fontSize: 20,
+                lineHeight: 28,
+            }}>{msg}</Text>
+        </View>
+    }
+    
     return (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
             <View style={styles.container}>
                 <View style={styles.box}>
-                    <Mapbox.MapView
-                        styleURL={typeMap}
-                        rotateEnabled={true}
-                        logoEnabled={false}
-                        compassEnabled={true}
-                        scaleBarEnabled={false}
-                        compassPosition={{ top: 80, right: 10 }}
-                        onPress={({ geometry }) => {
-                            setOnModal(null)
-                        }}
-                        style={{ flex: 1 }} >
-                        <Mapbox.Camera zoomLevel={15}
-                            centerCoordinate={clienteData.cordenadas.split(',')}
-                            animationMode='none' />
-                        <Mapbox.UserLocation
-                            visible={true} />
-                        <Mapbox.PointAnnotation
-                            selected={true}
-                            key="pointAnnotation"
-                            id="pointAnnotation"
-                            onSelected={() => {
-                                setOnModal(ModalDetalhesCliente(clienteData))
-                            }}
-                            coordinate={clienteData.cordenadas.split(',')}
-                        />
+                    {
+                        !msg &&
+                        mapOffline &&
+                        <>
+                            <Text>offilene</Text>
+                            <Mapbox.MapView
+                                styleURL={mapOffline?.metadata._rnmapbox.styleURI}
+                                rotateEnabled={true}
+                                logoEnabled={false}
+                                compassEnabled={true}
+                                scaleBarEnabled={false}
+                                compassPosition={{ top: 80, right: 10 }}
+                                onPress={({ geometry }) => {
+                                    setOnModal(null)
+                                }}
 
-                    </Mapbox.MapView>
+                                style={{ flex: 1 }} >
+                                <Mapbox.Camera
+                                    maxBounds={{
+                                        ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
+                                        sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
+                                    }}
+                                    minZoomLevel={12}
+                                    maxZoomLevel={18}
+
+                                    animationMode="none" />
+                                <Mapbox.UserLocation
+                                    animated={true}
+                                    visible={true} />
+                                <Mapbox.PointAnnotation
+                                    selected={true}
+                                    key="pointAnnotation"
+                                    id="pointAnnotation"
+                                    onSelected={() => {
+                                        setOnModal(ModalDetalhesCliente(clienteData))
+                                    }}
+                                    coordinate={clienteData.cordenadas.split(',')}
+                                />
+
+                            </Mapbox.MapView></>
+                    }
+                    {
+                        !msg &&
+                        !mapOffline &&
+                        <Mapbox.MapView
+                            styleURL={typeMap}
+                            rotateEnabled={true}
+                            logoEnabled={false}
+                            compassEnabled={true}
+                            scaleBarEnabled={false}
+                            compassPosition={{ top: 80, right: 10 }}
+                            onPress={({ geometry }) => {
+                                setOnModal(null)
+                            }}
+                            style={{ flex: 1 }} >
+                            <Mapbox.Camera zoomLevel={15}
+                                centerCoordinate={clienteData.cordenadas.split(',')}
+                                animationMode='none' />
+                            <Mapbox.UserLocation
+                                visible={true} />
+                            <Mapbox.PointAnnotation
+                                selected={true}
+                                key="pointAnnotation"
+                                id="pointAnnotation"
+                                onSelected={() => {
+                                    setOnModal(ModalDetalhesCliente(clienteData))
+                                }}
+                                coordinate={clienteData.cordenadas.split(',')}
+                            />
+
+                        </Mapbox.MapView>
+                    }
                 </View>
                 {
                     onModal && <>{onModal}</>
@@ -86,7 +192,7 @@ export default function page() {
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
