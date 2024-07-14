@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Button } from "react-native-elements";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";

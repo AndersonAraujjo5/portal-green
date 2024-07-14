@@ -10,6 +10,7 @@ import LoginBD, { LoginProps } from "@/database/LoginBD";
 import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
 import Cliente from "@/database/Cliente";
+import SafeStatusBar from "@/components/SafeStatusBar";
 
 
 export default function login() {
@@ -23,7 +24,7 @@ export default function login() {
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
                 login, password,
             })
-            // console.log(data)
+    
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
             router.replace('/tabs/cadastro')
@@ -51,74 +52,70 @@ export default function login() {
     },[login, password])
 
     return (
-        <View style={styles.container}>
-            <Loader show={loader} />
-            <View style={styles.imgTop}>
-                <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
-            </View>
-            <View style={styles.imgBottom}>
-                <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
-            </View>
-            <Text style={styles.title}>Faça o login</Text>
+        <SafeStatusBar>
+            <View style={{justifyContent: "center", display: "flex", flex: 1, paddingRight: 20, paddingLeft:20}}>
+                <Loader show={loader} />
+                <View style={styles.imgTop}>
+                    <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
+                </View>
+                <View style={styles.imgBottom}>
+                    <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
+                </View>
+                <Text style={styles.title}>Faça o login</Text>
 
-            <View style={styles.containerInput}>
-                {
-                    error &&
-                    <View style={styles.error}>
-                        {
-                            error.map((item,index) => (
-                                <Text key={index} style={styles.errorText}>{item}</Text>
+                <View style={styles.containerInput}>
+                    {
+                        error &&
+                        <View style={styles.error}>
+                            {
+                                error.map((item,index) => (
+                                    <Text key={index} style={styles.errorText}>{item}</Text>
 
-                            ))
-                        }
+                                ))
+                            }
+                        </View>
+                    }
+
+                    <Text style={{marginTop:10}}>Usuário</Text>
+                    <View style={styles.boxInput}>
+                        <AntDesign
+                            style={styles.icon}
+                            name="user"
+                            color={Colors.gray}
+                            size={18} />
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => setLogin(text)} />
                     </View>
-                }
-
-                <Text style={{marginTop:10}}>Usuário</Text>
-                <View style={styles.boxInput}>
-                    <AntDesign
-                        style={styles.icon}
-                        name="user"
-                        color={Colors.gray}
-                        size={18} />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => setLogin(text)} />
+                </View>
+                <View style={styles.containerInput}>
+                    <Text>Senha</Text>
+                    <View style={styles.boxInput}>
+                        <AntDesign
+                            style={styles.icon}
+                            name="lock1"
+                            color={Colors.gray}
+                            size={18} />
+                        <TextInput
+                            onChangeText={(text) => setPassword(text)}
+                            secureTextEntry={true}
+                            style={styles.input} />
+                    </View>
+                </View>
+                <View style={{width: '100%'}}>
+                    <Pressable  style={styles.button}
+                        onPress={handleSign}
+                    >
+                        <Text 
+                        style={{textAlign: 'center', color: 'white'}}>Entrar</Text>
+                    </Pressable>
                 </View>
             </View>
-            <View style={styles.containerInput}>
-                <Text>Senha</Text>
-                <View style={styles.boxInput}>
-                    <AntDesign
-                        style={styles.icon}
-                        name="lock1"
-                        color={Colors.gray}
-                        size={18} />
-                    <TextInput
-                        onChangeText={(text) => setPassword(text)}
-                        secureTextEntry={true}
-                        style={styles.input} />
-                </View>
-            </View>
-            <View style={{width: '100%'}}>
-                <Pressable  style={styles.button}
-                    onPress={handleSign}
-                >
-                    <Text 
-                    style={{textAlign: 'center', color: 'white'}}>Entrar</Text>
-                </Pressable>
-            </View>
-        </View>
+        </SafeStatusBar>
     )
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        display: 'flex',
-        justifyContent:'center',
-        padding: 20
-    },
     imgTop:{
         position: 'absolute',
         top: -288,

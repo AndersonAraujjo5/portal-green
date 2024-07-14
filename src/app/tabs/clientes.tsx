@@ -6,47 +6,47 @@ import Loader from "@/components/Loader";
 import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
 import Comentario from "@/database/Comentario";
+import SafeStatusBar from "@/components/SafeStatusBar";
+import PreCadastro from "@/database/PreCadastro";
+import Status from "@/database/Status";
 export default function tabClientesScreen() {
     const [data, setData] = useState<object>(); // dados que foram baixados da api
     const [msgError, setMsgErro] = useState();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusEffect(useCallback(() => {
+    const syncronize = () => {
+        PreCadastro.asyncEnviar();
+        Comentario.asyncEnviar()
+        Status.asyncEnviar();
         
-        setData(Cliente.findAll());
-        console.log(Comentario.findAll())
         Cliente.syncronize()
             .then(item => {
-                console.log(item)
-                if (item.length != 0) setData(item)
+                if (item.length != 0){
+                    setData(item)
+                    setMsgErro(null)
+                }
                 else {
                     setMsgErro(['Sem usuarios cadastrados'])
                     setData(null)
                 }
             }).catch(e => {
-                console.log("errr", e)
+                setData(Cliente.findAll());
             });
+    }
 
+    useFocusEffect(useCallback(() => {
+       syncronize();
     }, []))
 
     const onRefresh = () => {
         setRefreshing(true)
-
-        setData(Cliente.findAll());
-        Cliente.syncronize()
-            .then(item => {
-                if (item.length != 0) setData(item)
-                else {
-                    setMsgErro(['Sem usuarios cadastrados'])
-                    setData(null)
-                }
-            }).catch(e => e);
+       syncronize();
         setRefreshing(false)
     }
 
 
     return (
-        <View style={styles.container}>
+        <SafeStatusBar >
             {
                 (!data && !msgError) && <Loader show={true} />
             }
@@ -69,7 +69,6 @@ export default function tabClientesScreen() {
                         onRefresh={onRefresh} />}>
 
                     <View>
-                        <Text style={styles.title}>Sincronizado</Text>
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />
@@ -79,15 +78,11 @@ export default function tabClientesScreen() {
 
                 </ScrollView>
             }
-        </View>
+        </SafeStatusBar>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 14
-    },
     title: {
         fontSize: 24,
         lineHeight: 32,

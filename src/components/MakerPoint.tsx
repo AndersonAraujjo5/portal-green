@@ -37,7 +37,6 @@ export default function MakerPoint({ setLocation }) {
 
     const activeMapOffilne = async () => {
         const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
-        console.log("offilepack", offlinePack)
         if (offlinePack) {
             setMapOffline(offlinePack)
             getLocalizacao();
@@ -57,8 +56,6 @@ export default function MakerPoint({ setLocation }) {
                 getLocalizacao();
             }).catch(e => {
                 activeMapOffilne();
-                console.log("sem internet")
-
             })
         }
     }

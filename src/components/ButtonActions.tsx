@@ -2,7 +2,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Comentar from "@/components/Comentar";
-import CadastroBD from "@/database/CadastroBD";
 import LoginBD from "@/database/LoginBD";
 import { useState } from "react";
 import { ScrollView } from "moti";
@@ -33,7 +32,6 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
     const [statusValue, setStatusValue] = useState<string>(status)
 
     const atualizar = () => update && update(item => item + 1)
-    console.log(update)
     const atualizarStatus = (status: string) => {
         setStatusValue(status)
         Cliente.addStatus(id, {

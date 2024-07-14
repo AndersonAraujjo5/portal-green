@@ -60,7 +60,6 @@ export default function Comentar({ id, update }: ComentarProps) {
             salvarComentarios();
         } catch (error) { }
         limpar()
-        // router.navigate('tabs/mapa')
     }
 
     return (

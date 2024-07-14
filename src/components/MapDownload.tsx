@@ -17,7 +17,6 @@ function MapDownload() {
   const [statusDown, setStatusDown] = useState(0);
   const [mapOffline, setMapOffline] = useState();
   const [stateConnect, setStateConnect] = useState(false)
-  const [msg, setMsg] = useState(null)
   const { isConnected } = useNetInfo();
   useEffect(() => {
     (async () => {
@@ -30,27 +29,20 @@ function MapDownload() {
 
   }, []);
 
-  useEffect(() => {
-    activeMapOffilne();
-  }, [isConnected])
-
   const activeMapOffilne = async () => {
     const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
     if (offlinePack) {
       setMapOffline(offlinePack)
       getLocalizacao();
-      setMsg(null)
       setStateConnect(true);
       return
     };
     getLocalizacao();
     setStateConnect(true);
-    setMsg(`Conecte-se a internet para realizar o download do mapa`)
   }
 
 
   const checkIsOffline = () => {
-    setMsg(null)
     if (!isConnected) {
       activeMapOffilne();
     } else {
@@ -76,12 +68,6 @@ function MapDownload() {
     let getLocation = await Location.getCurrentPositionAsync({});
     setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
   }
-
-  useFocusEffect(useCallback(() => {
-    checkIsOffline();
-  }, [isConnected]))
-
-
 
   // Função para capturar as coordenadas da área visível do mapa
   const captureVisibleBounds = async () => {
@@ -135,17 +121,6 @@ function MapDownload() {
     )
   }
 
-  if (msg) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", padding: 12 }}>
-        <Text style={{
-          fontSize: 20,
-          lineHeight: 28,
-        }}>{msg}</Text>
-      </View>
-    )
-  }
-
   return (
     <View style={styles.container}>
       {
@@ -195,26 +170,10 @@ function MapDownload() {
               />
             </Mapbox.MapView>
 
-            {/* Botão para capturar a área visível */}
-            {/* <TouchableOpacity className='mb-96' style={styles.button} onPress={captureVisibleBounds}>
-          <Text style={styles.buttonText}>Capturar Área Visível</Text>
-        </TouchableOpacity> */}
-
-            {/* Botão para iniciar o download do mapa */}
             <TouchableOpacity style={styles.button} onPress={downloadMapData}>
               <Text style={styles.buttonText}>Baixar Mapa da Área Visível</Text>
             </TouchableOpacity>
 
-            {/* Informações da área visível (opcional para depuração) */}
-            {visibleBounds && (
-              <View style={styles.infoBox}>
-                <Text style={styles.infoText}>Área visível do mapa:</Text>
-                <Text style={styles.infoText}>Latitude mínima: {visibleBounds[0][1]}</Text>
-                <Text style={styles.infoText}>Longitude mínima: {visibleBounds[0][0]}</Text>
-                <Text style={styles.infoText}>Latitude máxima: {visibleBounds[1][1]}</Text>
-                <Text style={styles.infoText}>Longitude máxima: {visibleBounds[1][0]}</Text>
-              </View>
-            )}
             <CamadaMap setType={handleTypeMap} />
           </>
       }

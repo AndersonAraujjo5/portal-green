@@ -9,14 +9,14 @@ import Cliente from '@/database/Cliente';
 import { useNetInfo } from '@react-native-community/netinfo';
 import axios from 'axios';
 import Loader from '@/components/Loader';
+import OfflinePack from '@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack';
 
 export default function page() {
     const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
 
-    const [onModal, setOnModal] = useState()
-    const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
-    const [mapOffline, setMapOffline] = useState();
-    const [msg, setMsg] = useState<string | null>(null)
+    const [onModal, setOnModal] = useState<void>()
+    const [typeMap, setTypeMap] = useState<string>(StyleURL.Street);
+    const [mapOffline, setMapOffline] = useState<OfflinePack | undefined>();
     const [stateConnect, setStateConnect] = useState(false)
     const { isConnected } = useNetInfo();
 
@@ -53,18 +53,14 @@ export default function page() {
         if (offlinePack) {
             setMapOffline(offlinePack)
             getLocalizacao();
-            setMsg(null)
             setStateConnect(true);
             return
         };
         getLocalizacao();
         setStateConnect(true);
-        setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
-
     }
 
     const checkIsOffline = () => {
-        setMsg(null)
         if (!isConnected) {
             activeMapOffilne();
         } else {
@@ -94,22 +90,12 @@ export default function page() {
         router.replace('/tabs/clientes')
         return <></>
     }
-
-    if (msg) {
-        return <View style={{ flex: 1, justifyContent: "center", padding: 12 }}>
-            <Text style={{
-                fontSize: 20,
-                lineHeight: 28,
-            }}>{msg}</Text>
-        </View>
-    }
     
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.container}>
                 <View style={styles.box}>
                     {
-                        !msg &&
                         mapOffline &&
                         <>
                             <Text>offilene</Text>
@@ -127,8 +113,8 @@ export default function page() {
                                 style={{ flex: 1 }} >
                                 <Mapbox.Camera
                                     maxBounds={{
-                                        ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
-                                        sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
+                                        ne: [Number(mapOffline?.bounds[0]), Number(mapOffline?.bounds[1])],
+                                        sw: [Number(mapOffline?.bounds[2]), Number(mapOffline?.bounds[3])]
                                     }}
                                     minZoomLevel={12}
                                     maxZoomLevel={18}
@@ -150,7 +136,6 @@ export default function page() {
                             </Mapbox.MapView></>
                     }
                     {
-                        !msg &&
                         !mapOffline &&
                         <Mapbox.MapView
                             styleURL={typeMap}

@@ -1,7 +1,6 @@
-import { ICadastro, ClienteProps, StatusProps } from "@/interface/ICadastro";
+import { ClienteProps, StatusProps } from "@/interface/ICadastro";
 import { api } from "@/service/api";
 import { MMKV } from "react-native-mmkv";
-import Cliente from "@/database/Cliente";
 import LoginBD from "./LoginBD";
 
 
@@ -16,7 +15,6 @@ export default new class Status {
         if (typeof cadastro !== 'object') return false
         const cadastros = this.findAll()
         let cadastrosArray: StatusProps[] = [];
-        console.log(cadastros)
         if (cadastros) {
             cadastrosArray = cadastros;
         }
@@ -34,7 +32,6 @@ export default new class Status {
 
      asyncEnviar() {
         const cadastros = this.findAll();
-        console.log(cadastros)
         if (cadastros) {
             const dados = cadastros;
 

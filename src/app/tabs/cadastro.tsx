@@ -16,6 +16,10 @@ import { router } from "expo-router";
 import Loader from "@/components/Loader";
 import Colors from "@/constants/Colors";
 import PreCadastro from "@/database/PreCadastro";
+import SafeStatusBar from "@/components/SafeStatusBar";
+import Cliente from "@/database/Cliente";
+import Comentario from "@/database/Comentario";
+import Status from "@/database/Status";
 
 const validarCPF = (cpf: string) => {
   cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
@@ -78,6 +82,7 @@ const schema = yup.object({
   }),
   cpf: yup.string().required("CPF e Obrigatorio").test('valid-cpf', 'CPF inválido', (value) => validarCPF(value)),
   email: yup.string().email("E-mail invalido"),
+  telefone: yup.string().length(15, "Numero de telefone invalido"),
   endereco: yup.string().required("Informe o endereco"),
   bairro: yup.string().required("Informe o bairro"),
   numero: yup.string().required("Informe o numero da casa"),
@@ -201,7 +206,17 @@ export default function TabHomeScreen() {
     setFotos(e => e.toSpliced(index, 1));
   }
 
+  const syncronize = () => {
+    PreCadastro.asyncEnviar();
+    Comentario.asyncEnviar()
+    Status.asyncEnviar();
+    
+    Cliente.syncronize().catch(e => e);
+}
+
   const onRefresh = () => {
+
+    syncronize();
     setCordenadas(null)
     setFotos(null)
 
@@ -211,7 +226,7 @@ export default function TabHomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeStatusBar>
       <Loader show={showLoader} />
       {
         camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
@@ -246,7 +261,7 @@ export default function TabHomeScreen() {
 
             <View style={styles.inputGroup}>
               <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} style={{ flex: 1 }} keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
-              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" />
+              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" error={errors.telefone} />
             </View>
 
           </View>
@@ -272,7 +287,7 @@ export default function TabHomeScreen() {
           </Text>
           <View style={styles.selectBox}>
             <View style={styles.containerSelect}>
-              <Text>
+              <Text style={{color: Colors.gray}}>
                 Planos
               </Text>
               <View style={{ width: '100%' }}>
@@ -305,7 +320,7 @@ export default function TabHomeScreen() {
                   containerStyle={{
                     backgroundColor: "rgba(0,0,0,0)",
                   }} />
-                <Text>Com Fidelidade</Text>
+                <Text style={{color: Colors.gray}}>Com Fidelidade</Text>
               </View>
             </View>
             <View style={styles.inputBoxGroup}>
@@ -317,14 +332,14 @@ export default function TabHomeScreen() {
                     backgroundColor: "rgba(0,0,0,0)"
                   }}
                   style={{ alignItems: "center" }} />
-                <Text>Sem Fidelidade</Text>
+                <Text style={{color: Colors.gray}}>Sem Fidelidade</Text>
               </View>
             </View>
           </View>
 
           <View style={styles.selectBox}>
             <View style={styles.containerSelect}>
-              <Text >
+              <Text style={{color: Colors.gray}}>
                 Data do vencimento
               </Text>
               <View style={{ width: "100%", padding: 0, margin: 0 }}>
@@ -349,7 +364,7 @@ export default function TabHomeScreen() {
           <View style={{ width: "100%", flex: 1, marginTop: 12 }} >
             {/* className="w-full bg-gray-200 rounded-md ps-2 mt-4" */}
             <View style={styles.containerSelect} >
-              <Text >Mais informações</Text>
+              <Text style={{color: Colors.gray}}>Mais informações</Text>
               <TextInput
                 onChangeText={setInfo}
                 multiline={true}
@@ -416,7 +431,7 @@ export default function TabHomeScreen() {
             />
             <View style={{ width: '50%', marginTop: 40 }} >
               <Pressable style={{
-                padding: 3, borderRadius: 8,
+                padding: 8, borderRadius: 8,
                 backgroundColor: Colors.green
               }} onPress={handleSubmit(handleSave)}>
                 <Text style={{ textAlign: 'center', color: 'white' }}>Enviar</Text>
@@ -426,17 +441,11 @@ export default function TabHomeScreen() {
         </ScrollView >
       }
 
-    </View >
+    </SafeStatusBar >
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 25,
-    paddingRight: 8,
-    paddingLeft: 8
-  },
   title: {
     fontWeight: 'bold',
     fontSize: 24,
@@ -487,7 +496,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: 8,
-    height: 73,
+   
     borderRadius: 8,
     backgroundColor: Colors.gray
   },
@@ -497,7 +506,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 24,
-    color: '#9ca3af',
     height: 144,
     justifyContent: 'flex-start',
     textAlignVertical: "top",

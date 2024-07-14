@@ -3,13 +3,14 @@ import axios from "axios";
 import { router } from "expo-router";
 
 const api = axios.create({
-    baseURL:'http://10.129.0.156:3007/api',
+    baseURL:'https://fileprecadastro.greenet.net.br/api',
     timeout: 5000, // 5 segundos
 })
 
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
+    console.log(JSON.stringify(error))
     if(error.response && error.response.status === 401){
         console.log("redirecionar")
         LoginBD.delete();

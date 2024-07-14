@@ -22,7 +22,6 @@ export default new class Cliente implements ICadastro {
         }
 
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
-
         cadastrosArray.push(cadastro)
 
         this._storage.set('cadastros', JSON.stringify(cadastrosArray));
@@ -91,7 +90,7 @@ export default new class Cliente implements ICadastro {
         return;
     }
 
-    findById(id: number): object | undefined {
+    findById(id: number): ClienteProps | undefined {
         if (!id) return;
         const cadastrados = this._storage.getString('cadastros')
 
@@ -138,7 +137,6 @@ export default new class Cliente implements ICadastro {
         const { data } = await api.get('/v1/cliente');
 
         this.addAndRewrite(data.data)
-        console.log("eeeeeeee")
         data.data.map((item: ClienteProps) => {
             if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
                 this.saveImageStorage(url); // salva as imagens no dispositivo

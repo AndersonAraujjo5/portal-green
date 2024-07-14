@@ -2,33 +2,23 @@ import ButtonAction from "@/components/ButtonActions";
 import { Dimensions, View, ScrollView, Text, Image, TextInput, Pressable, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
-import { MotiView } from "moti";
 
-export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
+export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
     cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
 }: any, update: any) {
-
     const { width } = Dimensions.get('window');
-    const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento"];
+    const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento", "tecnico"];
     const obj: any = { pppoe, telefone, email, plano, fidelidade, vencimento };
 
     return (
-        <MotiView
-            from={{
-                opacity: 0,
-                translateY: 40
-            }}
-            animate={{
-                opacity: 1,
-                translateY: 0
-            }}
-        >
+    
             <View style={styles.contianer}>
                 <ScrollView style={{
+                    flex: 1,
                     paddingRight: 8, paddingLeft: 8
                 }}
                     showsVerticalScrollIndicator={false}>
-                    <Text style={styles.title}>{cliente}</Text>
+                    <Text style={styles.title}>{cliente || nome}</Text>
                     <Text>Status: {status}</Text>
                     <Text>Vendedor: {associado}</Text>
                     <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
@@ -39,7 +29,7 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                             }
                         })
                     }
-                    <Text>Mais info: {tecnico} </Text>
+                    <Text>Mais info: {info} </Text>
                     <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
                     <ScrollView
                         style={{
@@ -51,14 +41,14 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}>
                         {
-                            Fotos.map((item, index) => (
+                            Fotos && Fotos.map((item, index) => (
                                 <CacherImage url={item.url} width={width} key={index} />
                             ))
                         }
                     </ScrollView>
 
                     {
-                        Comentarios.map((item: any) => (
+                        Comentarios && Comentarios.map((item: any) => (
                             <View style={styles.containerComentario} key={`${item.id}-comentario`}>
                                 <View style={styles.associado}>
                                     <AntDesign style={{
@@ -95,21 +85,22 @@ export default function ModalDetalhesCliente({ cliente, pppoe, endereco, casa, b
 
                 </ScrollView>
             </View>
-        </MotiView>
     )
 
 }
 
 const styles = StyleSheet.create({
     contianer: {
+        position: "absolute",
         width: '100%',
         height: 384,
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
-        backgroundColor: 'white',
-        bottom: 192,
+        bottom: 0,
+        backgroundColor: "white",
         paddingTop: 20,
-        paddingBottom: 20
+        paddingBottom: 20,
+        zIndex: 50
     },
     title: {
         fontSize: 20,

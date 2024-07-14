@@ -25,8 +25,6 @@ export default new class PreCadastro implements ICadastro {
         cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
         cadastrosArray.push(cadastro)
 
-        console.log(cadastrosArray)
-
         this._storage.set('pre-cadastro', JSON.stringify(cadastrosArray));
 
         this.asyncEnviar();

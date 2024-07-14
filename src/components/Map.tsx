@@ -11,6 +11,9 @@ import Loader from "./Loader";
 import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";
 import axios from "axios";
+import SafeStatusBar from "./SafeStatusBar";
+import Comentario from "@/database/Comentario";
+import Status from "@/database/Status";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -57,7 +60,6 @@ export default function MakerPoint() {
     const [mapOffline, setMapOffline] = useState();
     const { isConnected } = useNetInfo();
     const [update, setUpdate] = useState(0)
-    const [msg, setMsg] = useState(null)
 
     useEffect(() => {
         (async () => {
@@ -77,8 +79,13 @@ export default function MakerPoint() {
         }
     }, [update])
 
+
     const sincronizar = () => {
         PreCadastro.asyncEnviar();
+        Comentario.asyncEnviar()
+        Status.asyncEnviar();
+        Cliente.syncronize().catch(e => e);
+
         if (Cliente.findAll()) {
             setClientesData(Cliente.findAll())
         }
@@ -95,28 +102,21 @@ export default function MakerPoint() {
         if (offlinePack) {
             setMapOffline(offlinePack)
             getLocalizacao();
-            setMsg(null)
             return
         };
         getLocalizacao();
-        setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
     }
 
     useFocusEffect(useCallback(() => {
-        setMsg(null)
         setOnModal(null)
         sincronizar();
 
         if (!isConnected) {
             activeMapOffilne();
-            console.log('is')
         } else {
             axios.get('https://google.com', { timeout: 5000 }).then(e => {
               getLocalizacao();
-              console.log("com")
             }).catch(e => {
-              console.log("sem")
-
                 activeMapOffilne();
             })
         }
@@ -133,19 +133,8 @@ export default function MakerPoint() {
         )
     }
 
-    if (msg) {
-        return (
-            <View style={{ flex: 1, justifyContent: "center", padding: 12 }}>
-                <Text style={{
-                    fontSize: 20,
-                    lineHeight: 28,
-                }}>{msg}</Text>
-            </View>
-        )
-    }
-
     return (
-        <View style={styles.container}>
+        <SafeStatusBar >
 
             <View style={styles.box}>
                 <View style={{ width: '100%', height: '100%' }}>
@@ -173,7 +162,7 @@ export default function MakerPoint() {
                                 animated={true}
                                 visible={true} />
                             {
-                                clientesData && clientesData.map((item) => {
+                                clientesData && clientesData.map((item,index) => {
                                     if (item.status === ClienteStatus.CadastroEnviado ||
                                         item.status === ClienteStatus.CadastroPendente
                                     ) return;
@@ -183,8 +172,8 @@ export default function MakerPoint() {
                                             title={item.cliente}
                                             snippet={item.cliente}
                                             selected={true}
-                                            key={item.id.toString()}
-                                            id={item.id.toString()}
+                                            key={`${item.id}-${index}-cliente`}
+                                            id={`${item.id}-${index}-id`}
                                             onSelected={() => {
                                                 setOnModal(ModalDetalhesCliente(item, setUpdate))
                                             }}
@@ -214,7 +203,7 @@ export default function MakerPoint() {
                                 animated={true}
                                 visible={true} />
                             {
-                                clientesData && clientesData.map((item) => {
+                                clientesData && clientesData.map((item, index) => {
                                     if (item.status === ClienteStatus.CadastroEnviado ||
                                         item.status === ClienteStatus.CadastroPendente
                                     ) return;
@@ -224,8 +213,8 @@ export default function MakerPoint() {
                                             title={item.cliente}
                                             snippet={item.cliente}
                                             selected={true}
-                                            key={item.id.toString()}
-                                            id={item.id.toString()}
+                                            key={`${item.id}-${index}-cliente`}
+                                            id={`${item.id}-${index}-cliente`}
                                             onSelected={() => {
                                                 setOnModal(ModalDetalhesCliente(item, setUpdate))
                                             }}
@@ -248,16 +237,12 @@ export default function MakerPoint() {
                 }
                 <CamadaMap setType={handleTypeMap} />
             </View>
-        </View>
+        </SafeStatusBar>
 
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 25,
-    },
     box: {
         flex: 1,
         justifyContent: 'center',
