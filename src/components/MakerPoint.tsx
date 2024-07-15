@@ -8,11 +8,13 @@ import { StyleSheet } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useNetInfo } from "@react-native-community/netinfo";
 import axios from "axios";
+import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 
 export default function MakerPoint({ setLocation }) {
     const [isVisible, setIsVisible] = useState(false)
     const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
     const [point, setPoint] = useState<number[] | [number, number]>()
+    const [typeMap, setTypeMap] = useState(StyleURL.Street)
     const [msg, setMsg] = useState(null)
     const { isConnected } = useNetInfo();
     const [mapOffline, setMapOffline] = useState();
@@ -61,7 +63,7 @@ export default function MakerPoint({ setLocation }) {
     }
 
     useFocusEffect(useCallback(() => {
-        checkIsOffline();       
+        checkIsOffline();
     }, [isConnected]))
 
 
@@ -131,10 +133,10 @@ export default function MakerPoint({ setLocation }) {
                                             ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
                                             sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
                                         }}
-                                            minZoomLevel={12}
-                                            maxZoomLevel={18}
-                                            centerCoordinate={locationAtual}
-                                            animationMode="none" />
+                                        minZoomLevel={12}
+                                        maxZoomLevel={18}
+                                        centerCoordinate={locationAtual}
+                                        animationMode="none" />
 
                                     <Mapbox.UserLocation
                                         animated={true}
@@ -153,42 +155,49 @@ export default function MakerPoint({ setLocation }) {
                             {
                                 !msg &&
                                 !mapOffline &&
-                                <Mapbox.MapView
-                                    onPress={({ geometry }) => {
-                                        setPoint(geometry.coordinates)
-                                        setLocation(geometry.coordinates)
-                                        alert(`Localização selecionada!
+                                <>
+
+                                    <Mapbox.MapView
+                                        onPress={({ geometry }) => {
+                                            setPoint(geometry.coordinates)
+                                            setLocation(geometry.coordinates)
+                                            alert(`Localização selecionada!
                                     \n\n${geometry.coordinates}`)
 
-                                    }}
-                                    style={{ flex: 1 }} >
-                                    <Mapbox.Camera
-                                        zoomLevel={15}
-                                        centerCoordinate={locationAtual}
-                                        animationMode="none" />
+                                        }}
+                                        styleURL={typeMap}
+                                        style={{ flex: 1 }} >
+                                        <Mapbox.Camera
+                                            zoomLevel={15}
+                                            centerCoordinate={locationAtual}
+                                            animationMode="none" />
 
-                                    <Mapbox.UserLocation
-                                        animated={true}
-                                        visible={true} />
-                                    {point && <Mapbox.PointAnnotation
-                                        title="Teste"
-                                        snippet="Teste"
-                                        selected={true}
-                                        key="pointAnnotation"
-                                        id="pointAnnotation"
-                                        coordinate={point}
-                                    />}
-                                </Mapbox.MapView>
+                                        <Mapbox.UserLocation
+                                            animated={true}
+                                            visible={true} />
+                                        {point && <Mapbox.PointAnnotation
+                                            title="Teste"
+                                            snippet="Teste"
+                                            selected={true}
+                                            key="pointAnnotation"
+                                            id="pointAnnotation"
+                                            coordinate={point}
+                                        />}
+                                    </Mapbox.MapView>
+                                    <CamadaMap setType={setTypeMap} top={70}/>
+                                </>
                             }
                         </View>
                     </View>
                     <View style={styles.containerClose}>
                         <View style={styles.close}>
                             <TouchableOpacity onPress={() => setIsVisible(!isVisible)}>
-                                <AntDesign name="close" size={25} />
+                                <AntDesign name="close" size={30} />
                             </TouchableOpacity>
                         </View>
+                        
                     </View>
+                 
                 </Modal>
             </View>
         </>
@@ -225,7 +234,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
-        margin: 5
+        marginRight: 20,
+        marginTop: 12
     }
 
 })

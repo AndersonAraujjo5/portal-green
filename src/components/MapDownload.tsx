@@ -5,12 +5,11 @@ import * as Location from 'expo-location'
 import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import Loader from '@/components/Loader';
 import { useFocusEffect } from 'expo-router';
-import { addEventListener, useNetInfo } from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
 import axios from 'axios';
 
 function MapDownload() {
   const mapRef = useRef(null);
-  const [visibleBounds, setVisibleBounds] = useState(null);
   const [location, setLocation] = useState<number[] | [number, number]>();
   const [typeMap, setTypeMap] = useState(StyleURL.Street)
   const [loading, setLoading] = useState(false);

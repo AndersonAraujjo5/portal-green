@@ -128,7 +128,7 @@ export default new class Cliente implements ICadastro {
         return false;
     }
 
-    private addAndRewrite(cadastrado: ClienteProps): ClienteProps {
+    addAndRewrite(cadastrado: ClienteProps): ClienteProps {
         this._storage.set('cadastros', JSON.stringify(cadastrado));
         return JSON.stringify(cadastrado);
     }

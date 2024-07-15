@@ -1,19 +1,9 @@
 import { Text, View } from "react-native";
 import { Control, Controller, FieldError } from "react-hook-form";
-import { TextInputProps } from "react-native";
 import  MaskInput from 'react-native-mask-input' ;
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 
-type Props = TextInputProps | {
-    control: Control<any>
-    name: string
-    label: string
-    style?: string
-    required?: boolean
-    error?: FieldError | undefined
-    mask?:any
-}
 
 export default function ControllerInput({ control, name, label, style, 
     required=false, error, mask, inputRef, onSubmitEditing, ...rest }: any) {

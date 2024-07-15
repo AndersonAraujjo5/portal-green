@@ -47,6 +47,7 @@ export default function Camera({ closed, setFotos, multipleSelection = true }: a
       const result = await ImagePicker.launchImageLibraryAsync({
         allowsMultipleSelection: multipleSelection
       });
+    
       if (result) {
         closed(false)
         setFotos(result.assets);

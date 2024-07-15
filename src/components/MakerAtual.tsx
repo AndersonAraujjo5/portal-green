@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import Loader from "@/components/Loader";
 
 export default function MakerAtual({setLocaction}) {
+    const [isLoad, setIsLoad] = useState(false)
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -17,9 +19,26 @@ export default function MakerAtual({setLocaction}) {
     }, []);
 
     const handleLocalAtual = async () => {
+        setIsLoad(true)
         let location = await Location.getCurrentPositionAsync({});
         setLocaction([location.coords.longitude, location.coords.latitude])
+        setIsLoad(false)
         alert(`Localização atual selecionada!\n\n${location.coords.longitude},${location.coords.latitude}`)
+    }
+
+    if(isLoad){
+        return<View style={styles.container}>
+        <Pressable style={styles.btn}
+        onPress={handleLocalAtual}>
+            <ActivityIndicator size={60} color={Colors.green} />
+            <Text style={{
+                color: 'white',
+                textAlign: 'center'
+            }}>
+                Aguarde...
+            </Text>
+        </Pressable>
+    </View>
     }
 
     return (

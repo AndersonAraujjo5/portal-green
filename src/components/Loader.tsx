@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
     zIndex: 10,
-    marginTop:25,
     backgroundColor: 'rgba(156, 163, 175,0.5)'
   }, 
   box:{

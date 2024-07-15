@@ -11,6 +11,7 @@ import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
 import Cliente from "@/database/Cliente";
 import SafeStatusBar from "@/components/SafeStatusBar";
+import Filtro from "@/database/Filtro";
 
 
 export default function login() {
@@ -42,7 +43,9 @@ export default function login() {
     }
 
     if(LoginBD.find()){
-        Cliente.syncronize().catch(e => e)
+        if(!Filtro.find().filter){
+            Cliente.syncronize().catch(e => e)
+        }
 
         return <Redirect href={'/tabs/cadastro'} />
     }

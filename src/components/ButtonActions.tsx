@@ -17,7 +17,8 @@ export enum ClienteStatus {
     TecnicoACaminho = "Técnico a Caminho",
     InstalacaoEmAndamento = "Instalação em Andamento",
     InstalacaoConcluida = "Instalação Concluída",
-    ClienteDesistiu = "Cliente Desistiu"
+    ClienteDesistiu = "Cliente Desistiu",
+    CarneEntregue = "Carnê Entregue"
 }
 
 type ButtonAction = {
@@ -60,8 +61,8 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
             <View style={styles.container}>
                 <Link style={styles.buttonRotas}
                     href={`https://www.google.com/maps/dir/?api=1&destination=${cordenadas.split(',')[1]},${cordenadas.split(',')[0]}`}>
-                    <FontAwesome name="location-arrow" size={15} color="black" />
-                    <Text> Rotas</Text>
+                    <FontAwesome name="location-arrow" size={15} color="white" />
+                    <Text style={{color: 'white'}}> Rotas</Text>
                 </Link>
                 {
                     statusValue == ClienteStatus.UsuarioCriado &&
@@ -91,8 +92,17 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                         </Pressable>
                     </>
                 }
-
                 <Comentar update={update} id={id} />
+
+                {
+                    (statusValue == ClienteStatus.InstalacaoConcluida &&
+                        statusValue != ClienteStatus.CarneEntregue
+                    ) &&
+                    <Pressable style={styles.buttons}
+                        onPress={iniciar}>
+                        <Text>Carnê entregue</Text>
+                    </Pressable>
+                }
 
             </View>
         </ScrollView>

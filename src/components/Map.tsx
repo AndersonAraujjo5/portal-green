@@ -84,7 +84,6 @@ export default function MakerPoint() {
         PreCadastro.asyncEnviar();
         Comentario.asyncEnviar()
         Status.asyncEnviar();
-        Cliente.syncronize().catch(e => e);
 
         if (Cliente.findAll()) {
             setClientesData(Cliente.findAll())

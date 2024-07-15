@@ -45,7 +45,7 @@ export default new class Status {
                     this.deleteById(index)
 
                     const formData = new FormData();
-                    formData.append('status', item.status)
+                    formData.append('body', item.status)
 
                     await api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
                         headers: {

@@ -8,14 +8,17 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
 }: any, update: any) {
     const { width } = Dimensions.get('window');
     const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento", "tecnico"];
-    const obj: any = { pppoe, telefone, email, plano, fidelidade, vencimento };
+    const obj: any = { pppoe, telefone, email, plano, fidelidade, vencimento, tecnico };
 
     return (
     
             <View style={styles.contianer}>
                 <ScrollView style={{
                     flex: 1,
-                    paddingRight: 8, paddingLeft: 8
+                    paddingRight: 8, paddingLeft: 8,
+                    borderTopRightRadius:8,
+                    borderTopLeftRadius: 8,
+                    backgroundColor:"white"
                 }}
                     showsVerticalScrollIndicator={false}>
                     <Text style={styles.title}>{cliente || nome}</Text>
@@ -29,7 +32,7 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
                             }
                         })
                     }
-                    <Text>Mais info: {info} </Text>
+                    <Text style={{marginBottom: 18}}>Mais info: {info} </Text>
                     <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
                     <ScrollView
                         style={{
@@ -97,9 +100,8 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
         bottom: 0,
-        backgroundColor: "white",
-        paddingTop: 20,
-        paddingBottom: 20,
+        backgroundColor: "rgba(174, 174, 174, 0.5)",
+        paddingTop: 4,
         zIndex: 50
     },
     title: {

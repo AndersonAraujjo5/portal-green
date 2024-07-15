@@ -2,7 +2,6 @@ import { SimpleLineIcons } from "@expo/vector-icons";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { mapaDefault, mapaRelevo, mapaSatellite } from '@/assets/images'
 import { useState } from "react";
-import { MotiView } from 'moti'
 export enum StyleURL {
     Street = 'mapbox://styles/mapbox/streets-v11',
     Dark = 'mapbox://styles/mapbox/dark-v10',
@@ -14,14 +13,14 @@ export enum StyleURL {
     TrafficNight = 'mapbox://styles/mapbox/navigation-preview-night-v4',
 }
 
-export default function CamadaMap({ setType }: any) {
+export default function CamadaMap({ setType, top = 20 }: any) {
     const [on, setOn] = useState('hidden');
     return (
         <>
             <View
                 style={{
                     position: 'absolute',
-                    top: 20,
+                    top: top,
                     right: 12,
                     backgroundColor: on === 'hidden' ? 'white' : '#94a3b8',
                     borderRadius: 9999,
@@ -33,39 +32,30 @@ export default function CamadaMap({ setType }: any) {
             </View>
             {
                 on !== 'hidden' &&
-                <MotiView
-                    from={{
-                        opacity: 0,
-                        translateY: 40
-                    }}
-                    animate={{
-                        opacity: 1,
-                        translateY: 0
-                    }}
-                >
-                    <View style={styles.container}
-                    >
 
-                        <Text style={styles.title}>Tipo de mapa</Text>
-                        <View style={styles.box}>
-                            <Pressable onPress={() => setType(StyleURL.Street)}>
-                                <Image source={mapaDefault}
-                                    width={64} height={64} alt="mapa padrão" />
-                                <Text style={styles.text}>Padrão</Text>
-                            </Pressable>
-                            <Pressable onPress={() => setType(StyleURL.SatelliteStreet)}>
-                                <Image source={mapaSatellite}
-                                    width={64} height={64} alt="mapa do satelite" />
-                                <Text style={styles.text}>Satellite</Text>
-                            </Pressable>
-                            <Pressable onPress={() => setType(StyleURL.Outdoors)}>
-                                <Image source={mapaRelevo}
-                                    width={64} height={64} alt="mapa relevo" />
-                                <Text style={styles.text}>Livre</Text>
-                            </Pressable>
-                        </View>
+                <View style={styles.container}
+                >
+
+                    <Text style={styles.title}>Tipo de mapa</Text>
+                    <View style={styles.box}>
+                        <Pressable onPress={() => setType(StyleURL.Street)}>
+                            <Image source={mapaDefault}
+                                width={64} height={64} alt="mapa padrão" />
+                            <Text style={styles.text}>Padrão</Text>
+                        </Pressable>
+                        <Pressable onPress={() => setType(StyleURL.SatelliteStreet)}>
+                            <Image source={mapaSatellite}
+                                width={64} height={64} alt="mapa do satelite" />
+                            <Text style={styles.text}>Satellite</Text>
+                        </Pressable>
+                        <Pressable onPress={() => setType(StyleURL.Outdoors)}>
+                            <Image source={mapaRelevo}
+                                width={64} height={64} alt="mapa relevo" />
+                            <Text style={styles.text}>Livre</Text>
+                        </Pressable>
                     </View>
-                </MotiView>
+                </View>
+
             }
         </>
     )

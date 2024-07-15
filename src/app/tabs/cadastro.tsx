@@ -195,7 +195,7 @@ export default function TabHomeScreen() {
     dados.status = ClienteStatus.SincronizacaoPendente
 
 
-   PreCadastro.add(dados)
+    PreCadastro.add(dados)
 
     setShowLoader(false)
     alert("Salvo com sucesso")
@@ -210,9 +210,7 @@ export default function TabHomeScreen() {
     PreCadastro.asyncEnviar();
     Comentario.asyncEnviar()
     Status.asyncEnviar();
-    
-    Cliente.syncronize().catch(e => e);
-}
+  }
 
   const onRefresh = () => {
 
@@ -232,214 +230,219 @@ export default function TabHomeScreen() {
         camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
       }
 
-      {
-        camera || <ScrollView ref={scrollViewRef}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing}
-            onRefresh={onRefresh} />}>
-          <Text style={styles.title}>
-            Dados Pessoais
-          </Text>
-          <View>
-            <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
+      <View style={{
+        paddingLeft: 8, 
+        paddingRight: 8
+      }}>
+        {
+          camera || <ScrollView ref={scrollViewRef}
+            showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={refreshing}
+              onRefresh={onRefresh} />}>
+            <Text style={styles.title}>
+              Dados Pessoais
+            </Text>
+            <View>
+              <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
+
+              <View style={styles.inputGroup}>
+                <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae}
+                  style={{ flex: 1 }}
+                  control={control} label="Nome do pai" name="nomePai" />
+                <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} style={{ flex: 1 }} control={control} label="Nome da Mae" name="nomeMae" />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} style={{ width: "66.66%", flex: 1 }} mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
+                <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="RG" name="rg" />
+              </View>
+
+
+              <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} keyboardType="numeric" style={{ flex: 1 }} mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
+
+
+              <View style={styles.inputGroup}>
+                <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} style={{ flex: 1 }} keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
+                <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" error={errors.telefone} />
+              </View>
+
+            </View>
+            <Text style={styles.title}>
+              Endereço
+            </Text>
 
             <View style={styles.inputGroup}>
-              <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae}
-                style={{ flex: 1 }}
-                control={control} label="Nome do pai" name="nomePai" />
-              <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} style={{ flex: 1 }} control={control} label="Nome da Mae" name="nomeMae" />
+              <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} style={{ flex: 1 }} mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
+              <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} style={{ flex: 1 }} control={control} label="Cidade" name="cidade" error={errors.cidade} />
             </View>
 
             <View style={styles.inputGroup}>
-              <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} style={{ width: "66.66%", flex: 1 }} mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
-              <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="RG" name="rg" />
+              <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} style={{ width: "66.66%", flex: 1 }} control={control} label="Endereco" name="endereco" error={errors.endereco} />
+              <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} style={{ width: '33.33%' }} control={control} label="Bairro" name="bairro" error={errors.bairro} />
             </View>
-
-
-            <ControllerInput inputRef={inputs.dataNascimento} onSubmitEditing={inputs.email} keyboardType="numeric" style={{ flex: 1 }} mask={Masks.DATE_DDMMYYYY} control={control} label="Data de nascimento" name="dataNascimento" />
+            <View style={styles.inputGroup}>
+              <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
+              <ControllerInput inputRef={inputs.ref} style={{ width: "66.66%", flex: 1 }} control={control} label="Ponto de Ref" name="complemento" />
+            </View>
+            <Text style={styles.title}>
+              Plano Escolhido
+            </Text>
+            <View style={styles.selectBox}>
+              <View style={styles.containerSelect}>
+                <Text style={{ color: Colors.gray }}>
+                  Planos
+                </Text>
+                <View style={{ width: '100%' }}>
+                  <RNPickerSelect
+                    items={[
+                      { label: "Ligth Green - 200MB", value: "Ligth Green - 200MB" },
+                      { label: "Conexão Verde - 400MB", value: "Conexão Verde - 400MB" },
+                      { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
+                      { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
+                    ]}
+                    placeholder={{ label: "Selecione uma dos Planos", value: null }}
+                    onValueChange={(value) => setPlano(value)}
+                  />
+                </View>
+              </View>
+              {
+                checkPlanAndVenci &&
+                checkPlanAndVenci.planos &&
+                <Text style={{ color: '#dc2626', paddingRight: 8 }}>{checkPlanAndVenci.planos}</Text>
+              }
+            </View>
 
 
             <View style={styles.inputGroup}>
-              <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} style={{ flex: 1 }} keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
-              <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" error={errors.telefone} />
+              <View style={styles.inputBoxGroup}>
+                <View style={styles.inputCheckBox}>
+                  <CheckBox
+                    checked={!checkFidelidade}
+                    onPress={() => setCheckFidelidade(!checkFidelidade)}
+                    containerStyle={{
+                      backgroundColor: "rgba(0,0,0,0)",
+                    }} />
+                  <Text style={{ color: Colors.gray }}>Com Fidelidade</Text>
+                </View>
+              </View>
+              <View style={styles.inputBoxGroup}>
+                <View style={styles.inputCheckBox}>
+                  <CheckBox
+                    checked={checkFidelidade}
+                    onPress={() => setCheckFidelidade(!checkFidelidade)}
+                    containerStyle={{
+                      backgroundColor: "rgba(0,0,0,0)"
+                    }}
+                    style={{ alignItems: "center" }} />
+                  <Text style={{ color: Colors.gray }}>Sem Fidelidade</Text>
+                </View>
+              </View>
             </View>
 
-          </View>
-          <Text style={styles.title}>
-            Endereço
-          </Text>
+            <View style={styles.selectBox}>
+              <View style={styles.containerSelect}>
+                <Text style={{ color: Colors.gray }}>
+                  Data do vencimento
+                </Text>
+                <View style={{ width: "100%", padding: 0, margin: 0 }}>
+                  <RNPickerSelect
+                    items={[
+                      { label: "5", value: "5" },
+                      { label: "10", value: "10" },
+                      { label: "15", value: "15" }
+                    ]}
+                    placeholder={{ label: "Selecione uma das opções", value: null }}
+                    onValueChange={(value) => setVencimento(value)}
+                  />
+                </View>
+              </View>
+              {
+                checkPlanAndVenci &&
+                checkPlanAndVenci.vencimento &&
+                <Text style={{ color: '#dc2626', paddingRight: 8 }} >{checkPlanAndVenci.vencimento}</Text>
+              }
+            </View>
 
-          <View style={styles.inputGroup}>
-            <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} style={{ flex: 1 }} mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
-            <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} style={{ flex: 1 }} control={control} label="Cidade" name="cidade" error={errors.cidade} />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} style={{ width: "66.66%", flex: 1 }} control={control} label="Endereco" name="endereco" error={errors.endereco} />
-            <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} style={{ width: '33.33%' }} control={control} label="Bairro" name="bairro" error={errors.bairro} />
-          </View>
-          <View style={styles.inputGroup}>
-            <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
-            <ControllerInput inputRef={inputs.ref} style={{ width: "66.66%", flex: 1 }} control={control} label="Ponto de Ref" name="complemento" />
-          </View>
-          <Text style={styles.title}>
-            Plano Escolhido
-          </Text>
-          <View style={styles.selectBox}>
-            <View style={styles.containerSelect}>
-              <Text style={{color: Colors.gray}}>
-                Planos
-              </Text>
-              <View style={{ width: '100%' }}>
-                <RNPickerSelect
-                  items={[
-                    { label: "Ligth Green - 200MB", value: "Ligth Green - 200MB" },
-                    { label: "Conexão Verde - 400MB", value: "Conexão Verde - 400MB" },
-                    { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
-                    { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
-                  ]}
-                  placeholder={{ label: "Selecione uma dos Planos", value: null }}
-                  onValueChange={(value) => setPlano(value)}
+            <View style={{ width: "100%", flex: 1, marginTop: 12 }} >
+              {/* className="w-full bg-gray-200 rounded-md ps-2 mt-4" */}
+              <View style={styles.containerSelect} >
+                <Text style={{ color: Colors.gray }}>Mais informações</Text>
+                <TextInput
+                  onChangeText={setInfo}
+                  multiline={true}
+                  numberOfLines={10}
+                  style={styles.inputInfo}
                 />
               </View>
             </View>
-            {
-              checkPlanAndVenci &&
-              checkPlanAndVenci.planos &&
-              <Text style={{ color: '#dc2626', paddingRight: 8 }}>{checkPlanAndVenci.planos}</Text>
-            }
-          </View>
 
+            <View style={styles.containerButton}>
+              {
+                cordenadas && <Text >Cordenadas: {cordenadas}</Text>
+              }
+              <View style={styles.buttonAction}>
+                <MakerAtual setLocaction={setCordenadas} />
+                <MakerPoint setLocation={setCordenadas} />
 
-          <View style={styles.inputGroup}>
-            <View style={styles.inputBoxGroup}>
-              <View style={styles.inputCheckBox}>
-                <CheckBox
-                  checked={!checkFidelidade}
-                  onPress={() => setCheckFidelidade(!checkFidelidade)}
-                  containerStyle={{
-                    backgroundColor: "rgba(0,0,0,0)",
-                  }} />
-                <Text style={{color: Colors.gray}}>Com Fidelidade</Text>
+                <View style={{ width: '33.33%', padding: 4 }}>
+                  <Pressable style={styles.buttonCamera}
+                    onPress={() => { setCamera(true) }}>
+                    <Feather name="camera" size={20} color={"white"} />
+                    <Text style={{ color: 'white', textAlign: 'center' }}>
+                      Camera
+                    </Text>
+                  </Pressable>
+
+                </View>
               </View>
-            </View>
-            <View style={styles.inputBoxGroup}>
-              <View style={styles.inputCheckBox}>
-                <CheckBox
-                  checked={checkFidelidade}
-                  onPress={() => setCheckFidelidade(!checkFidelidade)}
-                  containerStyle={{
-                    backgroundColor: "rgba(0,0,0,0)"
-                  }}
-                  style={{ alignItems: "center" }} />
-                <Text style={{color: Colors.gray}}>Sem Fidelidade</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.selectBox}>
-            <View style={styles.containerSelect}>
-              <Text style={{color: Colors.gray}}>
-                Data do vencimento
-              </Text>
-              <View style={{ width: "100%", padding: 0, margin: 0 }}>
-                <RNPickerSelect
-                  items={[
-                    { label: "5", value: "5" },
-                    { label: "10", value: "10" },
-                    { label: "15", value: "15" }
-                  ]}
-                  placeholder={{ label: "Selecione uma das opções", value: null }}
-                  onValueChange={(value) => setVencimento(value)}
-                />
-              </View>
-            </View>
-            {
-              checkPlanAndVenci &&
-              checkPlanAndVenci.vencimento &&
-              <Text style={{ color: '#dc2626', paddingRight: 8 }} >{checkPlanAndVenci.vencimento}</Text>
-            }
-          </View>
-
-          <View style={{ width: "100%", flex: 1, marginTop: 12 }} >
-            {/* className="w-full bg-gray-200 rounded-md ps-2 mt-4" */}
-            <View style={styles.containerSelect} >
-              <Text style={{color: Colors.gray}}>Mais informações</Text>
-              <TextInput
-                onChangeText={setInfo}
-                multiline={true}
-                numberOfLines={10}
-                style={styles.inputInfo}
+              <FlatList
+                style={{
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  marginTop: 20,
+                  marginBottom: 20
+                }}
+                horizontal={true}
+                data={fotos}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View style={{ position: 'relative' }}>
+                      <Pressable onLongPress={() => alert("isso")}>
+                        <Image
+                          style={{
+                            marginTop: 8,
+                            marginBottom: 8,
+                            marginLeft: 8,
+                            marginRight: 8,
+                            borderRadius: 8,
+                          }}
+                          width={width / 2} height={200}
+                          source={{ uri: item.uri }}
+                          resizeMode="cover"
+                        />
+                      </Pressable>
+                      <Pressable onPress={() => handleTrash(index)}
+                        style={{ right: 20, top: 20, position: 'absolute' }}>
+                        <AntDesign name="close" size={20} color={'white'} />
+                      </Pressable>
+                    </View>
+                  )
+                }}
+                keyExtractor={(item) => item.fileName}
               />
-            </View>
-          </View>
-
-          <View style={styles.containerButton}>
-            {
-              cordenadas && <Text >Cordenadas: {cordenadas}</Text>
-            }
-            <View style={styles.buttonAction}>
-              <MakerAtual setLocaction={setCordenadas} />
-              <MakerPoint setLocation={setCordenadas} />
-
-              <View style={{ width: '33.33%', padding: 4 }}>
-                <Pressable style={styles.buttonCamera}
-                  onPress={() => { setCamera(true) }}>
-                  <Feather name="camera" size={20} color={"white"} />
-                  <Text style={{ color: 'white', textAlign: 'center' }}>
-                    Camera
-                  </Text>
+              <View style={{ width: '50%', marginTop: 40 }} >
+                <Pressable style={{
+                  padding: 8, borderRadius: 8,
+                  backgroundColor: Colors.green
+                }} onPress={handleSubmit(handleSave)}>
+                  <Text style={{ textAlign: 'center', color: 'white' }}>Enviar</Text>
                 </Pressable>
-
               </View>
             </View>
-            <FlatList
-              style={{
-                paddingLeft: 8,
-                paddingRight: 8,
-                marginTop: 20,
-                marginBottom: 20
-              }}
-              horizontal={true}
-              data={fotos}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                return (
-                  <View style={{ position: 'relative' }}>
-                    <Pressable onLongPress={() => alert("isso")}>
-                      <Image
-                        style={{
-                          marginTop: 8,
-                          marginBottom: 8,
-                          marginLeft: 8,
-                          marginRight: 8,
-                          borderRadius: 8,
-                        }}
-                        width={width / 2} height={200}
-                        source={{ uri: item.uri }}
-                        resizeMode="cover"
-                      />
-                    </Pressable>
-                    <Pressable onPress={() => handleTrash(index)}
-                      style={{ right: 20, top: 20, position: 'absolute' }}>
-                      <AntDesign name="close" size={20} color={'white'} />
-                    </Pressable>
-                  </View>
-                )
-              }}
-              keyExtractor={(item) => item.fileName}
-            />
-            <View style={{ width: '50%', marginTop: 40 }} >
-              <Pressable style={{
-                padding: 8, borderRadius: 8,
-                backgroundColor: Colors.green
-              }} onPress={handleSubmit(handleSave)}>
-                <Text style={{ textAlign: 'center', color: 'white' }}>Enviar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </ScrollView >
-      }
+          </ScrollView >
+        }
+      </View>
 
     </SafeStatusBar >
   )
@@ -496,7 +499,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: 8,
-   
+
     borderRadius: 8,
     backgroundColor: Colors.gray
   },
