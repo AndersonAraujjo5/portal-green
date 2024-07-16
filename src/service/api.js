@@ -3,7 +3,7 @@ import axios from "axios";
 import { router } from "expo-router";
 
 const api = axios.create({
-    baseURL:'https://fileprecadastro.greenet.net.br//api',
+    baseURL:'https://fileprecadastro.greenet.net.br/api',
     timeout: 5000, // 5 segundos
 })
 
