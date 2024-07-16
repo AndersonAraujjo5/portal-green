@@ -50,6 +50,11 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
         atualizarStatus(ClienteStatus.InstalacaoConcluida)
     }
 
+
+    const CarneEntregue = () => {
+        atualizarStatus(ClienteStatus.CarneEntregue)
+    }
+
     const cancelar = () => {
         atualizarStatus(ClienteStatus.ClienteDesistiu)
     }
@@ -99,7 +104,7 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                         statusValue != ClienteStatus.CarneEntregue
                     ) &&
                     <Pressable style={styles.buttons}
-                        onPress={iniciar}>
+                        onPress={CarneEntregue}>
                         <Text>Carnê entregue</Text>
                     </Pressable>
                 }
