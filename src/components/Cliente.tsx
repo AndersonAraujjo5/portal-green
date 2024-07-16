@@ -7,7 +7,6 @@ function Clientes({ data }: any) {
     
     const vars = ["pppoe", 'tecnico',
         "telefone", "email", "plano", "fidelidade", "vencimento"];
-        console.log(id)
     return (
         <>
             <Link href={{

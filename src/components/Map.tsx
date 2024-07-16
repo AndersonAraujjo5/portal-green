@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, Text, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useFocusEffect } from "expo-router";
-import { Entypo } from "@expo/vector-icons";
 import Loader from "./Loader";
 import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";
@@ -14,6 +13,8 @@ import axios from "axios";
 import SafeStatusBar from "./SafeStatusBar";
 import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
+import InfoMap from "@/components/InfoMap";
+import { Entypo } from "@expo/vector-icons";
 
 export enum ClienteStatus {
     CadastroPendente = "Cadastro Pendente",
@@ -26,27 +27,27 @@ export enum ClienteStatus {
     ClienteDesistiu = "Cliente Desistiu"
 }
 
-function LocationPin({ status }) {
+function LocationPin({ status, size=40, ...rest }) {
     return (
         <>
             {
                 status === ClienteStatus.UsuarioCriado &&
-                <Entypo name="location-pin" size={40} color={'red'} />
+                <Entypo name="location-pin" size={size} color={'red'} {...rest} />
             }
             {
                 (status === ClienteStatus.InstalacaoEmAndamento ||
                     status === ClienteStatus.TecnicoACaminho ||
                     status === ClienteStatus.TecnicoDesignado
                 ) &&
-                <Entypo name="location-pin" size={40} color={'orange'} />
+                <Entypo name="location-pin" size={size} color={'orange'} {...rest} />
             }
             {
                 (status === ClienteStatus.InstalacaoConcluida) &&
-                <Entypo name="location-pin" size={40} color={'blue'} />
+                <Entypo name="location-pin" size={size} color={'blue'} {...rest} />
             }
             {
                 (status === ClienteStatus.ClienteDesistiu) &&
-                <Entypo name="location-pin" size={40} color={'black'} />
+                <Entypo name="location-pin" size={size} color={'black'} {...rest} />
             }
         </>
     )
@@ -97,7 +98,7 @@ export default function MakerPoint() {
 
     const activeMapOffilne = async () => {
         const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
-        
+
         if (offlinePack) {
             setMapOffline(offlinePack)
             getLocalizacao();
@@ -114,7 +115,7 @@ export default function MakerPoint() {
             activeMapOffilne();
         } else {
             axios.get('https://google.com', { timeout: 5000 }).then(e => {
-              getLocalizacao();
+                getLocalizacao();
             }).catch(e => {
                 activeMapOffilne();
             })
@@ -134,7 +135,7 @@ export default function MakerPoint() {
 
     return (
         <SafeStatusBar >
-
+            <InfoMap />
             <View style={styles.box}>
                 <View style={{ width: '100%', height: '100%' }}>
                     {
@@ -161,7 +162,7 @@ export default function MakerPoint() {
                                 animated={true}
                                 visible={true} />
                             {
-                                clientesData && clientesData.map((item,index) => {
+                                clientesData && clientesData.map((item, index) => {
                                     if (item.status === ClienteStatus.CadastroEnviado ||
                                         item.status === ClienteStatus.CadastroPendente
                                     ) return;
