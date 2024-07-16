@@ -12,20 +12,20 @@ import Loader from '@/components/Loader';
 import OfflinePack from '@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack';
 
 export default function page() {
-    const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
+    const { id } = useLocalSearchParams<{ id?: string }>();
 
+
+    const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
+    const [update, setUpdate] = useState(0)
     const [onModal, setOnModal] = useState<void>()
     const [typeMap, setTypeMap] = useState<string>(StyleURL.Street);
     const [mapOffline, setMapOffline] = useState<OfflinePack | undefined>();
     const [stateConnect, setStateConnect] = useState(false)
+    const [clienteData, setClientesData] = useState(Cliente.findById(Number(id)));
     const { isConnected } = useNetInfo();
 
     const navigation = useNavigation();
-
-    const { id } = useLocalSearchParams<{ id?: string }>();
-
-    const clienteData = Cliente.findById(Number(id));
-
+ 
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -41,6 +41,12 @@ export default function page() {
         })
 
     }, []);
+
+    useEffect(() => {
+        if(Cliente.findById(Number(id))) {
+            setClientesData(Cliente.findById(Number(id)))
+        }
+    },[update])
 
 
     const getLocalizacao = async () => {
@@ -75,7 +81,7 @@ export default function page() {
 
     useFocusEffect(useCallback(() => {
         checkIsOffline();
-    }, [isConnected]))
+    }, [isConnected, update]))
 
 
     const handleTypeMap = (styleUrl: string) => {
@@ -128,7 +134,7 @@ export default function page() {
                                     key="pointAnnotation"
                                     id="pointAnnotation"
                                     onSelected={() => {
-                                        setOnModal(ModalDetalhesCliente(clienteData))
+                                        setOnModal(ModalDetalhesCliente(clienteData, setUpdate))
                                     }}
                                     coordinate={clienteData.cordenadas.split(',')}
                                 />
@@ -158,7 +164,7 @@ export default function page() {
                                 key="pointAnnotation"
                                 id="pointAnnotation"
                                 onSelected={() => {
-                                    setOnModal(ModalDetalhesCliente(clienteData))
+                                    setOnModal(ModalDetalhesCliente(clienteData,setUpdate))
                                 }}
                                 coordinate={clienteData.cordenadas.split(',')}
                             />

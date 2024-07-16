@@ -1,54 +1,35 @@
 import { Link } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
 
-function Clientes({ data, access }: any) {
+function Clientes({ data }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
         id, cordenadas, tecnico }: any = data;
-        
+    
     const vars = ["pppoe", 'tecnico',
         "telefone", "email", "plano", "fidelidade", "vencimento"];
-
+        console.log(id)
     return (
         <>
-            {
-                (cordenadas !== '' && cordenadas !== null && access != false) ?
-                    <Link href={{
-                        pathname: `/clienteInfo/[id]`,
-                        params: { id }
-                    }
-                    } style={styles.container} >
-                        <View style={styles.box}>
-                            <View>
-                                <Text style={styles.title}>{cliente || nome}</Text>
-                                <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
-                                {
-                                    vars.map((item, index) => {
-                                        if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
-                                    })
-                                }
-                                <Text style={styles.text}>{status}</Text>
-
-                            </View>
-                           
-                        </View>
-                    </Link >
-                    :
-                    <View style={styles.container} >
-                        <View style={styles.box}>
-                            <View>
-                                <Text style={styles.title}>{cliente || nome}</Text>
-                                <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
-                                {
-                                    vars.map((item, index) => {
-                                        if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
-                                    })
-                                }
-                                <Text style={styles.text}>{status}</Text>
-
-                            </View>
-                        </View>
-                    </View>
+            <Link href={{
+                pathname: `/clienteInfo/[id]`,
+                params: { id }
             }
+            } style={styles.container} >
+                <View style={styles.box}>
+                    <View>
+                        <Text style={styles.title}>{cliente || nome}</Text>
+                        <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
+                        {
+                            vars.map((item, index) => {
+                                if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
+                            })
+                        }
+                        <Text style={styles.text}>{status}</Text>
+
+                    </View>
+                    
+                </View>
+            </Link >
         </>
     )
 }

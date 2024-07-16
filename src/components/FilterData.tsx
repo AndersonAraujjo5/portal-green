@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         right: 0,
         width,
         height,
-        zIndex: 2
+        zIndex: 20
     },
     modal: {
         right: 0,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         padding: 8,
         position: "absolute",
         backgroundColor: "white",
-        zIndex: 20,
+        zIndex: 30,
         borderBottomLeftRadius: 18,
         borderBottomRightRadius: 18,
         height: 80,

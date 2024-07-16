@@ -29,7 +29,10 @@ export default function Filter({setData, setMsgErro, setFilter}: any) {
         <View style={{
             display: "flex",
             flexDirection: 'row',
-            alignItems: "center"
+            alignItems: "center",
+            backgroundColor: 'white',
+            paddingVertical: 18,
+            zIndex: 50
         }}>
             <Search setData={setData} filter={setFilter} />
             <FilterData setData={setData} filter={setFilter} />

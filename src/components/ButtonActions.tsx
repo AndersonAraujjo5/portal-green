@@ -62,7 +62,7 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                 <Link style={styles.buttonRotas}
                     href={`https://www.google.com/maps/dir/?api=1&destination=${cordenadas.split(',')[1]},${cordenadas.split(',')[0]}`}>
                     <FontAwesome name="location-arrow" size={15} color="white" />
-                    <Text style={{color: 'white'}}> Rotas</Text>
+                    <Text style={{color: 'white'}}>  Rotas</Text>
                 </Link>
                 {
                     statusValue == ClienteStatus.UsuarioCriado &&
@@ -118,15 +118,12 @@ const styles = StyleSheet.create({
 
     buttonRotas:{
         backgroundColor: Colors.green,
-        paddingRight: 16,
-        paddingLeft:16,
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
         borderRadius: 9999,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 2
     },
     buttons:{
         borderWidth: 1,

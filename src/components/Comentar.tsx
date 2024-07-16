@@ -56,9 +56,7 @@ export default function Comentar({ id, update }: ComentarProps) {
 
     const handleSendComentario = async () => {
         setLoader(true)
-        try {
-            salvarComentarios();
-        } catch (error) { }
+        salvarComentarios();
         limpar()
     }
 
@@ -99,7 +97,7 @@ export default function Comentar({ id, update }: ComentarProps) {
                                 style={styles.btnAddImg}
                                 onPress={() => setCamera(true)}>
                                 <AntDesign color={'white'} name="camera" size={20} />
-                                <Text style={{ color: 'white' }}>Adicionar imagem</Text>
+                                <Text style={{ color: 'white' }}>   Adicionar imagem</Text>
                             </Pressable>
 
 

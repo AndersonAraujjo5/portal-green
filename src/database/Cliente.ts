@@ -13,6 +13,7 @@ export default new class Cliente implements ICadastro {
     }
 
     add(cadastro: ClienteProps): boolean {
+        
         if (typeof cadastro !== 'object') return false
         const cadastros = this.findAll()
         let cadastrosArray: ClienteProps[] = [];
@@ -21,11 +22,10 @@ export default new class Cliente implements ICadastro {
             cadastrosArray = cadastros;
         }
 
-        cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray.length : 0
+        cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[0].id+1 : 0
         cadastrosArray.push(cadastro)
-
         this._storage.set('cadastros', JSON.stringify(cadastrosArray));
-
+        
         return true;
     }
 
@@ -40,13 +40,12 @@ export default new class Cliente implements ICadastro {
 
             const cadastro = cadastrosArray.find((item: ClienteProps) => {
                 if (item.id === id) {
-                    item.Comentarios.push(comentario)
+                    item.Comentarios = [comentario, ...item.Comentarios]
                     return item;
                 }
             })
-
-            this.deleteById(id);
-
+            this.deleteById(id)
+            
             this.add(cadastro)
 
             return cadastro
@@ -81,7 +80,6 @@ export default new class Cliente implements ICadastro {
 
     findAll(): ClienteProps[] | undefined {
         const cadastros = this._storage.getString('cadastros');
-
         if (cadastros) {
             const dados = JSON.parse(cadastros)
             if (dados.length === 0) return;
@@ -92,10 +90,10 @@ export default new class Cliente implements ICadastro {
 
     findById(id: number): ClienteProps | undefined {
         if (!id) return;
-        const cadastrados = this._storage.getString('cadastros')
+        const cadastrados = this.findAll()
 
         if (cadastrados) {
-            const cadastrosArray = JSON.parse(cadastrados)
+            const cadastrosArray = cadastrados
 
             const cadastro = cadastrosArray.find(item => item.id === id)
 
@@ -105,24 +103,22 @@ export default new class Cliente implements ICadastro {
     }
 
     deleteById(id: number): boolean {
+        
         if (typeof id !== 'number') throw new Error("Valor deve ser do tipo number");
 
-        const cadastros = this._storage.getString('cadastros');
+        const cadastros = this.findAll();
 
         if (cadastros) {
 
-            const cadastrosArray = JSON.parse(cadastros);
+            const cadastrosArray = cadastros;
 
             let index = -1;
 
             cadastrosArray.find((item: ClienteProps, i: number) => {
                 if (item.id === id) index = i;
             })
-
-            if (index !== -1) cadastrosArray.shift(id, 1);
-
-            this._storage.set('cadastros', JSON.stringify(cadastrosArray));
-
+            
+            if (index !== -1) this._storage.set('cadastros', JSON.stringify(cadastrosArray.toSpliced(index, 1)));
             return true;
         }
         return false;

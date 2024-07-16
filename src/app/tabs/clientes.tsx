@@ -1,18 +1,18 @@
-import { Text, View, ScrollView, RefreshControl, TextInput, Pressable } from "react-native";
+import { Text, View, ScrollView, RefreshControl, TextInput, Pressable, Dimensions } from "react-native";
 import Clientes from "@/components/Cliente";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import Loader from "@/components/Loader";
-import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
 import Comentario from "@/database/Comentario";
 import SafeStatusBar from "@/components/SafeStatusBar";
 import PreCadastro from "@/database/PreCadastro";
 import Status from "@/database/Status";
-import Colors from "@/constants/Colors";
 import Filtro from "@/database/Filtro";
-import FilterData from "@/components/FilterData";
 import Filter from "@/components/Filter";
+
+const { width, height } = Dimensions.get("window")
+
 export default function tabClientesScreen() {
     const [data, setData] = useState<object>(); // dados que foram baixados da api
     const [msgError, setMsgErro] = useState();
@@ -25,7 +25,8 @@ export default function tabClientesScreen() {
         Status.asyncEnviar();
 
         if (isFilter) { // se tiver filtro não consulta todos os dados
-            setData(Cliente.findAll())
+            if(Cliente.findAll()) setData(Cliente.findAll())
+            else setData([])
             return;
         };
 
@@ -40,6 +41,7 @@ export default function tabClientesScreen() {
                     setData(null)
                 }
             }).catch(e => {
+                alert(Cliente.findAll()?.length)
                 setData(Cliente.findAll());
             });
     }
@@ -48,22 +50,6 @@ export default function tabClientesScreen() {
         syncronize();
     }, []))
 
-    const deleteFilter = () => {
-        Filtro.delete();
-        Cliente.syncronize()
-            .then(item => {
-                if (item.length != 0) {
-                    setData(item)
-                    setMsgErro(null)
-                }
-                else {
-                    setMsgErro(['Sem usuarios cadastrados'])
-                    setData(null)
-                }
-            }).catch(e => {
-                setData(Cliente.findAll());
-            });
-    }
 
     const onRefresh = () => {
         setRefreshing(true)
@@ -96,7 +82,7 @@ export default function tabClientesScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing}
                         onRefresh={onRefresh} />}>
                         <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} />
-                    <View>
+                    <View style={{minHeight: height}}> 
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />
@@ -109,20 +95,3 @@ export default function tabClientesScreen() {
         </SafeStatusBar>
     )
 }
-
-const styles = StyleSheet.create({
-    search: {
-        width: '85%',
-        marginHorizontal: 8,
-        borderWidth: 2,
-        borderColor: Colors.gray,
-        borderRadius: 18,
-        paddingLeft: 12,
-
-    },
-    title: {
-        fontSize: 24,
-        lineHeight: 32,
-        padding: 8
-    }
-})
