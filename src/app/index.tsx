@@ -2,7 +2,7 @@ import { forma } from "@/assets/images";
 import Colors from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, TouchableOpacity, } from "react-native";
 import { Text } from "react-native";
 import { TextInput, View } from "react-native";
 import { api } from '@/service/api'
@@ -25,7 +25,7 @@ export default function login() {
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
                 login, password,
             })
-    
+
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
             return router.replace('/tabs/home')
@@ -36,14 +36,14 @@ export default function login() {
                 return;
             }
 
-            if(error && error?.errors) setError(['Ops, tente novamente mais tarde ou tente em contato com o administrador']) 
+            if (error && error?.errors) setError(['Ops, tente novamente mais tarde ou tente em contato com o administrador'])
             else setError(['Erro desconecido'])
-            
+
         }
     }
 
-    if(LoginBD.find()){
-        if(!Filtro.find().filter){
+    if (LoginBD.find()) {
+        if (!Filtro.find().filter) {
             Cliente.syncronize().catch(e => e)
         }
 
@@ -52,12 +52,12 @@ export default function login() {
     }
 
     useEffect(() => {
-        if(error) setError(null)
-    },[login, password])
+        if (error) setError(null)
+    }, [login, password])
 
     return (
         <SafeStatusBar>
-            <View style={{justifyContent: "center", display: "flex", flex: 1, paddingRight: 20, paddingLeft:20}}>
+            <View style={{ justifyContent: "center", display: "flex", flex: 1, paddingRight: 20, paddingLeft: 20 }}>
                 <Loader show={loader} />
                 <View style={styles.imgTop}>
                     <Image style={{ width: 500, height: 500, resizeMode: "contain" }} source={forma} />
@@ -72,7 +72,7 @@ export default function login() {
                         error &&
                         <View style={styles.error}>
                             {
-                                error.map((item,index) => (
+                                error.map((item, index) => (
                                     <Text key={index} style={styles.errorText}>{item}</Text>
 
                                 ))
@@ -80,7 +80,7 @@ export default function login() {
                         </View>
                     }
 
-                    <Text style={{marginTop:10}}>Usuário</Text>
+                    <Text style={{ marginTop: 10 }}>Usuário</Text>
                     <View style={styles.boxInput}>
                         <AntDesign
                             style={styles.icon}
@@ -106,12 +106,17 @@ export default function login() {
                             style={styles.input} />
                     </View>
                 </View>
-                <View style={{width: '100%'}}>
-                    <Pressable  style={styles.button}
+                <TouchableOpacity onPress={() => {
+                    Alert.alert("ATENÇÃO","Entre em contato com o administrador")
+                }}>
+                    <Text style={{ textAlign: 'right' }}>Esqueci minha senha</Text>
+                </TouchableOpacity>
+                <View style={{ width: '100%' }}>
+                    <Pressable style={styles.button}
                         onPress={handleSign}
                     >
-                        <Text 
-                        style={{textAlign: 'center', color: 'white'}}>Entrar</Text>
+                        <Text
+                            style={{ textAlign: 'center', color: 'white' }}>Entrar</Text>
                     </Pressable>
                 </View>
             </View>
@@ -120,36 +125,36 @@ export default function login() {
 }
 
 const styles = StyleSheet.create({
-    imgTop:{
+    imgTop: {
         position: 'absolute',
         top: -288,
         left: 144
     },
-    imgBottom:{
+    imgBottom: {
         position: 'absolute',
         bottom: -288,
-        right:0
+        right: 0
     },
-    title:{
+    title: {
         fontSize: 24,
-        fontWeight:'bold',
+        fontWeight: 'bold',
         color: Colors.green
-    }, 
-    containerInput:{
+    },
+    containerInput: {
         marginBottom: 24,
         borderBottomWidth: 1,
         borderColor: '#4b5563'
     },
-    error:{
+    error: {
         backgroundColor: '#ef4444',
         marginBottom: 10,
         marginTop: 20,
         padding: 20
     },
-    errorText:{
+    errorText: {
         color: 'white'
     },
-    boxInput:{
+    boxInput: {
         flexDirection: 'row',
         marginTop: 8
     },
@@ -157,11 +162,11 @@ const styles = StyleSheet.create({
         padding: 8
     },
     input: {
-        width:'100%'
+        width: '100%'
     },
-    button:{
-        width:'100%',
-        borderRadius:16,
+    button: {
+        width: '100%',
+        borderRadius: 16,
         padding: 8,
         marginTop: 44,
         backgroundColor: Colors.gray

@@ -1,13 +1,15 @@
 import { View } from "moti";
 import Search from "./Search";
 import Filtro from "@/database/Filtro";
-import { Pressable, Text, TouchableOpacity } from "react-native";
+import { Modal, Pressable, Text, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
 import { Entypo } from "@expo/vector-icons";
+import { useState } from "react";
+import FilterData from "./FilterData";
 
 export default function Filter({ setData, setMsgErro, setFilter }: any) {
-
+    const [visible, setVisible] = useState(false)
     const deleteFilter = () => {
         Filtro.delete();
         Cliente.syncronize()
@@ -24,6 +26,8 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                 setData(Cliente.findAll());
             });
     }
+
+    const handleModal = () => setVisible(!visible)
 
     return <>
         <View style={{
@@ -44,7 +48,8 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                 paddingHorizontal: 12
             }}>
                 <Search setData={setData} filter={setFilter} />
-                <TouchableOpacity>
+                <TouchableOpacity 
+                onPress={handleModal}>
                     <Entypo name="sound-mix" size={16} />
                 </TouchableOpacity>
                 {/* <FilterData setData={setData} filter={setFilter} /> */}
@@ -67,7 +72,17 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                     onPress={deleteFilter}>
                     <Text style={{ color: "white" }}>Limpar Filtro</Text>
                 </Pressable>
+
+                <FilterData setData={setData} filter={setFilter} />
             </View>
         }
+        <Modal 
+        animationType="slide"
+        visible={visible}>
+            <TouchableOpacity 
+            onPress={handleModal}>
+                <Text>Cancelar</Text>
+            </TouchableOpacity>
+        </Modal>
     </>
 }
