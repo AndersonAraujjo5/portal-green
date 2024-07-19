@@ -82,13 +82,13 @@ export default function tabHomeScreen() {
                         <>
                             <View style={{paddingVertical:22}}>
                                 <Image style={{
-                                    width: 300, height: 200, resizeMode: 'contain',
+                                    width: "100%", height: 200, resizeMode: 'contain',
 
                                 }} source={checkList} />
                                 <Text style={{
                                     textAlign: "center",
                                     fontSize: 18,
-                                    fontWeight: "bold"
+                                    fontWeight: "bold", marginTop: 4
                                 }}>Cadastros Sincronizado</Text>
                             </View>
                         </>

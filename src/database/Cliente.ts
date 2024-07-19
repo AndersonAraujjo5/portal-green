@@ -134,7 +134,7 @@ export default new class Cliente implements ICadastro {
         let url = '/v1/cliente';
         const user = LoginBD.find()?.usuario;
         if(user?.cargo == "Vendedor") url = `${url}?associado=${user.nome}`
-
+        console.log(url)
         const { data } = await api.get(url);
 
         this.addAndRewrite(data.data)

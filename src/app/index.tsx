@@ -48,10 +48,10 @@ export default function login() {
         }
 
         if(LoginBD.find()?.usuario.cargo === "Tecnico"){
-            return <Redirect href={'/tabs/home'} />
+            return <Redirect href={'/tabs/map'} />
         }
 
-        return <Redirect href={'/tabs/cadastro'} />
+        return <Redirect href={'/tabs/home'} />
     }
 
     useEffect(() => {

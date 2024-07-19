@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 
 function Clientes({ data }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
-        id, vencimento }: any = data;
+        id, vencimento, associado}: any = data;
     
     const vars = ["pppoe", 'tecnico',
         "telefone", "plano", "fidelidade"];
@@ -25,7 +25,9 @@ function Clientes({ data }: any) {
                     }}>
                         <Text style={{fontSize: 12}}>{status}</Text>
                         <Text style={{fontSize: 22, fontWeight:"bold", marginVertical: 4}}>{cliente || nome}</Text>
+                        <Text>Vendedo: {associado}</Text>
                         {
+                            
                             vars.map((item) => {
                                 if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
                             })
