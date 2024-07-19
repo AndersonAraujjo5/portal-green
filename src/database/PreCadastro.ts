@@ -85,7 +85,7 @@ export default new class PreCadastro implements ICadastro {
             if (dados.length === 0) return;
             return dados;
         }
-        return;
+        return[];
     }
 
     findById(id: number): object | undefined {

@@ -4,6 +4,7 @@ import Images from "@/utils/Images";
 import { MMKV } from "react-native-mmkv";
 import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
+import LoginBD from "./LoginBD";
 
 export default new class Cliente implements ICadastro {
     private _storage
@@ -130,7 +131,11 @@ export default new class Cliente implements ICadastro {
     }
 
     async syncronize() {
-        const { data } = await api.get('/v1/cliente');
+        let url = '/v1/cliente';
+        const user = LoginBD.find()?.usuario;
+        if(user?.cargo == "Vendedor") url = `${url}?associado=${user.nome}`
+
+        const { data } = await api.get(url);
 
         this.addAndRewrite(data.data)
         data.data.map((item: ClienteProps) => {
