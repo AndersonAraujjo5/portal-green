@@ -2,34 +2,26 @@ import SafeStatusBar from "@/components/SafeStatusBar";
 import Colors from "@/constants/Colors";
 import LoginBD from "@/database/LoginBD";
 import { AntDesign, Entypo } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-
-function Nav({text, url, children}: any){
-    return(
-        <View>
-            <View style={{
-                width: '100%',
-                height:'100%',
-                alignItems:"center",
-                justifyContent:"center",
-            }}>{children}</View>
-            <Text>{text}</Text>
-        </View>
-    )
-}
 
 
 export default function tabHomeScreen(){
     const {nome} = LoginBD.find()?.usuario;
+
+    const handleCadFisica = () => {
+        router.replace('/tabs/cadastro/fisica')
+    }
+
     return(
-        <SafeStatusBar>
+        <SafeStatusBar safe={false} style={'light'}>
             <ScrollView>
                 <View style={styles.card}>
                     <Text style={{color:"white"}}>Olá</Text>
                     <Text style={styles.nome}>{nome}</Text>
 
-                {/* input e filtro */}
+                    {/* input e filtro */}
                     <View style={styles.search}>
                         <View style={{flexDirection:"row", alignItems:"center"}}>
                             <AntDesign name="search1" size={16}/>
@@ -51,7 +43,8 @@ export default function tabHomeScreen(){
                                 borderRadius: 32,
                                 paddingVertical:12,
                                 backgroundColor: Colors.gray
-                            }}>
+                            }}
+                            onPress={handleCadFisica}>
                                 <Text style={{color:"white"}}>Pessoa Físicas</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{
@@ -89,7 +82,7 @@ export default function tabHomeScreen(){
                         borderRadius: 18
                     }}>
                         <Text style={{fontSize: 12}}>Sincronização pendente</Text>
-                        <Text style={{fontSize: 22, fontWeight:"bold", marginVertical: 4}}>Anderson Araujo</Text>
+                        <Text style={{fontSize: 22, fontWeight:"bold", marginVertical: 4}}>Anderson Tailon Fernandes de Araujo</Text>
                         <Text>Telefone:(91) 99603-1077</Text>
                         <Text>Vencimento: 10    -    Com Carnê</Text>
                         <Text>Tv 14 de março, 442, - Centro Capanema</Text>

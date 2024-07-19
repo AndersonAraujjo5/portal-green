@@ -1,60 +1,51 @@
-import { Link } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import Colors from "@/constants/Colors";
+import { Link, router } from "expo-router";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 
 function Clientes({ data }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
-        id, cordenadas, tecnico }: any = data;
+        id, vencimento }: any = data;
     
     const vars = ["pppoe", 'tecnico',
-        "telefone", "email", "plano", "fidelidade", "vencimento"];
+        "telefone", "plano", "fidelidade"];
+    
+    const handlePress = () => {
+        router.push(`/clienteInfo/${id}`)
+    }
     return (
         <>
-            <Link href={{
-                pathname: `/clienteInfo/[id]`,
-                params: { id }
-            }
-            } style={styles.container} >
-                <View style={styles.box}>
-                    <View>
-                        <Text style={styles.title}>{cliente || nome}</Text>
-                        <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
+            <Pressable style={styles.container} >
+                <View style={{
+                        borderWidth: 1,
+                        borderColor: Colors.green,
+                        paddingVertical: 18,
+                        paddingHorizontal: 12,
+                        marginTop: 12,
+                        borderRadius: 18,
+                    }}>
+                        <Text style={{fontSize: 12}}>{status}</Text>
+                        <Text style={{fontSize: 22, fontWeight:"bold", marginVertical: 4}}>{cliente || nome}</Text>
                         {
-                            vars.map((item, index) => {
+                            vars.map((item) => {
                                 if (data[item]) return (<Text key={`${item}-${id}`}>{[item]}: {data[item]}</Text>)
                             })
                         }
-                        <Text style={styles.text}>{status}</Text>
-
+                        <Text>Vencimento: {vencimento} - Com carnê</Text>
+                        <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
+                        <Text>Plano: Conexão Verde - 400MB - Com Fidelidade</Text>
+                        
                     </View>
-                    
-                </View>
-            </Link >
+              
+            </Pressable >
         </>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        marginTop: 8,
-        marginBottom: 8,
-        paddingTop: 4,
-        paddingBottom: 18,
-        backgroundColor: 'white',
-    },
-    box: {
-        paddingLeft: 8,
-        paddingRight: 16
-    },
-    text: {
-        marginBottom: 10,
-        fontSize: 20,
-        lineHeight: 28,
-    },
-    title: {
-        fontSize: 20,
-        lineHeight: 28,
-        fontWeight: "bold"
+        flex:1,
+        paddingHorizontal: 12,
+        marginTop: 4,
     }
 })
 

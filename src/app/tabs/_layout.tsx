@@ -28,13 +28,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cadastro"
+        name="cadastro/fisica"
         options={{
-          headerShown: false,
-          title: 'Cadastro',
-          tabBarInactiveTintColor: Colors.gray,
-          tabBarActiveTintColor: Colors.green,
-          tabBarIcon: ({ color }) => <AntDesign name="solution1" size={25} color={color} />
+          href: null,
+          headerShown: false
         }}
       />
       <Tabs.Screen

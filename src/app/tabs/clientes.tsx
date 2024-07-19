@@ -10,7 +10,7 @@ import PreCadastro from "@/database/PreCadastro";
 import Status from "@/database/Status";
 import Filtro from "@/database/Filtro";
 import Filter from "@/components/Filter";
-import LoginBD from "@/database/LoginBD";
+import Colors from "@/constants/Colors";
 
 const { width, height } = Dimensions.get("window")
 
@@ -59,7 +59,7 @@ export default function tabClientesScreen() {
 
 
     return (
-        <SafeStatusBar >
+        <SafeStatusBar safe={false} style={'light'}>
      
             {
                 (!data && !msgError) && <Loader show={true} />
@@ -82,7 +82,7 @@ export default function tabClientesScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing}
                         onRefresh={onRefresh} />}>
                         <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} />
-                    <View style={{minHeight: height}}> 
+                    <View style={{minHeight: height, paddingBottom: 18}}> 
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />

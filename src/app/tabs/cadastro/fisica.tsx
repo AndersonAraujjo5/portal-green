@@ -17,7 +17,6 @@ import Loader from "@/components/Loader";
 import Colors from "@/constants/Colors";
 import PreCadastro from "@/database/PreCadastro";
 import SafeStatusBar from "@/components/SafeStatusBar";
-import Cliente from "@/database/Cliente";
 import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
 
@@ -100,7 +99,7 @@ type FormData2 = {
   status: string
 }
 
-export default function TabHomeScreen() {
+export default function fisica() {
   const { width } = Dimensions.get('window');
   const [checkPlanAndVenci, setCheckPlanAndVenci] = useState()
   const [refreshing, setRefreshing] = useState(false);

@@ -1,12 +1,12 @@
 import { View } from "moti";
 import Search from "./Search";
 import Filtro from "@/database/Filtro";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
-import FilterData from "./FilterData";
+import { Entypo } from "@expo/vector-icons";
 
-export default function Filter({setData, setMsgErro, setFilter}: any) {
+export default function Filter({ setData, setMsgErro, setFilter }: any) {
 
     const deleteFilter = () => {
         Filtro.delete();
@@ -27,15 +27,28 @@ export default function Filter({setData, setMsgErro, setFilter}: any) {
 
     return <>
         <View style={{
-            display: "flex",
-            flexDirection: 'row',
-            alignItems: "center",
-            backgroundColor: 'white',
-            paddingVertical: 18,
-            zIndex: 50
+            backgroundColor: Colors.green,
+            borderWidth: 1,
+            borderColor: Colors.green,
+            zIndex: 50,
+            paddingHorizontal: 16,
         }}>
-            <Search setData={setData} filter={setFilter} />
-            <FilterData setData={setData} filter={setFilter} />
+            <View style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+                alignItems: "center",
+                marginVertical: 28,
+                backgroundColor: "white",
+                borderRadius: 12,
+                paddingVertical: 4,
+                paddingHorizontal: 12
+            }}>
+                <Search setData={setData} filter={setFilter} />
+                <TouchableOpacity>
+                    <Entypo name="sound-mix" size={16} />
+                </TouchableOpacity>
+                {/* <FilterData setData={setData} filter={setFilter} /> */}
+            </View>
         </View>
         {
             Filtro.find().filter &&
