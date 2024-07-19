@@ -47,8 +47,8 @@ export default function login() {
             Cliente.syncronize().catch(e => e)
         }
 
-        return <Redirect href={'/tabs/cadastro/fisica'} />
-        // return <Redirect href={'/tabs/home'} />
+        // return <Redirect href={'/tabs/cadastro/juridico'} />
+        return <Redirect href={'/tabs/home'} />
     }
 
     useEffect(() => {

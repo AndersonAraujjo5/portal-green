@@ -43,7 +43,7 @@ export default new class PreCadastro implements ICadastro {
                     item.status = ClienteStatus.CadastroEnviado;
                     const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
                         "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-                        'cordenadas', 'fidelidade', 'info', 'status', 'plano']
+                        'cordenadas', 'fidelidade', 'info', 'status', 'plano','nomeFantasia', 'razaoSocial', 'fatura']
 
                     const formData = new FormData()
                     arr.map((e: string) => {
