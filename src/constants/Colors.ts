@@ -17,5 +17,12 @@ export default {
     tabIconSelected: tintColorDark,
   },
   green:"#009236",
-  gray:"#35475a"
+  gray:"#35475a",
+  status:{
+    aguardando: "#FFD700",
+    em_andamento: "#FFA500",
+    finalizado: "#009236",
+    cancelado: "#FF4500",
+    carne: "#35475a"
+  }
 };

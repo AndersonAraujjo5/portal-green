@@ -17,6 +17,16 @@ export default function TabLayout() {
 
   return (
     <Tabs>
+       <Tabs.Screen
+        name="home"
+        options={{
+          headerShown: false,
+          title: 'Inicio',
+          tabBarInactiveTintColor: Colors.gray,
+          tabBarActiveTintColor: Colors.green,
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={25} color={color} />
+        }}
+      />
       <Tabs.Screen
         name="cadastro"
         options={{

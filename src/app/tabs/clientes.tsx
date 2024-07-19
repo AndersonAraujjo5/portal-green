@@ -10,6 +10,7 @@ import PreCadastro from "@/database/PreCadastro";
 import Status from "@/database/Status";
 import Filtro from "@/database/Filtro";
 import Filter from "@/components/Filter";
+import LoginBD from "@/database/LoginBD";
 
 const { width, height } = Dimensions.get("window")
 

@@ -4,7 +4,7 @@ import Filtro from "@/database/Filtro";
 import { api } from "@/service/api";
 import { StyleSheet, TextInput } from "react-native";
 
-export default function Search({setData, filter}) {
+export default function Search({setData, filter}:any) {
       const handlePesquisar =  (value) => {
         api.get(`/v1/cliente?search=${value}`).
         then(({data}) => {
