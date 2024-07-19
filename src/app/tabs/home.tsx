@@ -1,22 +1,40 @@
 import { checkList } from "@/assets/images";
+import { ClienteStatus } from "@/components/ButtonActions";
 import Clientes from "@/components/Cliente";
 import SafeStatusBar from "@/components/SafeStatusBar";
 import Colors from "@/constants/Colors";
+import Cliente from "@/database/Cliente";
 import LoginBD from "@/database/LoginBD";
 import PreCadastro from "@/database/PreCadastro";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Image, ScrollView, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 
 export default function tabHomeScreen() {
-    const { nome } = LoginBD.find()?.usuario;
+    const [nome, setNome] = useState(LoginBD.find()?.usuario.nome)
+    const [cargo, setCargo] = useState(LoginBD.find()?.usuario.cargo)
+    const [length, setLength] = useState(PreCadastro.findAll()?.length);
+    const [precadastro, setPrecadastro] = useState(PreCadastro.findAll())
+ 
 
     const handleCadFisica = () => {
         router.replace('/tabs/cadastro/fisica')
     }
 
+    const handleCadJuridica = () => {
+        router.replace('/tabs/cadastro/juridico')
+    }
+
+
+    useFocusEffect(useCallback(() => {
+        setNome(LoginBD.find()?.usuario.nome);
+        setCargo(LoginBD.find()?.usuario.cargo);
+        setLength(PreCadastro.findAll()?.length);
+        setPrecadastro(PreCadastro.findAll());
+    },[]))
 
     return (
         <SafeStatusBar safe={false} style={'light'}>
@@ -25,21 +43,10 @@ export default function tabHomeScreen() {
                     <Text style={{ color: "white" }}>Olá</Text>
                     <Text style={styles.nome}>{nome}</Text>
 
-                    {/* input e filtro */}
-                    <View style={styles.search}>
-                        <View style={{ flexDirection: "row", alignItems: "center" }}>
-                            <AntDesign name="search1" size={16} />
-                            <TextInput style={{ marginLeft: 8 }} placeholder="Pesquisa" />
-                        </View>
-                        <TouchableOpacity>
-                            <Entypo name="sound-mix" size={16} />
-                        </TouchableOpacity>
-                    </View>
-
                     {/* btn de cadastro */}
 
                     {
-                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
+                        cargo === 'Vendedor' &&
                         <View style={styles.boxNav}>
                             <View style={styles.cardNav}>
                                 <TouchableOpacity style={{
@@ -62,7 +69,8 @@ export default function tabHomeScreen() {
                                     borderRadius: 32,
                                     paddingVertical: 12,
                                     backgroundColor: Colors.gray
-                                }}>
+                                }}
+                                onPress={handleCadJuridica}>
                                     <Text style={{ color: "white" }}>Pessoa Jurídica</Text>
                                 </TouchableOpacity>
                             </View>
@@ -82,43 +90,56 @@ export default function tabHomeScreen() {
                     }}>
 
 
-                    <View style={{
-                        marginVertical: 12,
-                        flexDirection: "row",
-                        gap: 12
-                    }}>
+                    {
+                        cargo === 'Tecnico' &&
                         <View style={{
-                            borderWidth: 1,
-                            borderColor: Colors.green,
-                            paddingVertical: 18,
-                            paddingHorizontal: 12,
-                            marginTop: 12,
-                            borderRadius: 18,
+                            marginVertical: 12,
+                            flexDirection: "row",
+                            gap: 12
                         }}>
-
-                            <Text>Instalações pendentes</Text>
-                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>05</Text>
-
+                            <View style={{
+                                borderWidth: 1,
+                                borderColor: Colors.green,
+                                paddingVertical: 18,
+                                paddingHorizontal: 12,
+                                marginTop: 12,
+                                borderRadius: 18,
+                            }}>
+    
+                                <Text>Instalações pendentes</Text>
+                                <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                                    {
+                                        Cliente.findBy((item:any) => {
+                                            return item.status === ClienteStatus.UsuarioCriado
+                                        })?.length
+                                    }
+                                </Text>
+    
+                            </View>
+    
+                            <View style={{
+                                borderWidth: 1,
+                                borderColor: Colors.green,
+                                paddingVertical: 18,
+                                paddingHorizontal: 12,
+                                marginTop: 12,
+                                borderRadius: 18,
+                            }}>
+    
+                                <Text>Aguardando o carnê</Text>
+                                <Text style={{ fontSize: 18, fontWeight: "bold" }}>{
+                                        Cliente.findBy((item:any) => {
+                                            return item.fatura == "Carnê" && item.status !== ClienteStatus.CarneEntregue
+                                        })?.length
+                                    }</Text>
+                            </View>
                         </View>
-
-                        <View style={{
-                            borderWidth: 1,
-                            borderColor: Colors.green,
-                            paddingVertical: 18,
-                            paddingHorizontal: 12,
-                            marginTop: 12,
-                            borderRadius: 18,
-                        }}>
-
-                            <Text>Aguardando o carnê</Text>
-                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>05</Text>
-                        </View>
-                    </View>
+                    }
 
 
                     {
-                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
-                        PreCadastro.findAll()?.length === 0 &&
+                        cargo === 'Vendedor' &&
+                        length === 0 &&
                         <>
                             <View style={{ paddingVertical: 22 }}>
                                 <Image style={{
@@ -135,12 +156,12 @@ export default function tabHomeScreen() {
                     }
 
                     {
-                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
-                        PreCadastro.findAll()?.length !== 0 &&
+                        cargo === 'Vendedor' &&
+                        length !== 0 &&
                         <>
-                            <Text style={{ marginVertical: 18 }}> Aguardando a sincronização {PreCadastro.findAll()?.length}</Text>
+                            <Text style={{ marginVertical: 18 }}> Aguardando a sincronização {length}</Text>
                             {
-                                PreCadastro.findAll()?.map(item => (
+                                precadastro.map(item => (
                                     <Clientes data={item} key={`${item.id}-cliente`} />
                                 ))
                             }
@@ -169,6 +190,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 18,
         lineHeight: 24,
+        marginBottom: 32,
     },
     search: {
         justifyContent: "space-between",

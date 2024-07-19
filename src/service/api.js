@@ -3,14 +3,15 @@ import axios from "axios";
 import { router } from "expo-router";
 
 const api = axios.create({
-    baseURL:'https://fileprecadastro.greenet.net.br/api',
+    // baseURL:'https://fileprecadastro.greenet.net.br/api',
+    baseURL:'http://10.129.0.228:3007/api',
     timeout: 5000, // 5 segundos
 })
 
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
-    
+    console.log(JSON.stringify(error))
     if(error.response && error.response.status === 404){
         return Promise.reject({errors:["Algo deu errado tente novamente mais tarde"]});
     }

@@ -26,12 +26,13 @@ type ButtonAction = {
     status: string
     id: number
     tecnico: string
-    update?: any
+    update?: any,
+    fatura: string
 }
 
-export default function ButtonAction({ cordenadas, status, id, update, tecnico }: ButtonAction) {
+export default function ButtonAction({ cordenadas, status, id, update, fatura, tecnico }: ButtonAction) {
     const [statusValue, setStatusValue] = useState<string>(status)
-
+    const cargo = LoginBD.find()?.usuario.cargo
     const atualizar = () => update && update(item => item + 1)
     const atualizarStatus = (status: string) => {
         setStatusValue(status)
@@ -70,7 +71,7 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                     <Text style={{color: 'white'}}>  Rotas</Text>
                 </Link>
                 {
-                    statusValue == ClienteStatus.UsuarioCriado &&
+                    (statusValue == ClienteStatus.UsuarioCriado && cargo === "Tecnico") &&
                     <Pressable style={styles.buttons}
                         onPress={iniciar}>
                         <Text>iniciar atendimento</Text>
@@ -78,11 +79,11 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
                 }
                 {
                     (
-                        (statusValue === ClienteStatus.TecnicoDesignado ||
+                        cargo === "Tecnico" && (statusValue === ClienteStatus.TecnicoDesignado ||
                             statusValue === ClienteStatus.TecnicoACaminho ||
                             statusValue === ClienteStatus.InstalacaoEmAndamento
                         )
-                        && tecnico === LoginBD.find()?.usuario.nome
+                       
                     ) &&
                     <>
                         <Pressable
@@ -101,7 +102,7 @@ export default function ButtonAction({ cordenadas, status, id, update, tecnico }
 
                 {
                     (statusValue == ClienteStatus.InstalacaoConcluida &&
-                        statusValue != ClienteStatus.CarneEntregue
+                        statusValue != ClienteStatus.CarneEntregue && fatura === "Carnê"
                     ) &&
                     <Pressable style={styles.buttons}
                         onPress={CarneEntregue}>

@@ -4,7 +4,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
 
 export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, casa, bairro, velocidade, fidelidade, info, cidade,
-    cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id
+    cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id, fatura
 }: any, update: any) {
     const { width } = Dimensions.get('window');
     const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento", "tecnico"];
@@ -33,7 +33,7 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
                         })
                     }
                     <Text style={{marginBottom: 18}}>Mais info: {info} </Text>
-                    <ButtonAction tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
+                    <ButtonAction fatura={fatura} tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
                     <ScrollView
                         style={{
                             paddingRight: 8,

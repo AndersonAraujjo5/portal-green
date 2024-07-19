@@ -28,7 +28,7 @@ export default function login() {
     
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
-            router.replace('/tabs/cadastro')
+            return router.replace('/tabs/home')
         } catch (error) {
             setLoader(false)
             if (error && error.data) {

@@ -103,6 +103,20 @@ export default new class Cliente implements ICadastro {
         return;
     }
 
+    findBy(where: Function): ClienteProps[] | undefined {
+  
+        const cadastrados = this.findAll()
+
+        if (cadastrados) {
+            const cadastrosArray = cadastrados
+
+            const cadastro = cadastrosArray.filter(where)
+
+            return cadastro
+        }
+        return [];
+    }
+
     deleteById(id: number): boolean {
         
         if (typeof id !== 'number') throw new Error("Valor deve ser do tipo number");

@@ -249,7 +249,7 @@ export default function juridico() {
             refreshControl={<RefreshControl refreshing={refreshing}
               onRefresh={onRefresh} />}>
             <Text style={styles.title}>
-              Dados Pessoais
+              Dados da Empresa
             </Text>
             <View>
               <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome do proprietario*" name="nome" error={errors.nome} />

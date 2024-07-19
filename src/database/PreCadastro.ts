@@ -82,7 +82,7 @@ export default new class PreCadastro implements ICadastro {
 
         if (cadastros) {
             const dados = JSON.parse(cadastros)
-            if (dados.length === 0) return;
+            if (dados.length === 0) return[];
             return dados;
         }
         return[];
