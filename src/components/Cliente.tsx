@@ -1,10 +1,10 @@
 import Colors from "@/constants/Colors";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
 function Clientes({ data }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
-        id, vencimento, associado}: any = data;
+        id, vencimento, associado, plano}: any = data;
     
     const vars = ["pppoe", 'tecnico',
         "telefone", "plano", "fidelidade"];
@@ -14,7 +14,8 @@ function Clientes({ data }: any) {
     }
     return (
         <>
-            <Pressable style={styles.container} >
+            <Pressable style={styles.container} 
+            onPress={handlePress}>
                 <View style={{
                         borderWidth: 1,
                         borderColor: Colors.green,
@@ -34,7 +35,7 @@ function Clientes({ data }: any) {
                         }
                         <Text>Vencimento: {vencimento} - Com carnê</Text>
                         <Text>{endereco}, {casa} – {bairro} {cidade} </Text>
-                        <Text>Plano: Conexão Verde - 400MB - Com Fidelidade</Text>
+                        <Text>Plano: {plano}</Text>
                         
                     </View>
               

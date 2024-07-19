@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, RefreshControl, TextInput, Pressable, Dimensions } from "react-native";
+import { Text, View, ScrollView, RefreshControl, Dimensions } from "react-native";
 import Clientes from "@/components/Cliente";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
@@ -10,7 +10,6 @@ import PreCadastro from "@/database/PreCadastro";
 import Status from "@/database/Status";
 import Filtro from "@/database/Filtro";
 import Filter from "@/components/Filter";
-import Colors from "@/constants/Colors";
 
 const { width, height } = Dimensions.get("window")
 

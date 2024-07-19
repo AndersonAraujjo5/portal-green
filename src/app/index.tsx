@@ -47,11 +47,8 @@ export default function login() {
             Cliente.syncronize().catch(e => e)
         }
 
-        if(LoginBD.find()?.usuario.cargo === "Tecnico"){
-            return <Redirect href={'/tabs/map'} />
-        }
-
-        return <Redirect href={'/tabs/home'} />
+        return <Redirect href={'/tabs/cadastro/fisica'} />
+        // return <Redirect href={'/tabs/home'} />
     }
 
     useEffect(() => {

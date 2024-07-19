@@ -81,7 +81,7 @@ const schema = yup.object({
   }),
   cpf: yup.string().required("CPF e Obrigatorio").test('valid-cpf', 'CPF inválido', (value) => validarCPF(value)),
   email: yup.string().email("E-mail invalido"),
-  telefone: yup.string().length(15, "Numero de telefone invalido"),
+  telefone: yup.string().required().length(15, "Numero de telefone invalido"),
   endereco: yup.string().required("Informe o endereco"),
   bairro: yup.string().required("Informe o bairro"),
   numero: yup.string().required("Informe o numero da casa"),
@@ -105,6 +105,7 @@ export default function fisica() {
   const [refreshing, setRefreshing] = useState(false);
   const [plano, setPlano] = useState();
   const [checkFidelidade, setCheckFidelidade] = useState(true)
+  const [checkCarne, setCheckCarne] = useState(true)
   const [camera, setCamera] = useState(false)
   const [info, setInfo] = useState('')
   const [vencimento, setVencimento] = useState('')
@@ -147,6 +148,12 @@ export default function fisica() {
     scrollToTop()
   }
 
+  const verificaCarne = () => {
+    let carne = '';
+    if (checkCarne) carne = "E-mail/Whatsapp"
+    else carne = "Carnê"
+    return carne;
+  }
 
   const verificaFidelidade = () => {
     let fidelidade = '';
@@ -184,6 +191,7 @@ export default function fisica() {
     setShowLoader(true);
     let obj: FormData2 = {};
     obj.plano = `${plano} - ${verificaFidelidade()}`
+    obj.fatura = `${verificaCarne()}`
     obj.info = info
     obj.vencimento = vencimento
     obj.cordenadas = cordenadas ? cordenadas.toString() : ''
@@ -230,7 +238,7 @@ export default function fisica() {
       }
 
       <View style={{
-        paddingLeft: 8, 
+        paddingLeft: 8,
         paddingRight: 8
       }}>
         {
@@ -242,7 +250,7 @@ export default function fisica() {
               Dados Pessoais
             </Text>
             <View>
-              <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo" name="nome" error={errors.nome} />
+              <ControllerInput inputRef={inputs.nome} onSubmitEditing={inputs.nomePai} control={control} label="Nome Completo*" name="nome" error={errors.nome} />
 
               <View style={styles.inputGroup}>
                 <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae}
@@ -252,7 +260,7 @@ export default function fisica() {
               </View>
 
               <View style={styles.inputGroup}>
-                <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} style={{ width: "66.66%", flex: 1 }} mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF" name="cpf" error={errors.cpf} />
+                <ControllerInput inputRef={inputs.cpf} onSubmitEditing={inputs.rg} style={{ width: "66.66%", flex: 1 }} mask={Masks.BRL_CPF} keyboardType="numeric" control={control} label="CPF*" name="cpf" error={errors.cpf} />
                 <ControllerInput inputRef={inputs.rg} onSubmitEditing={inputs.dataNascimento} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="RG" name="rg" />
               </View>
 
@@ -262,7 +270,7 @@ export default function fisica() {
 
               <View style={styles.inputGroup}>
                 <ControllerInput inputRef={inputs.email} onSubmitEditing={inputs.telefone} style={{ flex: 1 }} keyboardType="email-address" control={control} label="E-mail" name="email" error={errors.email} />
-                <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone" name="telefone" error={errors.telefone} />
+                <ControllerInput inputRef={inputs.telefone} onSubmitEditing={inputs.cep} style={{ flex: 1 }} mask={Masks.BRL_PHONE} keyboardType="numeric" control={control} label="Telefone*" name="telefone" error={errors.telefone} />
               </View>
 
             </View>
@@ -272,15 +280,15 @@ export default function fisica() {
 
             <View style={styles.inputGroup}>
               <ControllerInput inputRef={inputs.cep} onSubmitEditing={inputs.cidade} style={{ flex: 1 }} mask={Masks.ZIP_CODE} keyboardType="numeric" control={control} label="CEP" name="cep" />
-              <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} style={{ flex: 1 }} control={control} label="Cidade" name="cidade" error={errors.cidade} />
+              <ControllerInput inputRef={inputs.cidade} onSubmitEditing={inputs.endereco} style={{ flex: 1 }} control={control} label="Cidade*" name="cidade" error={errors.cidade} />
             </View>
 
             <View style={styles.inputGroup}>
-              <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} style={{ width: "66.66%", flex: 1 }} control={control} label="Endereco" name="endereco" error={errors.endereco} />
-              <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} style={{ width: '33.33%' }} control={control} label="Bairro" name="bairro" error={errors.bairro} />
+              <ControllerInput inputRef={inputs.endereco} onSubmitEditing={inputs.bairro} style={{ width: "66.66%", flex: 1 }} control={control} label="Endereco*" name="endereco" error={errors.endereco} />
+              <ControllerInput inputRef={inputs.bairro} onSubmitEditing={inputs.numero} style={{ width: '33.33%' }} control={control} label="Bairro*" name="bairro" error={errors.bairro} />
             </View>
             <View style={styles.inputGroup}>
-              <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="Nº da casa" name="numero" error={errors.numero} />
+              <ControllerInput inputRef={inputs.numero} onSubmitEditing={inputs.ref} style={{ width: '33.33%' }} keyboardType="numeric" control={control} label="Nº da casa*" name="numero" error={errors.numero} />
               <ControllerInput inputRef={inputs.ref} style={{ width: "66.66%", flex: 1 }} control={control} label="Ponto de Ref" name="complemento" />
             </View>
             <Text style={styles.title}>
@@ -289,7 +297,7 @@ export default function fisica() {
             <View style={styles.selectBox}>
               <View style={styles.containerSelect}>
                 <Text style={{ color: Colors.gray }}>
-                  Planos
+                  Planos*
                 </Text>
                 <View style={{ width: '100%' }}>
                   <RNPickerSelect
@@ -311,29 +319,39 @@ export default function fisica() {
               }
             </View>
 
-
-            <View style={styles.inputGroup}>
-              <View style={styles.inputBoxGroup}>
-                <View style={styles.inputCheckBox}>
-                  <CheckBox
-                    checked={!checkFidelidade}
-                    onPress={() => setCheckFidelidade(!checkFidelidade)}
-                    containerStyle={{
-                      backgroundColor: "rgba(0,0,0,0)",
-                    }} />
-                  <Text style={{ color: Colors.gray }}>Com Fidelidade</Text>
+            <View style={{
+              marginTop: 12, backgroundColor: 'rgba(156, 163, 175, 0.5)',
+              paddingHorizontal: 8,
+              paddingBottom: 8,
+              borderRadius: 8
+            }}>
+              <Text style={{ color: Colors.gray }}></Text>
+              <View style={styles.inputGroup}>
+                <View style={styles.inputBoxGroup}>
+                  <View style={styles.inputCheckBox}>
+                    <CheckBox
+                      checked={!checkFidelidade}
+                      onPress={() => setCheckFidelidade(!checkFidelidade)}
+                      containerStyle={{
+                        backgroundColor: "rgba(0,0,0,0)",
+                        padding: 0
+                      }} checkedColor={Colors.green}
+                      uncheckedColor={Colors.gray} />
+                    <Text style={{ color: Colors.gray }}>Com Fidelidade</Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.inputBoxGroup}>
-                <View style={styles.inputCheckBox}>
-                  <CheckBox
-                    checked={checkFidelidade}
-                    onPress={() => setCheckFidelidade(!checkFidelidade)}
-                    containerStyle={{
-                      backgroundColor: "rgba(0,0,0,0)"
-                    }}
-                    style={{ alignItems: "center" }} />
-                  <Text style={{ color: Colors.gray }}>Sem Fidelidade</Text>
+                <View style={styles.inputBoxGroup}>
+                  <View style={styles.inputCheckBox}>
+                    <CheckBox
+                      checked={checkFidelidade}
+                      onPress={() => setCheckFidelidade(!checkFidelidade)}
+                      containerStyle={{
+                        backgroundColor: "rgba(0,0,0,0)",
+                        padding: 0
+                      }} checkedColor={Colors.green}
+                      uncheckedColor={Colors.gray} />
+                    <Text style={{ color: Colors.gray }}>Sem Fidelidade</Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -341,7 +359,7 @@ export default function fisica() {
             <View style={styles.selectBox}>
               <View style={styles.containerSelect}>
                 <Text style={{ color: Colors.gray }}>
-                  Data do vencimento
+                  Data do vencimento*
                 </Text>
                 <View style={{ width: "100%", padding: 0, margin: 0 }}>
                   <RNPickerSelect
@@ -360,6 +378,43 @@ export default function fisica() {
                 checkPlanAndVenci.vencimento &&
                 <Text style={{ color: '#dc2626', paddingRight: 8 }} >{checkPlanAndVenci.vencimento}</Text>
               }
+            </View>
+
+            <View style={{
+              marginVertical: 12, backgroundColor: 'rgba(156, 163, 175, 0.5)',
+              paddingHorizontal: 8,
+              paddingBottom: 8,
+              borderRadius: 8
+            }}>
+              <Text style={{ color: Colors.gray }}>Receber faturas por*</Text>
+              <View style={styles.inputGroup}>
+                <View style={styles.inputBoxGroup}>
+                  <View style={styles.inputCheckBox}>
+                    <CheckBox
+                      checked={!checkCarne}
+                      onPress={() => setCheckCarne(!checkCarne)}
+                      containerStyle={{
+                        backgroundColor: "rgba(0,0,0,0)",
+                        padding: 0
+                      }} checkedColor={Colors.green}
+                      uncheckedColor={Colors.gray} />
+                    <Text style={{ color: Colors.gray }}>Carnê</Text>
+                  </View>
+                </View>
+                <View style={styles.inputBoxGroup}>
+                  <View style={styles.inputCheckBox}>
+                    <CheckBox
+                      checked={checkCarne}
+                      onPress={() => setCheckCarne(!checkCarne)}
+                      containerStyle={{
+                        backgroundColor: "rgba(0,0,0,0)",
+                        padding: 0
+                      }} checkedColor={Colors.green}
+                      uncheckedColor={Colors.gray} />
+                    <Text style={{ color: Colors.gray }}>E-mail/Whatsapp</Text>
+                  </View>
+                </View>
+              </View>
             </View>
 
             <View style={{ width: "100%", flex: 1, marginTop: 12 }} >

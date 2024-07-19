@@ -38,33 +38,36 @@ export default function tabHomeScreen() {
 
                     {/* btn de cadastro */}
 
-                    <View style={styles.boxNav}>
-                        <View style={styles.cardNav}>
-                            <TouchableOpacity style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                alignContent: "center",
-                                width: '45%',
-                                borderRadius: 32,
-                                paddingVertical: 12,
-                                backgroundColor: Colors.gray
-                            }}
-                                onPress={handleCadFisica}>
-                                <Text style={{ color: "white" }}>Pessoa Físicas</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                alignContent: "center",
-                                width: '45%',
-                                borderRadius: 32,
-                                paddingVertical: 12,
-                                backgroundColor: Colors.gray
-                            }}>
-                                <Text style={{ color: "white" }}>Pessoa Jurídica</Text>
-                            </TouchableOpacity>
+                    {
+                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
+                        <View style={styles.boxNav}>
+                            <View style={styles.cardNav}>
+                                <TouchableOpacity style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    alignContent: "center",
+                                    width: '45%',
+                                    borderRadius: 32,
+                                    paddingVertical: 12,
+                                    backgroundColor: Colors.gray
+                                }}
+                                    onPress={handleCadFisica}>
+                                    <Text style={{ color: "white" }}>Pessoa Físicas</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    alignContent: "center",
+                                    width: '45%',
+                                    borderRadius: 32,
+                                    paddingVertical: 12,
+                                    backgroundColor: Colors.gray
+                                }}>
+                                    <Text style={{ color: "white" }}>Pessoa Jurídica</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                    }
                 </View>
 
                 {/* Cientes */}
@@ -77,10 +80,47 @@ export default function tabHomeScreen() {
                         marginTop: 44,
                         backgroundColor: "white"
                     }}>
+
+
+                    <View style={{
+                        marginVertical: 12,
+                        flexDirection: "row",
+                        gap: 12
+                    }}>
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: Colors.green,
+                            paddingVertical: 18,
+                            paddingHorizontal: 12,
+                            marginTop: 12,
+                            borderRadius: 18,
+                        }}>
+
+                            <Text>Instalações pendentes</Text>
+                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>05</Text>
+
+                        </View>
+
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: Colors.green,
+                            paddingVertical: 18,
+                            paddingHorizontal: 12,
+                            marginTop: 12,
+                            borderRadius: 18,
+                        }}>
+
+                            <Text>Aguardando o carnê</Text>
+                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>05</Text>
+                        </View>
+                    </View>
+
+
                     {
+                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
                         PreCadastro.findAll()?.length === 0 &&
                         <>
-                            <View style={{paddingVertical:22}}>
+                            <View style={{ paddingVertical: 22 }}>
                                 <Image style={{
                                     width: "100%", height: 200, resizeMode: 'contain',
 
@@ -95,6 +135,7 @@ export default function tabHomeScreen() {
                     }
 
                     {
+                        LoginBD.find()?.usuario.cargo === 'Vendedor' &&
                         PreCadastro.findAll()?.length !== 0 &&
                         <>
                             <Text style={{ marginVertical: 18 }}> Aguardando a sincronização {PreCadastro.findAll()?.length}</Text>
