@@ -18,6 +18,7 @@ export enum ClienteStatus {
     InstalacaoEmAndamento = "Instalação em Andamento",
     InstalacaoConcluida = "Instalação Concluída",
     ClienteDesistiu = "Cliente Desistiu",
+    Cancelado = "Cancelado",
     CarneEntregue = "Carnê Entregue"
 }
 

@@ -3,7 +3,7 @@ import Cliente from "@/database/Cliente";
 import Filtro from "@/database/Filtro";
 import { api } from "@/service/api";
 import { useState } from "react";
-import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MaskInput, { Masks } from "react-native-mask-input";
 
 const { width, height } = Dimensions.get("window")
@@ -50,64 +50,53 @@ export default function FilterData({ setData, filter }) {
     return (
         <>
 
-            <View style={styles.container}>
 
                 <View style={styles.modal}>
                     <View>
-
+                    <Text style={{width: "40%"}}>Filtro por Data:</Text>
+                        
                         <View style={{
                             marginTop: 8,
                             display: "flex",
                             flexDirection: "row",
                             margin: "auto",
-                            alignItems: "center"
+                            alignItems: "center",
+                            justifyContent:"space-between"
                         }}>
+                                <Text>Inicial:  </Text>
+
                             <View style={{
                                 flexDirection: "column",
-                                width: "33%",
-
+                                width: "40%",
                             }}>
-                                <Text>Data Inicial</Text>
                                 <MaskInput
                                     mask={Masks.DATE_DDMMYYYY}
                                     style={styles.inputDate}
                                     value={dataIni}
                                     onChangeText={(value) => setDataIni(value)} />
                             </View>
+                            <Text>Final:  </Text>
+
                             <View style={{
-                                width: "33%"
+                                width: "40%"
                             }}>
-                                <Text>Data Final</Text>
                                 <MaskInput
                                     mask={Masks.DATE_DDMMYYYY}
                                     style={styles.inputDate}
                                     value={dataFin}
                                     onChangeText={(value) => setDataFin(value)} />
                             </View>
-                            <Pressable
-                                onPress={handlePesquisar}
-                                style={styles.btnPresquisar}>
-                                <Text style={{ color: "white" }}>Pesquisar</Text>
-                            </Pressable>
-                        </View>
+                       </View>
                     </View>
 
                 </View>
-            </View>
-
+     
         </>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        top: 16,
-        flex: 1,
-        width: width,
-       
-    },
     background: {
-
         backgroundColor: 'rgba(156, 163, 175,0.5)',
         top: 0,
         right: 0,
@@ -118,18 +107,16 @@ const styles = StyleSheet.create({
     modal: {
         right: 0,
         width,
-        padding: 8,
-        position: "absolute",
-        backgroundColor: "red",
+        paddingHorizontal: 12,
+        paddingVertical:18,
         zIndex: 30,
-        borderBottomLeftRadius: 18,
-        borderBottomRightRadius: 18,
         height: 80,
     },
     inputDate: {
         width: "100%",
         borderColor: Colors.gray,
         padding: 4,
+        fontSize:22
     },
     btnPresquisar: {
         paddingHorizontal: 12,

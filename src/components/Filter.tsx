@@ -4,9 +4,12 @@ import Filtro from "@/database/Filtro";
 import { Modal, Pressable, Text, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
-import { Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useState } from "react";
-import FilterData from "./FilterData";
+import FilterData from "@/components/FilterData";
+import { ClienteStatus } from "@/components/ButtonActions";
+import RNPickerSelect from "react-native-picker-select";
+
 
 export default function Filter({ setData, setMsgErro, setFilter }: any) {
     const [visible, setVisible] = useState(false)
@@ -25,6 +28,12 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
             }).catch(e => {
                 setData(Cliente.findAll());
             });
+    }
+
+    const status = [];
+    
+    for(let s in ClienteStatus){
+        status.push({label:ClienteStatus[s], value:ClienteStatus[s]})
     }
 
     const handleModal = () => setVisible(!visible)
@@ -52,7 +61,6 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                 onPress={handleModal}>
                     <Entypo name="sound-mix" size={16} />
                 </TouchableOpacity>
-                {/* <FilterData setData={setData} filter={setFilter} /> */}
             </View>
         </View>
         {
@@ -72,16 +80,63 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                     onPress={deleteFilter}>
                     <Text style={{ color: "white" }}>Limpar Filtro</Text>
                 </Pressable>
-
-                <FilterData setData={setData} filter={setFilter} />
             </View>
         }
         <Modal 
         animationType="slide"
         visible={visible}>
             <TouchableOpacity 
+            style={{marginVertical: 12, marginHorizontal: 8}}
             onPress={handleModal}>
-                <Text>Cancelar</Text>
+                <AntDesign name="left" size={25} />          
+            </TouchableOpacity>
+
+            <View style={{paddingHorizontal: 12}} >
+                <Text>Filtro por Status</Text>
+                <View>
+                <View style={{ width: "100%", padding: 0, margin: 0, borderWidth: 1,
+                    borderRadius: 12,
+                    marginTop: 8
+                 }}>
+                  <RNPickerSelect
+                    items={status}
+                    placeholder={{ label: "Selecione uma das opções", value: null }}
+                    onValueChange={(value) => {}}
+                  />
+                </View>
+                </View>
+            </View>
+
+            <View style={{paddingHorizontal: 12, marginTop: 18}} >
+                <Text>Filtro por Planos</Text>
+                <View>
+                <View style={{ width: "100%", padding: 0, margin: 0, borderWidth: 1,
+                    borderRadius: 12,
+                    marginTop: 8
+                 }}>
+                  <RNPickerSelect
+                    items={[
+                        { label: "Ligth Green - 200MB", value: "Ligth Green - 200MB" },
+                      { label: "Conexão Verde - 400MB", value: "Conexão Verde - 400MB" },
+                      { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
+                      { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
+                    ]}
+                    placeholder={{ label: "Selecione uma das opções", value: null }}
+                    onValueChange={(value) => {}}
+                  />
+                </View>
+                </View>
+            </View>
+
+            <FilterData setData={setData} filter={setFilter} />
+            <TouchableOpacity style={{
+                backgroundColor: Colors.green,
+                width: '40%',
+                paddingVertical: 8,
+                borderRadius: 12,
+                position: 'absolute', bottom: 40,right:22
+            }}>
+                <Text style={{textAlign:"center", color:"white"}}>Filtrar</Text>
             </TouchableOpacity>
         </Modal>
     </>
