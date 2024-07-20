@@ -9,10 +9,58 @@ import { useState } from "react";
 import FilterData from "@/components/FilterData";
 import { ClienteStatus } from "@/components/ButtonActions";
 import RNPickerSelect from "react-native-picker-select";
+import { api } from "@/service/api";
 
 
 export default function Filter({ setData, setMsgErro, setFilter }: any) {
     const [visible, setVisible] = useState(false)
+    const [dataIni, setDataIni] = useState(Filtro.find().dataIni)
+    const [dataFin, setDataFin] = useState(Filtro.find().dataFin)
+    const [isStatus, setIsStatus] = useState('')
+    const [isPlano, setIsPlano] = useState('')
+
+
+    const getDateAtual = () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Mês começa em 0
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+
+    const formatDate = (date) => {
+        if (!date) return getDateAtual();
+        const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+        const match = date.match(datePattern);
+
+        if (match) {
+            const day = match[1];
+            const month = match[2];
+            const year = match[3];
+            return `${year}-${month}-${day}`;
+        }
+        return getDateAtual();
+    }
+
+    const handlePesquisar = () => {
+        const url = `/v1/cliente?${dataIni && `dataInicio=${formatDate(dataIni)}&`}${dataFin && `dataFim=${formatDate(dataFin)}&`}${isStatus && `status=${isStatus}&`}${isPlano && `plano=${isPlano}`}`
+        api.get(url).
+            then(({data}) => {
+                // console.log(data)
+                setData(data.data)
+                Cliente.addAndRewrite(data.data)
+            }).catch(erro => {
+                console.log("error", erro)
+            })
+        // filter(true)
+        setVisible(false)
+
+        Filtro.add({ dataIni, dataFin });
+    }
+
+
+
     const deleteFilter = () => {
         Filtro.delete();
         Cliente.syncronize()
@@ -100,8 +148,8 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                  }}>
                   <RNPickerSelect
                     items={status}
-                    placeholder={{ label: "Selecione uma das opções", value: null }}
-                    onValueChange={(value) => {}}
+                    placeholder={{ label: "Selecione uma das opções", value: '' }}
+                    onValueChange={(value) => {setIsStatus(value)}}
                   />
                 </View>
                 </View>
@@ -121,21 +169,26 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
                       { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
                       { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
                     ]}
-                    placeholder={{ label: "Selecione uma das opções", value: null }}
-                    onValueChange={(value) => {}}
+                    placeholder={{ label: "Selecione uma das opções", value: '' }}
+                    onValueChange={(value) => {setIsPlano(value)}}
                   />
                 </View>
                 </View>
             </View>
 
-            <FilterData setData={setData} filter={setFilter} />
+            <FilterData setDataIni={setDataIni}
+            setDataFin={setDataFin}
+            dataIni={dataIni}
+            dataFin={dataFin} />
             <TouchableOpacity style={{
                 backgroundColor: Colors.green,
                 width: '40%',
                 paddingVertical: 8,
                 borderRadius: 12,
                 position: 'absolute', bottom: 40,right:22
-            }}>
+            }}
+            onPress={handlePesquisar}
+            >
                 <Text style={{textAlign:"center", color:"white"}}>Filtrar</Text>
             </TouchableOpacity>
         </Modal>

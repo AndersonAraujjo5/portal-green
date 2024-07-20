@@ -6,46 +6,18 @@ import { useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MaskInput, { Masks } from "react-native-mask-input";
 
+type FilterDataProps = {
+        setDataIni: any
+        setDataFin:any
+        dataIni: string
+        dataFin: string
+}
+
 const { width, height } = Dimensions.get("window")
 
-export default function FilterData({ setData, filter }) {
-    const [dataIni, setDataIni] = useState(Filtro.find().dataIni)
-    const [dataFin, setDataFin] = useState(Filtro.find().dataFin)
-
-    const getDateAtual = () => {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Mês começa em 0
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-
-    const formatDate = (date) => {
-        if (!date) return getDateAtual();
-        const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-        const match = date.match(datePattern);
-
-        if (match) {
-            const day = match[1];
-            const month = match[2];
-            const year = match[3];
-            return `${year}-${month}-${day}`;
-        }
-        return getDateAtual();
-    }
-
-    const handlePesquisar = () => {
-        api.get(`/v1/cliente?dataInicio=${formatDate(dataIni)}&dataFim=${formatDate(dataFin)}`).
-            then(({ data }) => {
-                setData(data.data)
-                Cliente.addAndRewrite(data.data)
-            }).catch(erro => {
-                console.log("error", erro)
-            })
-        filter(true)
-        Filtro.add({ dataIni, dataFin });
-    }
+export default function FilterData({setDataIni, setDataFin,
+    dataIni, dataFin}: FilterDataProps) {
+    
 
     return (
         <>
