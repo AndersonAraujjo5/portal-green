@@ -258,7 +258,7 @@ export default function juridico() {
                 <ControllerInput inputRef={inputs.nomePai} onSubmitEditing={inputs.nomeMae}
                   style={{ flex: 1 }}
                   control={control} label="Razão social" name="razaoSocial" />
-                <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} style={{ flex: 1 }} control={control} label="Nome Fantasia" name="nomeFantasia"error={errors.nomeFantasia}  />
+                <ControllerInput inputRef={inputs.nomeMae} onSubmitEditing={inputs.cpf} style={{ flex: 1 }} control={control} label="Nome Fantasia*" name="nomeFantasia"error={errors.nomeFantasia}  />
               </View>
 
               <View style={styles.inputGroup}>

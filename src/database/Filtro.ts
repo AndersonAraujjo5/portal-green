@@ -5,6 +5,8 @@ type FilterProps = {
   filter: boolean
   dataIni: string
   dataFin: string
+  staus: string
+  plano: string
 }
 
 export default new class Filtro {
@@ -23,7 +25,7 @@ export default new class Filtro {
       const dataArray = JSON.parse(data);
       return dataArray;
     }
-    return {filter: false, dataFin: '', dataIni:''};
+    return {filter: false, dataFin: '', dataIni:'', staus: '', plano: ''};
   };
 
   public delete() {

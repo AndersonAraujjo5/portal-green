@@ -23,7 +23,7 @@ api.interceptors.response.use((response) => {
     }
 
     if(error.response === undefined && JSON.stringify(error).includes('Network Error')){
-        return Promise.reject({errors:[`Ops, tente novamente mais tarde, ou entre em contato com o adminsitrator.\nMas não se preocupe você pode realizar os cadastros normalmente`]});
+        return Promise.reject({errors:[`Ops, tente novamente mais tarde, ou entre em contato com o adminsitrator.`]});
     }
     
     return Promise.reject(error.response);

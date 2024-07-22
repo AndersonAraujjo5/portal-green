@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
-function Clientes({ data }: any) {
+function Clientes({ data, nav=true }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
         id, vencimento, associado, plano}: any = data;
     
@@ -10,6 +10,7 @@ function Clientes({ data }: any) {
         "telefone", "plano", "fidelidade"];
     
     const handlePress = () => {
+        if(!nav) return;
         router.push(`/clienteInfo/${id}`)
     }
     return (
@@ -26,7 +27,7 @@ function Clientes({ data }: any) {
                     }}>
                         <Text style={{fontSize: 12}}>{status}</Text>
                         <Text style={{fontSize: 22, fontWeight:"bold", marginVertical: 4}}>{cliente || nome}</Text>
-                        <Text>Vendedo: {associado}</Text>
+                        {associado && <Text>Vendedo: {associado}</Text>}
                         {
                             
                             vars.map((item) => {

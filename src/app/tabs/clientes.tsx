@@ -47,10 +47,12 @@ export default function tabClientesScreen() {
 
     useFocusEffect(useCallback(() => {
         syncronize();
+        setMsgErro(null)
     }, []))
 
 
     const onRefresh = () => {
+        setMsgErro(null)
         setRefreshing(true)
         syncronize();
         setRefreshing(false)
@@ -63,25 +65,22 @@ export default function tabClientesScreen() {
             {
                 (!data && !msgError) && <Loader show={true} />
             }
-            {
-                msgError &&
-                <ScrollView style={{ flex: 1, paddingBottom: 8, paddingTop: 8 }}>
-                    {
-                        msgError.map((e, i) => <Text key={i}
-                            style={{
-                                fontSize: 24, lineHeight: 32, textAlign: 'center',
-                                marginTop: 50
-                            }}>{e}</Text>)
-                    }
-                </ScrollView>
-            }
+    
             {
                 data &&
                 <ScrollView
                     refreshControl={<RefreshControl refreshing={refreshing}
                         onRefresh={onRefresh} />}>
-                        <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} />
+                        <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} msgError={setMsgErro}/>
                     <View style={{minHeight: height, paddingBottom: 18}}> 
+                        {
+                            msgError &&
+                            msgError.map((e, i) => <Text key={i}
+                                style={{
+                                    fontSize: 24, lineHeight: 32, textAlign: 'center',
+                                    marginTop: 50
+                                }}>{e}</Text>)
+                        }
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />

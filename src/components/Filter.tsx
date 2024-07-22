@@ -12,12 +12,12 @@ import RNPickerSelect from "react-native-picker-select";
 import { api } from "@/service/api";
 
 
-export default function Filter({ setData, setMsgErro, setFilter }: any) {
+export default function Filter({ setData, setMsgErro, setFilter, msgError }: any) {
     const [visible, setVisible] = useState(false)
     const [dataIni, setDataIni] = useState(Filtro.find().dataIni)
     const [dataFin, setDataFin] = useState(Filtro.find().dataFin)
-    const [isStatus, setIsStatus] = useState('')
-    const [isPlano, setIsPlano] = useState('')
+    const [isStatus, setIsStatus] = useState(Filtro.find().staus)
+    const [isPlano, setIsPlano] = useState(Filtro.find().staus)
 
 
     const getDateAtual = () => {
@@ -44,19 +44,20 @@ export default function Filter({ setData, setMsgErro, setFilter }: any) {
     }
 
     const handlePesquisar = () => {
-        const url = `/v1/cliente?${dataIni && `dataInicio=${formatDate(dataIni)}&`}${dataFin && `dataFim=${formatDate(dataFin)}&`}${isStatus && `status=${isStatus}&`}${isPlano && `plano=${isPlano}`}`
+        const url = `/v1/cliente?size=100&${dataIni && `dataInicio=${formatDate(dataIni)}&`}${dataFin && `dataFim=${formatDate(dataFin)}&`}${isStatus && `status=${isStatus}&`}${isPlano && `plano=${isPlano}`}`
+        console.log(dataIni,dataFin,isStatus, isPlano,'\n\n', url)
         api.get(url).
             then(({data}) => {
-                // console.log(data)
                 setData(data.data)
                 Cliente.addAndRewrite(data.data)
             }).catch(erro => {
+                if(erro.errors) msgError(erro.errors)
                 console.log("error", erro)
             })
-        // filter(true)
+        setFilter(true)
         setVisible(false)
 
-        Filtro.add({ dataIni, dataFin });
+        Filtro.add({ dataIni, dataFin, status: isStatus, plano: isPlano });
     }
 
 

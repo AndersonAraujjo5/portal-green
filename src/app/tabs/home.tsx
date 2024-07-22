@@ -162,7 +162,7 @@ export default function tabHomeScreen() {
                             <Text style={{ marginVertical: 18 }}> Aguardando a sincronização {length}</Text>
                             {
                                 precadastro.map(item => (
-                                    <Clientes data={item} key={`${item.id}-cliente`} />
+                                    <Clientes data={item} nav={false} key={`${item.id}-cliente`} />
                                 ))
                             }
                         </>

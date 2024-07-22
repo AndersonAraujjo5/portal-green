@@ -145,12 +145,12 @@ export default new class Cliente implements ICadastro {
     }
 
     async syncronize() {
-        let url = '/v1/cliente';
+        let url = '/v1/cliente?size=100&';
         const user = LoginBD.find()?.usuario;
-        if(user?.cargo == "Vendedor") url = `${url}?associado=${user.nome}`
-        console.log(url)
+        if(user?.cargo == "Vendedor") url = `${url}associado=${user.nome}`
+     
         const { data } = await api.get(url);
-
+        
         this.addAndRewrite(data.data)
         data.data.map((item: ClienteProps) => {
             if (item.Fotos.length !== 0) item.Fotos.map(({ url }: any) => {
