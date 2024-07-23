@@ -4,14 +4,15 @@ import { router } from "expo-router";
 
 const api = axios.create({
     // baseURL:'https://fileprecadastro.greenet.net.br/api',
-    baseURL:'http://192.168.18.12:3007/api',
+    // baseURL:'http://192.168.18.12:3007/api',
+    baseURL:'http://10.129.0.228:3007/api',
     timeout: 5000, // 5 segundos
 })
 
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
-    console.log(JSON.stringify(error))
+ 
     if(error.response && error.response.status === 404){
         return Promise.reject({errors:["Algo deu errado tente novamente mais tarde"]});
     }

@@ -22,10 +22,14 @@ export default function MakerPoint({ setLocation }) {
 
     useEffect(() => {
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return;
+            try {
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    console.log('Permission to access location was denied');
+                    return;
+                }
+            } catch (error) {
+
             }
 
         })();
@@ -33,8 +37,12 @@ export default function MakerPoint({ setLocation }) {
 
 
     const getLocalizacao = async () => {
+       try {
         let getLocation = await Location.getCurrentPositionAsync({});
         setLocationAtual([getLocation.coords.longitude, getLocation.coords.latitude])
+       } catch (error) {
+        getLocalizacao();
+       }
     }
 
     const activeMapOffilne = async () => {
@@ -46,14 +54,14 @@ export default function MakerPoint({ setLocation }) {
             return
         };
         getLocalizacao();
-        setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
+        // setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
     }
 
     const checkIsOffline = () => {
         setMsg(null)
         if (!isConnected) {
             activeMapOffilne();
-        } else {
+        } else {    
             axios.get('https://google.com', { timeout: 5000 }).then(e => {
                 getLocalizacao();
             }).catch(e => {
@@ -65,7 +73,6 @@ export default function MakerPoint({ setLocation }) {
     useFocusEffect(useCallback(() => {
         checkIsOffline();
     }, [isConnected]))
-
 
 
     return (
@@ -184,7 +191,7 @@ export default function MakerPoint({ setLocation }) {
                                             coordinate={point}
                                         />}
                                     </Mapbox.MapView>
-                                    <CamadaMap setType={setTypeMap} top={70}/>
+                                    <CamadaMap setType={setTypeMap} top={70} />
                                 </>
                             }
                         </View>
@@ -195,9 +202,9 @@ export default function MakerPoint({ setLocation }) {
                                 <AntDesign name="close" size={30} />
                             </TouchableOpacity>
                         </View>
-                        
+
                     </View>
-                 
+
                 </Modal>
             </View>
         </>

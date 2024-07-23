@@ -143,7 +143,8 @@ export default function tabHomeScreen() {
                         <>
                             <View style={{ paddingVertical: 22 }}>
                                 <Image style={{
-                                    width: "100%", height: 200, resizeMode: 'contain',
+                                    margin:"auto",
+                                    width: 128, height: 128, resizeMode: 'contain',
 
                                 }} source={checkList} />
                                 <Text style={{

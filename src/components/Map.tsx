@@ -92,8 +92,12 @@ export default function MakerPoint() {
     }
 
     const getLocalizacao = async () => {
+       try {
         let getLocation = await Location.getCurrentPositionAsync({});
         setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+       } catch (error) {
+        getLocalizacao();
+       }
     }
 
     const activeMapOffilne = async () => {

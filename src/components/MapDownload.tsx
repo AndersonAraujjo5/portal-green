@@ -64,8 +64,12 @@ function MapDownload() {
   }
 
   const getLocalizacao = async () => {
-    let getLocation = await Location.getCurrentPositionAsync({});
-    setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+    try {
+      let getLocation = await Location.getCurrentPositionAsync({});
+      setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+    } catch (error) {
+      getLocalizacao();
+    }
   }
 
   // Função para capturar as coordenadas da área visível do mapa

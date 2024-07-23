@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ScrollView } from "moti";
 import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
+import Finalizar from "@/components/Finalizar";
 
 export enum ClienteStatus {
     SincronizacaoPendente = "Sincronização Pendente",
@@ -58,6 +59,10 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
     }
 
     const cancelar = () => {
+        atualizarStatus(ClienteStatus.Cancelado)
+    }
+
+    const desistiu = () => {
         atualizarStatus(ClienteStatus.ClienteDesistiu)
     }
 
@@ -97,6 +102,11 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                             style={styles.buttons}>
                             <Text>Cencelar</Text>
                         </Pressable>
+                        <Pressable
+                            onPress={desistiu}
+                            style={styles.buttons}>
+                            <Text>Cliente desistiu</Text>
+                        </Pressable>
                     </>
                 }
                 <Comentar update={update} id={id} />
@@ -110,6 +120,8 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                         <Text>Carnê entregue</Text>
                     </Pressable>
                 }
+
+                <Finalizar id={id} update={update} />
 
             </View>
         </ScrollView>

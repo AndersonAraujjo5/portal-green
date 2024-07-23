@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, RefreshControl, Dimensions } from "react-native";
+import { Text, View, ScrollView, RefreshControl, Dimensions, Image } from "react-native";
 import Clientes from "@/components/Cliente";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
@@ -10,6 +10,7 @@ import PreCadastro from "@/database/PreCadastro";
 import Status from "@/database/Status";
 import Filtro from "@/database/Filtro";
 import Filter from "@/components/Filter";
+import { nodata } from "@/assets/images";
 
 const { width, height } = Dimensions.get("window")
 
@@ -25,7 +26,7 @@ export default function tabClientesScreen() {
         Status.asyncEnviar();
 
         if (isFilter) { // se tiver filtro não consulta todos os dados
-            if(Cliente.findAll()) setData(Cliente.findAll())
+            if (Cliente.findAll()) setData(Cliente.findAll())
             else setData([])
             return;
         };
@@ -61,18 +62,40 @@ export default function tabClientesScreen() {
 
     return (
         <SafeStatusBar safe={false} style={'light'}>
-     
+
             {
                 (!data && !msgError) && <Loader show={true} />
             }
-    
+
+            {
+                !data &&
+                <>
+                    <View style={{
+                        paddingVertical: 22, flex: 1, display: "flex",
+                        alignItems: "center", justifyContent: 'center'
+                    }}>
+                        <View >
+                            <Image style={{
+                                margin: 'auto',
+                                width: 128, height: 128, resizeMode: 'contain',
+                            }} source={nodata} />
+                            <Text style={{
+                                textAlign: "center",
+                                fontSize: 18,
+                                fontWeight: "bold", marginTop: 4
+                            }}>Sem informações disponiveis</Text>
+                        </View>
+                    </View>
+                </>
+            }
+
             {
                 data &&
                 <ScrollView
                     refreshControl={<RefreshControl refreshing={refreshing}
                         onRefresh={onRefresh} />}>
-                        <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} msgError={setMsgErro}/>
-                    <View style={{minHeight: height, paddingBottom: 18}}> 
+                    <Filter setData={setData} setMsgErro={setMsgErro} setFilter={setIsFilter} msgError={setMsgErro} />
+                    <View style={{ minHeight: height, paddingBottom: 18 }}>
                         {
                             msgError &&
                             msgError.map((e, i) => <Text key={i}
@@ -81,6 +104,7 @@ export default function tabClientesScreen() {
                                     marginTop: 50
                                 }}>{e}</Text>)
                         }
+
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />
