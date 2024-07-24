@@ -42,9 +42,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="mapa"
+        name="mapa/[param]"
         options={{
           title: 'Mapa',
+          href:{
+            pathname: "tabs/mapa/[param]",
+            params: {
+              param: 'all'
+            }
+          },
           headerShown: false,
           tabBarInactiveTintColor: Colors.gray,
           tabBarActiveTintColor: Colors.green,

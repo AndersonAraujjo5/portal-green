@@ -14,8 +14,6 @@ import OfflinePack from '@rnmapbox/maps/lib/typescript/src/modules/offline/Offli
 export default function page() {
     const { id } = useLocalSearchParams<{ id?: string }>();
 
-
-    const [locationAtual, setLocationAtual] = useState<number[] | [number, number]>([]);
     const [update, setUpdate] = useState(0)
     const [onModal, setOnModal] = useState<void>()
     const [typeMap, setTypeMap] = useState<string>(StyleURL.Street);
@@ -48,33 +46,26 @@ export default function page() {
         }
     },[update])
 
+    console.log(clienteData)
 
-    const getLocalizacao = async () => {
-        let getLocation = await Location.getCurrentPositionAsync({});
-        setLocationAtual([getLocation.coords.longitude, getLocation.coords.latitude])
-    }
-
-    const activeMapOffilne = async () => {
+    const activeMapOffline = async () => {
         const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
         if (offlinePack) {
             setMapOffline(offlinePack)
-            getLocalizacao();
             setStateConnect(true);
             return
         };
-        getLocalizacao();
         setStateConnect(true);
     }
 
     const checkIsOffline = () => {
         if (!isConnected) {
-            activeMapOffilne();
+            activeMapOffline();
         } else {
             axios.get('https://google.com', { timeout: 5000 }).then(e => {
-                getLocalizacao();
                 setStateConnect(true);
             }).catch(e => {
-                activeMapOffilne();
+                activeMapOffline();
             })
         }
     }
@@ -104,7 +95,6 @@ export default function page() {
                     {
                         mapOffline &&
                         <>
-                            <Text>offilene</Text>
                             <Mapbox.MapView
                                 styleURL={mapOffline?.metadata._rnmapbox.styleURI}
                                 rotateEnabled={true}

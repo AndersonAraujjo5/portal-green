@@ -5,7 +5,7 @@ import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import Loader from "./Loader";
 import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";
@@ -15,8 +15,10 @@ import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
 import InfoMap from "@/components/InfoMap";
 import { Entypo } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
 
 export enum ClienteStatus {
+    SincronizacaoPendente = "Sincronização Pendente",
     CadastroPendente = "Cadastro Pendente",
     CadastroEnviado = "Cadastro Enviado",
     UsuarioCriado = "Usuário Criado",
@@ -24,10 +26,12 @@ export enum ClienteStatus {
     TecnicoACaminho = "Técnico a Caminho",
     InstalacaoEmAndamento = "Instalação em Andamento",
     InstalacaoConcluida = "Instalação Concluída",
-    ClienteDesistiu = "Cliente Desistiu"
+    ClienteDesistiu = "Cliente Desistiu",
+    Cancelado = "Cancelado",
+    CarneEntregue = "Carnê Entregue"
 }
 
-function LocationPin({ status, size=40, ...rest }) {
+function LocationPin({ status, fatura, size=40, ...rest }) {
     return (
         <>
             {
@@ -49,11 +53,19 @@ function LocationPin({ status, size=40, ...rest }) {
                 (status === ClienteStatus.ClienteDesistiu) &&
                 <Entypo name="location-pin" size={size} color={'black'} {...rest} />
             }
+            {
+                (status === ClienteStatus.InstalacaoConcluida && fatura === "Carnê") &&
+                <Entypo name="location-pin" size={size} color={Colors.green} {...rest} />
+            }
+            {
+                (status === ClienteStatus.CarneEntregue) &&
+                <Entypo name="location-pin" size={size} color={'blue'} {...rest} />
+            }
         </>
     )
 }
 
-export default function MakerPoint() {
+export default function Map({param}:any) {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
@@ -61,7 +73,7 @@ export default function MakerPoint() {
     const [mapOffline, setMapOffline] = useState();
     const { isConnected } = useNetInfo();
     const [update, setUpdate] = useState(0)
-
+   
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -85,10 +97,16 @@ export default function MakerPoint() {
         PreCadastro.asyncEnviar();
         Comentario.asyncEnviar()
         Status.asyncEnviar();
-
-        if (Cliente.findAll()) {
-            setClientesData(Cliente.findAll())
+        if(param && param === 'carnê') return setClientesData(Cliente.findBy((item) => {
+            if(item.status === ClienteStatus.InstalacaoConcluida && item.fatura === "Carnê") return item;
+        }))
+        else if (param == "all" && Cliente.findAll()) {
+            return setClientesData(Cliente.findAll())
         }
+        else if(param) return setClientesData(Cliente.findBy((item) => {
+            if(item.status === param) return item;
+        }))
+       
     }
 
     const getLocalizacao = async () => {
@@ -124,7 +142,7 @@ export default function MakerPoint() {
                 activeMapOffilne();
             })
         }
-    }, [isConnected]))
+    }, [isConnected, param]))
 
 
     const handleTypeMap = (styleUrl: string) => {
@@ -183,7 +201,7 @@ export default function MakerPoint() {
                                             }}
                                             coordinate={item.cordenadas.split(',')}
                                         >
-                                            <LocationPin status={item.status} />
+                                            <LocationPin fatura={item.fatura} status={item.status} />
                                         </Mapbox.PointAnnotation>
                                     )
                                 })
@@ -228,7 +246,7 @@ export default function MakerPoint() {
 
                                             }}
                                         >
-                                            <LocationPin status={item.status} />
+                                            <LocationPin fatura={item.fatura} status={item.status} />
                                         </Mapbox.PointAnnotation>
                                     )
                                 })

@@ -24,8 +24,8 @@ export default function tabClientesScreen() {
         PreCadastro.asyncEnviar();
         Comentario.asyncEnviar()
         Status.asyncEnviar();
-
-        if (isFilter) { // se tiver filtro não consulta todos os dados
+     
+        if (Filtro.find().filter) { // se tiver filtro não consulta todos os dados
             if (Cliente.findAll()) setData(Cliente.findAll())
             else setData([])
             return;
@@ -59,6 +59,26 @@ export default function tabClientesScreen() {
         setRefreshing(false)
     }
 
+    const NoData = () => {
+        return(
+            <View style={{
+                paddingVertical: 22, flex: 1, display: "flex",
+                alignItems: "center", justifyContent: 'center'
+            }}>
+                <View >
+                    <Image style={{
+                        margin: 'auto',
+                        width: 128, height: 128, resizeMode: 'contain',
+                    }} source={nodata} />
+                    <Text style={{
+                        textAlign: "center",
+                        fontSize: 18,
+                        fontWeight: "bold", marginTop: 4
+                    }}>Sem informações disponiveis</Text>
+                </View>
+            </View>
+        )
+    }
 
     return (
         <SafeStatusBar safe={false} style={'light'}>
@@ -68,25 +88,7 @@ export default function tabClientesScreen() {
             }
 
             {
-                !data &&
-                <>
-                    <View style={{
-                        paddingVertical: 22, flex: 1, display: "flex",
-                        alignItems: "center", justifyContent: 'center'
-                    }}>
-                        <View >
-                            <Image style={{
-                                margin: 'auto',
-                                width: 128, height: 128, resizeMode: 'contain',
-                            }} source={nodata} />
-                            <Text style={{
-                                textAlign: "center",
-                                fontSize: 18,
-                                fontWeight: "bold", marginTop: 4
-                            }}>Sem informações disponiveis</Text>
-                        </View>
-                    </View>
-                </>
+                !data && <NoData/>
             }
 
             {
@@ -104,7 +106,10 @@ export default function tabClientesScreen() {
                                     marginTop: 50
                                 }}>{e}</Text>)
                         }
-
+                        {
+                            data.length === 0 &&
+                            <NoData/>
+                        }
                         {
                             data.map((item, index) => (
                                 <Clientes key={`clientes-${index}`} data={item} />

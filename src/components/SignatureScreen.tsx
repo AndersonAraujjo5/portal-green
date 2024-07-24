@@ -18,11 +18,12 @@ function SignatureScreen({style, assinatura}:any){
     if (base64Image) {
       try {
           const base64Data = base64Image.replace('data:image/png;base64,', '');
-          let path = `${FileSystem.documentDirectory}${aleatorio()}-assinatura.jpg`;
-          const a = await FileSystem.writeAsStringAsync(path, base64Data, {
+          const name = `${aleatorio()}-assinatura.png`
+          let path = `${FileSystem.documentDirectory}${name}`;
+          await FileSystem.writeAsStringAsync(path, base64Data, {
               encoding: FileSystem.EncodingType.Base64,
           });
-          assinatura(path)
+          assinatura([{uri:path, type: 'image/png', name }])
           setVisible(false)
           console.log('Imagem salva com sucesso em:', path);
       } catch (error) {

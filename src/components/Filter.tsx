@@ -14,10 +14,10 @@ import { api } from "@/service/api";
 
 export default function Filter({ setData, setMsgErro, setFilter, msgError }: any) {
     const [visible, setVisible] = useState(false)
-    const [dataIni, setDataIni] = useState(Filtro.find().dataIni)
-    const [dataFin, setDataFin] = useState(Filtro.find().dataFin)
-    const [isStatus, setIsStatus] = useState(Filtro.find().staus)
-    const [isPlano, setIsPlano] = useState(Filtro.find().staus)
+    const [dataIni, setDataIni] = useState('')
+    const [dataFin, setDataFin] = useState('')
+    const [isStatus, setIsStatus] = useState('')
+    const [isPlano, setIsPlano] = useState('')
 
 
     const getDateAtual = () => {

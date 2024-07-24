@@ -9,7 +9,7 @@ import PreCadastro from "@/database/PreCadastro";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, ScrollView, TouchableOpacity } from "react-native";
+import { Image, Pressable, ScrollView, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 
@@ -18,7 +18,7 @@ export default function tabHomeScreen() {
     const [cargo, setCargo] = useState(LoginBD.find()?.usuario.cargo)
     const [length, setLength] = useState(PreCadastro.findAll()?.length);
     const [precadastro, setPrecadastro] = useState(PreCadastro.findAll())
- 
+
 
     const handleCadFisica = () => {
         router.replace('/tabs/cadastro/fisica')
@@ -34,7 +34,15 @@ export default function tabHomeScreen() {
         setCargo(LoginBD.find()?.usuario.cargo);
         setLength(PreCadastro.findAll()?.length);
         setPrecadastro(PreCadastro.findAll());
-    },[]))
+    }, []))
+
+    const handlePressPendente = () => {
+        router.push(`/tabs/mapa/${ClienteStatus.UsuarioCriado}`)
+    }
+
+    const handlePressCarne= () => {
+        router.push(`/tabs/mapa/carnê`)
+    }
 
     return (
         <SafeStatusBar safe={false} style={'light'}>
@@ -70,7 +78,7 @@ export default function tabHomeScreen() {
                                     paddingVertical: 12,
                                     backgroundColor: Colors.gray
                                 }}
-                                onPress={handleCadJuridica}>
+                                    onPress={handleCadJuridica}>
                                     <Text style={{ color: "white" }}>Pessoa Jurídica</Text>
                                 </TouchableOpacity>
                             </View>
@@ -105,18 +113,20 @@ export default function tabHomeScreen() {
                                 marginTop: 12,
                                 borderRadius: 18,
                             }}>
-    
+
                                 <Text>Instalações pendentes</Text>
-                                <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                                    {
-                                        Cliente.findBy((item:any) => {
-                                            return item.status === ClienteStatus.UsuarioCriado
-                                        })?.length
-                                    }
-                                </Text>
-    
+                                <Pressable onPress={handlePressPendente}>
+                                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                                        {
+                                            Cliente.findBy((item: any) => {
+                                                return item.status === ClienteStatus.UsuarioCriado
+                                            })?.length
+                                        }
+                                    </Text>
+                                </Pressable>
+
                             </View>
-    
+
                             <View style={{
                                 borderWidth: 1,
                                 borderColor: Colors.green,
@@ -125,13 +135,15 @@ export default function tabHomeScreen() {
                                 marginTop: 12,
                                 borderRadius: 18,
                             }}>
-    
+
                                 <Text>Aguardando o carnê</Text>
+                                <Pressable onPress={handlePressCarne}>
                                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>{
-                                        Cliente.findBy((item:any) => {
-                                            return item.fatura == "Carnê" && item.status !== ClienteStatus.CarneEntregue
-                                        })?.length
-                                    }</Text>
+                                    Cliente.findBy((item: any) => {
+                                        return item.fatura == "Carnê" && item.status !== ClienteStatus.CarneEntregue
+                                    })?.length
+                                }</Text>
+                                </Pressable>
                             </View>
                         </View>
                     }
@@ -143,7 +155,7 @@ export default function tabHomeScreen() {
                         <>
                             <View style={{ paddingVertical: 22 }}>
                                 <Image style={{
-                                    margin:"auto",
+                                    margin: "auto",
                                     width: 128, height: 128, resizeMode: 'contain',
 
                                 }} source={checkList} />

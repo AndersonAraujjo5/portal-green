@@ -28,7 +28,7 @@ export default function Finalizar({ id, update }: ComentarProps) {
         const associado = LoginBD.find()?.usuario
 
         Cliente.addComentario(id, {
-            body: comentario,
+            body: comentario ? comentario: '',
             associado: associado?.nome,
             foto: foto ? foto[0].uri : '',
             url: foto ? foto[0].uri : '',
@@ -68,51 +68,53 @@ export default function Finalizar({ id, update }: ComentarProps) {
                 visible={isModal}
             >
 
-            <ScrollView style={{ padding: 20, flex:1 }}>
-                <View style={styles.boxInput}>
-                    <TextInput
-                        defaultValue={comentario}
-                        placeholder="Comentario"
-                        onChangeText={(value) => setComentario(value)}
-                        multiline={true}
-                        numberOfLines={10}
-                        style={styles.input}
-                    />
-                </View>
-                <SignatureScreen assinatura={setFoto} style={styles.btnAddImg} />
-
-                {
-                    foto &&
-                    <View style={styles.img}>
-                        <Image
-                            width={300}
-                            height={320}
-                            source={{
-                                uri: foto
-                            }}
-                            resizeMode="cover"
+                <ScrollView style={{ padding: 20, flex: 1 }}>
+                    <View style={styles.boxInput}>
+                        <TextInput
+                            defaultValue={comentario}
+                            placeholder="Comentario"
+                            onChangeText={(value) => setComentario(value)}
+                            multiline={true}
+                            numberOfLines={10}
+                            style={styles.input}
                         />
                     </View>
+                    <SignatureScreen assinatura={setFoto} style={styles.btnAddImg} />
+
+                    {
+                        foto &&
+                        foto.map((item) => (
+                            <View style={styles.img} key={item.name}>
+                                <Image
+                                    width={300}
+                                    height={320}
+                                    source={{
+                                        uri: item.uri
+                                    }}
+                                    resizeMode="cover"
+                                />
+                            </View>
+                        ))
+                    }
+
+                </ScrollView>
+                {
+                    (comentario || foto) &&
+                    <View style={styles.btnPostar}>
+                        <Pressable
+                            style={{
+                                backgroundColor: Colors.green,
+                                width: '100%',
+                                paddingTop: 12,
+                                paddingBottom: 12,
+                                borderRadius: 8
+                            }}
+                            onPress={handleSendComentario}
+                        >
+                            <Text style={styles.btnText}>Postar</Text>
+                        </Pressable>
+                    </View>
                 }
-               
-            </ScrollView>
-            {
-                (comentario || foto) &&
-                <View style={styles.btnPostar}>
-                    <Pressable
-                        style={{
-                            backgroundColor: Colors.green,
-                            width: '100%',
-                            paddingTop: 12,
-                            paddingBottom: 12,
-                            borderRadius: 8
-                        }}
-                        onPress={handleSendComentario}
-                    >
-                        <Text style={styles.btnText}>Postar</Text>
-                    </Pressable>
-                </View>
-            }
             </Modal>
         </>
     )

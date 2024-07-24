@@ -92,11 +92,7 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                        
                     ) &&
                     <>
-                        <Pressable
-                            onPress={finalizar}
-                            style={styles.buttons}>
-                            <Text >Finalizar</Text>
-                        </Pressable>
+                        <Finalizar id={id} update={update} />
                         <Pressable
                             onPress={cancelar}
                             style={styles.buttons}>
@@ -120,8 +116,6 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                         <Text>Carnê entregue</Text>
                     </Pressable>
                 }
-
-                <Finalizar id={id} update={update} />
 
             </View>
         </ScrollView>
