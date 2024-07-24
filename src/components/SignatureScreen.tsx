@@ -1,46 +1,72 @@
-import React, { useRef } from 'react';
-import { View, Button } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View,  Text, Dimensions, Pressable, Modal } from 'react-native';
 import Signature from 'react-native-signature-canvas';
+import * as FileSystem from 'expo-file-system';
 
 import RNFS from 'react-native-fs';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
+const {height} = Dimensions.get('window');
 
-const SignatureScreen = () => {
+function SignatureScreen({style, assinatura}:any){
+  const [visible, setVisible] = useState(false)
   const signatureRef = useRef();
 
-  const saveSignature = async (signature: any) => {
-    if (signature) {
-        const base64Data = signature.replace('data:image/png;base64,', '');
-      const path = RNFS.DocumentDirectoryPath + '/signature.png';
-      console.log(path)
+  const aleatorio = () => Math.floor(Math.random() * 10000 + 10000);
+
+  const saveSignature = async (base64Image: any) => {
+    if (base64Image) {
       try {
-        await RNFS.writeFile(path, signature, 'base64');
-        console.log('Assinatura salva em:', path);
+          const base64Data = base64Image.replace('data:image/png;base64,', '');
+          let path = `${FileSystem.documentDirectory}${aleatorio()}-assinatura.jpg`;
+          const a = await FileSystem.writeAsStringAsync(path, base64Data, {
+              encoding: FileSystem.EncodingType.Base64,
+          });
+          assinatura(path)
+          setVisible(false)
+          console.log('Imagem salva com sucesso em:', path);
       } catch (error) {
-        console.error('Erro ao salvar a assinatura:', error);
+          console.error('Erro ao salvar imagem:', error);
       }
     }
   };
 
-  const handleSignature = (t) => {
+  const handleSignature = (t:any) => {
     saveSignature(t)
-    // if (signatureRef.current) {
-    //   const signature = signatureRef.current.getSignature();
-    //   // Aqui você pode enviar a assinatura para onde precisar (por exemplo, salvar no banco de dados)
-    //   console.log(signature);
-    // }
+   
   };
 
+  const  styles  =  `.m-signature-pad
+     { 
+      height:${height -200}px;
+    }` ; 
+
   return (
-    <View style={{ flex: 1 }}>
+    <View>
+    <Pressable onPress={() => setVisible(!visible)}
+        style={style}>
+          <FontAwesome name='pencil-square-o' size={20} color={'white'} />
+        <Text style={{color: 'white'}}>   Assinatura do cliente</Text>
+    </Pressable>
+
+    <Modal style={{ flex: 1 , backgroundColor:"red"}}
+    visible={visible}
+    animationType='slide'>
+      <Pressable style={{padding: 8}}
+      onPress={() => setVisible(!visible)}
+      >
+        <AntDesign name='left' size={25}/>
+        </Pressable>
       <Signature
         ref={signatureRef}
         onOK={handleSignature}
         descriptionText="Assine aqui"
         clearText="Limpar"
         confirmText="Salvar"
-        webStyle="width: 100%; height: 100%;"
+        webStyle={styles}
+        imageType='image/png'
       />
+    </Modal>
     </View>
   );
 };

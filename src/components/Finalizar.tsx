@@ -18,14 +18,11 @@ type ComentarProps = {
 }
 
 export default function Finalizar({ id, update }: ComentarProps) {
-    const [camera, setCamera] = useState(false)
     const [foto, setFoto] = useState(null);
     const [comentario, setComentario] = useState();
     const [isModal, setIsModal] = useState(false);
     const [loader, setLoader] = useState(false)
-    const handleClosedCamera = () => {
-        setCamera(false)
-    }
+
 
     const salvarComentarios = () => {
         const associado = LoginBD.find()?.usuario
@@ -71,8 +68,51 @@ export default function Finalizar({ id, update }: ComentarProps) {
                 visible={isModal}
             >
 
+            <ScrollView style={{ padding: 20, flex:1 }}>
+                <View style={styles.boxInput}>
+                    <TextInput
+                        defaultValue={comentario}
+                        placeholder="Comentario"
+                        onChangeText={(value) => setComentario(value)}
+                        multiline={true}
+                        numberOfLines={10}
+                        style={styles.input}
+                    />
+                </View>
+                <SignatureScreen assinatura={setFoto} style={styles.btnAddImg} />
 
-                <SignatureScreen />
+                {
+                    foto &&
+                    <View style={styles.img}>
+                        <Image
+                            width={300}
+                            height={320}
+                            source={{
+                                uri: foto
+                            }}
+                            resizeMode="cover"
+                        />
+                    </View>
+                }
+               
+            </ScrollView>
+            {
+                (comentario || foto) &&
+                <View style={styles.btnPostar}>
+                    <Pressable
+                        style={{
+                            backgroundColor: Colors.green,
+                            width: '100%',
+                            paddingTop: 12,
+                            paddingBottom: 12,
+                            borderRadius: 8
+                        }}
+                        onPress={handleSendComentario}
+                    >
+                        <Text style={styles.btnText}>Postar</Text>
+                    </Pressable>
+                </View>
+            }
             </Modal>
         </>
     )
