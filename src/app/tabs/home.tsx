@@ -27,7 +27,7 @@ export default function tabHomeScreen() {
         router.replace('/tabs/cadastro/juridico')
     }
 
-    const getInstalacaoPendente = () =>{
+    const getInstalacaoPendente = () => {
         const pen = Cliente.findBy((item: any) => {
             return item.status === ClienteStatus.UsuarioCriado
         })
@@ -41,7 +41,7 @@ export default function tabHomeScreen() {
         setPrecadastro(PreCadastro.findAll());
 
         getInstalacaoPendente()
-        
+
     }, []))
 
     const handlePressPendente = () => {
@@ -195,30 +195,33 @@ export default function tabHomeScreen() {
 
                     {
                         cargo === 'Tecnico' &&
-                        insPendente.length !== 0 ?
-                        <>
-                        <Text style={{ marginTop: 18 }}>Instalação pendente: {insPendente.length}</Text>
-                            {
-                                insPendente.map(item => (
-                                    <Clientes data={item}  key={`${item.id}-cliente`} />
-                                ))
-                            }
-                        </>
-                        :
-                        <>
-                        <View style={{ paddingVertical: 22 }}>
-                            <Image style={{
-                                margin: "auto",
-                                width: 128, height: 128, resizeMode: 'contain',
+                            insPendente.length !== 0 &&
+                            <>
+                                <Text style={{ marginTop: 18 }}>Instalação pendente: {insPendente.length}</Text>
+                                {
+                                    insPendente.map(item => (
+                                        <Clientes data={item} key={`${item.id}-cliente`} />
+                                    ))
+                                }
+                            </>
+                    }
+                    {
+                        cargo === 'Tecnico' &&
+                            insPendente.length === 0 &&
+                            <>
+                                <View style={{ paddingVertical: 22 }}>
+                                    <Image style={{
+                                        margin: "auto",
+                                        width: 128, height: 128, resizeMode: 'contain',
 
-                            }} source={responsible} />
-                            <Text style={{
-                                textAlign: "center",
-                                fontSize: 18,
-                                fontWeight: "bold", marginTop: 4
-                            }}>Sem instalações pendentes</Text>
-                        </View>
-                    </>
+                                    }} source={responsible} />
+                                    <Text style={{
+                                        textAlign: "center",
+                                        fontSize: 18,
+                                        fontWeight: "bold", marginTop: 4
+                                    }}>Sem instalações pendentes</Text>
+                                </View>
+                            </>
                     }
                 </View>
             </ScrollView>
