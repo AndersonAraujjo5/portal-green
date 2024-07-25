@@ -92,7 +92,7 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                        
                     ) &&
                     <>
-                        <Finalizar id={id} update={update} />
+                        <Finalizar handleFinalizar={finalizar} id={id} update={update} />
                         <Pressable
                             onPress={cancelar}
                             style={styles.buttons}>

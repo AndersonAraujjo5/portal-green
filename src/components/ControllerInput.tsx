@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { Control, Controller, FieldError } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import  MaskInput from 'react-native-mask-input' ;
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";

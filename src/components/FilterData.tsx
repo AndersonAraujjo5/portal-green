@@ -1,8 +1,4 @@
 import Colors from "@/constants/Colors";
-import Cliente from "@/database/Cliente";
-import Filtro from "@/database/Filtro";
-import { api } from "@/service/api";
-import { useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MaskInput, { Masks } from "react-native-mask-input";
 

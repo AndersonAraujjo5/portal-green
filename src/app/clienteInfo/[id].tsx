@@ -46,8 +46,6 @@ export default function page() {
         }
     },[update])
 
-    console.log(clienteData)
-
     const activeMapOffline = async () => {
         const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
         if (offlinePack) {

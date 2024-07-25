@@ -2,8 +2,6 @@ import React, { useRef, useState } from 'react';
 import { View,  Text, Dimensions, Pressable, Modal } from 'react-native';
 import Signature from 'react-native-signature-canvas';
 import * as FileSystem from 'expo-file-system';
-
-import RNFS from 'react-native-fs';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 const {height} = Dimensions.get('window');
@@ -25,7 +23,6 @@ function SignatureScreen({style, assinatura}:any){
           });
           assinatura([{uri:path, type: 'image/png', name }])
           setVisible(false)
-          console.log('Imagem salva com sucesso em:', path);
       } catch (error) {
           console.error('Erro ao salvar imagem:', error);
       }

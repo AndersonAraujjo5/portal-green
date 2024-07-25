@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Mapbox from "@/components/MapBox"
 import * as Location from 'expo-location'
 import CamadaMap, { StyleURL } from '@/components/CamadaMap';

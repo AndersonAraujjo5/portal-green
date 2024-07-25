@@ -1,13 +1,10 @@
-import { AntDesign } from "@expo/vector-icons";
 import { Image, ScrollView, View } from "react-native";
 import { TextInput } from "react-native";
 import { Modal, Text } from "react-native";
 import { Pressable } from "react-native";
-import Camera from "@/components/Camera";
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import LoginBD from "@/database/LoginBD";
-import Loader from "@/components/Loader";
 import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
 import SignatureScreen from "./SignatureScreen";
@@ -15,9 +12,10 @@ import SignatureScreen from "./SignatureScreen";
 type ComentarProps = {
     id: number
     update?: any
+    handleFinalizar: Function
 }
 
-export default function Finalizar({ id, update }: ComentarProps) {
+export default function Finalizar({ id, update, handleFinalizar }: ComentarProps) {
     const [foto, setFoto] = useState(null);
     const [comentario, setComentario] = useState();
     const [isModal, setIsModal] = useState(false);
@@ -26,7 +24,6 @@ export default function Finalizar({ id, update }: ComentarProps) {
 
     const salvarComentarios = () => {
         const associado = LoginBD.find()?.usuario
-
         Cliente.addComentario(id, {
             body: comentario ? comentario: '',
             associado: associado?.nome,
@@ -36,6 +33,8 @@ export default function Finalizar({ id, update }: ComentarProps) {
             type: "image"
 
         })
+
+        handleFinalizar();
     }
 
     const limpar = () => {

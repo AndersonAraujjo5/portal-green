@@ -45,7 +45,6 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
 
     const handlePesquisar = () => {
         const url = `/v1/cliente?size=100&${dataIni && `dataInicio=${formatDate(dataIni)}&`}${dataFin && `dataFim=${formatDate(dataFin)}&`}${isStatus && `status=${isStatus}&`}${isPlano && `plano=${isPlano}`}`
-        console.log(dataIni,dataFin,isStatus, isPlano,'\n\n', url)
         api.get(url).
             then(({data}) => {
                 setData(data.data)

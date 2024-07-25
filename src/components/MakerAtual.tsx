@@ -4,7 +4,6 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import Loader from "@/components/Loader";
 
 export default function MakerAtual({setLocaction}) {
     const [isLoad, setIsLoad] = useState(false)

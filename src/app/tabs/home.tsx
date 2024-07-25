@@ -6,11 +6,10 @@ import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
 import LoginBD from "@/database/LoginBD";
 import PreCadastro from "@/database/PreCadastro";
-import { AntDesign, Entypo } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, TouchableOpacity } from "react-native";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 
 export default function tabHomeScreen() {

@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useNetInfo } from '@react-native-community/netinfo'
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import Loader from "./Loader";
 import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";

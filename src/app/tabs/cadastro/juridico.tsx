@@ -20,37 +20,6 @@ import SafeStatusBar from "@/components/SafeStatusBar";
 import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
 
-const validarCPF = (cpf: string) => {
-  cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
-    return false;
-  }
-  let soma = 0;
-  let resto;
-  for (let i = 1; i <= 9; i++) {
-    soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) {
-    resto = 0;
-  }
-  if (resto !== parseInt(cpf.substring(9, 10))) {
-    return false;
-  }
-  soma = 0;
-  for (let i = 1; i <= 10; i++) {
-    soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) {
-    resto = 0;
-  }
-  if (resto !== parseInt(cpf.substring(10, 11))) {
-    return false;
-  }
-  return true;
-}
-
 type FormData1 = {
   nome: string
   nomePai: string
@@ -200,7 +169,6 @@ export default function juridico() {
     obj.status = ClienteStatus.CadastroEnviado
     obj.localizacao = cordenadas ? `https://www.google.com/maps?q=${cordenadas[0]},${cordenadas[1]}` : ''
     const dados = { ...data, ...obj };
-    // console.log(dados)
     dados.status = ClienteStatus.SincronizacaoPendente
 
 

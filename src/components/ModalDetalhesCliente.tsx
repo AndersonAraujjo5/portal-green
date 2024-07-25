@@ -1,5 +1,5 @@
 import ButtonAction from "@/components/ButtonActions";
-import { Dimensions, View, ScrollView, Text, Image, TextInput, Pressable, StyleSheet } from "react-native";
+import { Dimensions, View, ScrollView, Text, Image, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import CacherImage from "./CacherImage";
 
