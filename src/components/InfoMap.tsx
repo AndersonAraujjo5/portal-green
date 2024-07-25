@@ -1,9 +1,9 @@
 import Colors from "@/constants/Colors";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 import { View } from "moti";
-import { Dimensions, Pressable, Text, ScrollView } from "react-native";
+import { Dimensions, Text, ScrollView } from "react-native";
 import { ClienteStatus } from "@/components/ButtonActions";
-import { useState } from "react";
+
 
 const { width } = Dimensions.get('window');
 
@@ -37,20 +37,9 @@ function LocationPin({ status, size = 40, ...rest }) {
     )
 }
 export default function InfoMap() {
-    const [show, setShow] = useState(false);
 
     return <>
-        <Pressable
-            onPress={() => {
-                setShow(!show)
-            }}
-            style={{
-                position: "absolute",
-                bottom: 20, right: 20,
-                zIndex: 50
-            }}><AntDesign name="infocirlceo" color={Colors.green} size={20} /></Pressable>
-        {
-            show &&
+
             <View>
                 <ScrollView horizontal={true}
             showsHorizontalScrollIndicator={false}>
@@ -87,6 +76,5 @@ export default function InfoMap() {
                 </View>
             </ScrollView>
             </View>
-        }
     </>
 }

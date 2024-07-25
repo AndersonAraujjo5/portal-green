@@ -79,13 +79,14 @@ export default function tabClientesScreen() {
             </View>
         )
     }
+    
+
+    if(!data && !msgError) {
+        return <Loader show={true} />
+    }
 
     return (
         <SafeStatusBar safe={false} style={'light'}>
-
-            {
-                (!data && !msgError) && <Loader show={true} />
-            }
 
             {
                 !data && <NoData/>

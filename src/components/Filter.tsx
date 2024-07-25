@@ -89,8 +89,7 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
     return <>
         <View style={{
             backgroundColor: Colors.green,
-            borderWidth: 1,
-            borderColor: Colors.green,
+            paddingTop:22,
             zIndex: 50,
             paddingHorizontal: 16,
         }}>

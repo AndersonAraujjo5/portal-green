@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import Comentar from "@/components/Comentar";
 import LoginBD from "@/database/LoginBD";
 import { useState } from "react";
@@ -66,16 +66,30 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
         atualizarStatus(ClienteStatus.ClienteDesistiu)
     }
 
+    const openMapApp = () => {
+        const [longitude, latitude] = cordenadas.split(',');
+        let url = `geo:${latitude},${longitude}?q=${latitude},${longitude}`;
+
+        Linking.canOpenURL(url).then((supported: any) => {
+            if (supported) {
+                Linking.openURL(url)
+            } else {
+                console.log('No map app available');
+            }
+        }).catch(err => console.error('An error occurred', err));
+    };
+
+
     return (
         <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}>
             <View style={styles.container}>
-                <Link style={styles.buttonRotas}
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${cordenadas.split(',')[1]},${cordenadas.split(',')[0]}`}>
+                <Pressable onPress={openMapApp} style={styles.buttonRotas}>
                     <FontAwesome name="location-arrow" size={15} color="white" />
-                    <Text style={{color: 'white'}}>  Rotas</Text>
-                </Link>
+                    <Text style={{ color: 'white' }}>  Rotas</Text>
+                </Pressable>
+
                 {
                     (statusValue == ClienteStatus.UsuarioCriado && cargo === "Tecnico") &&
                     <Pressable style={styles.buttons}
@@ -89,7 +103,7 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                             statusValue === ClienteStatus.TecnicoACaminho ||
                             statusValue === ClienteStatus.InstalacaoEmAndamento
                         )
-                       
+
                     ) &&
                     <>
                         <Finalizar handleFinalizar={finalizar} id={id} update={update} />
@@ -123,13 +137,13 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         display: 'flex',
         flexDirection: 'row',
-        width:'100%'
+        width: '100%'
     },
 
-    buttonRotas:{
+    buttonRotas: {
         backgroundColor: Colors.green,
         paddingHorizontal: 12,
         paddingVertical: 12,
@@ -138,11 +152,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    buttons:{
+    buttons: {
         borderWidth: 1,
         marginRight: 12,
         marginLeft: 12,
-        paddingRight:12,
+        paddingRight: 12,
         paddingLeft: 12,
         borderRadius: 9999,
         justifyContent: 'center',

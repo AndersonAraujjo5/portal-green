@@ -103,7 +103,7 @@ export default new class Cliente implements ICadastro {
         return;
     }
 
-    findBy(where: Function): ClienteProps[] | undefined {
+    findBy(where: Function): ClienteProps[] {
   
         const cadastrados = this.findAll()
 

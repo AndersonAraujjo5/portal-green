@@ -1,4 +1,4 @@
-import { checkList } from "@/assets/images";
+import { checkList, responsible } from "@/assets/images";
 import { ClienteStatus } from "@/components/ButtonActions";
 import Clientes from "@/components/Cliente";
 import SafeStatusBar from "@/components/SafeStatusBar";
@@ -17,7 +17,7 @@ export default function tabHomeScreen() {
     const [cargo, setCargo] = useState(LoginBD.find()?.usuario.cargo)
     const [length, setLength] = useState(PreCadastro.findAll()?.length);
     const [precadastro, setPrecadastro] = useState(PreCadastro.findAll())
-
+    const [insPendente, setInsPendente] = useState([])
 
     const handleCadFisica = () => {
         router.replace('/tabs/cadastro/fisica')
@@ -27,19 +27,28 @@ export default function tabHomeScreen() {
         router.replace('/tabs/cadastro/juridico')
     }
 
+    const getInstalacaoPendente = () =>{
+        const pen = Cliente.findBy((item: any) => {
+            return item.status === ClienteStatus.UsuarioCriado
+        })
+        setInsPendente(pen)
+    }
 
     useFocusEffect(useCallback(() => {
         setNome(LoginBD.find()?.usuario.nome);
         setCargo(LoginBD.find()?.usuario.cargo);
         setLength(PreCadastro.findAll()?.length);
         setPrecadastro(PreCadastro.findAll());
+
+        getInstalacaoPendente()
+        
     }, []))
 
     const handlePressPendente = () => {
         router.push(`/tabs/mapa/${ClienteStatus.UsuarioCriado}`)
     }
 
-    const handlePressCarne= () => {
+    const handlePressCarne = () => {
         router.push(`/tabs/mapa/carnê`)
     }
 
@@ -47,8 +56,10 @@ export default function tabHomeScreen() {
         <SafeStatusBar safe={false} style={'light'}>
             <ScrollView>
                 <View style={styles.card}>
-                    <Text style={{ color: "white" }}>Olá</Text>
-                    <Text style={styles.nome}>{nome}</Text>
+                    <View style={{ paddingVertical: 18, marginTop: 12 }}>
+                        <Text style={{ color: "white", fontSize: 18 }}>Olá</Text>
+                        <Text style={styles.nome}>{nome}</Text>
+                    </View>
 
                     {/* btn de cadastro */}
 
@@ -90,6 +101,8 @@ export default function tabHomeScreen() {
                     style={{
                         borderTopLeftRadius: 18,
                         borderTopRightRadius: 18,
+                        borderBottomLeftRadius: 18,
+                        borderBottomRightRadius: 18,
                         paddingHorizontal: 12,
                         paddingBottom: 22,
                         marginTop: 44,
@@ -111,15 +124,14 @@ export default function tabHomeScreen() {
                                 paddingHorizontal: 12,
                                 marginTop: 12,
                                 borderRadius: 18,
+                                width: '48%'
                             }}>
 
                                 <Text>Instalações pendentes</Text>
                                 <Pressable onPress={handlePressPendente}>
                                     <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                                         {
-                                            Cliente.findBy((item: any) => {
-                                                return item.status === ClienteStatus.UsuarioCriado
-                                            })?.length
+                                            insPendente.length
                                         }
                                     </Text>
                                 </Pressable>
@@ -133,15 +145,16 @@ export default function tabHomeScreen() {
                                 paddingHorizontal: 12,
                                 marginTop: 12,
                                 borderRadius: 18,
+                                width: '48%'
                             }}>
 
                                 <Text>Aguardando o carnê</Text>
                                 <Pressable onPress={handlePressCarne}>
-                                <Text style={{ fontSize: 18, fontWeight: "bold" }}>{
-                                    Cliente.findBy((item: any) => {
-                                        return item.fatura == "Carnê" && item.status !== ClienteStatus.CarneEntregue
-                                    })?.length
-                                }</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>{
+                                        Cliente.findBy((item: any) => {
+                                            return item.fatura === "Carnê" && item.status === ClienteStatus.InstalacaoConcluida
+                                        })?.length
+                                    }</Text>
                                 </Pressable>
                             </View>
                         </View>
@@ -180,8 +193,33 @@ export default function tabHomeScreen() {
                         </>
                     }
 
+                    {
+                        cargo === 'Tecnico' &&
+                        insPendente.length !== 0 ?
+                        <>
+                        <Text style={{ marginTop: 18 }}>Instalação pendente: {insPendente.length}</Text>
+                            {
+                                insPendente.map(item => (
+                                    <Clientes data={item}  key={`${item.id}-cliente`} />
+                                ))
+                            }
+                        </>
+                        :
+                        <>
+                        <View style={{ paddingVertical: 22 }}>
+                            <Image style={{
+                                margin: "auto",
+                                width: 128, height: 128, resizeMode: 'contain',
 
-
+                            }} source={responsible} />
+                            <Text style={{
+                                textAlign: "center",
+                                fontSize: 18,
+                                fontWeight: "bold", marginTop: 4
+                            }}>Sem instalações pendentes</Text>
+                        </View>
+                    </>
+                    }
                 </View>
             </ScrollView>
         </SafeStatusBar>

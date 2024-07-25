@@ -106,13 +106,10 @@ export default function page() {
 
                                 style={{ flex: 1 }} >
                                 <Mapbox.Camera
-                                    maxBounds={{
+                                    bounds={{
                                         ne: [Number(mapOffline?.bounds[0]), Number(mapOffline?.bounds[1])],
                                         sw: [Number(mapOffline?.bounds[2]), Number(mapOffline?.bounds[3])]
                                     }}
-                                    minZoomLevel={12}
-                                    maxZoomLevel={18}
-
                                     animationMode="none" />
                                 <Mapbox.UserLocation
                                     animated={true}
@@ -163,7 +160,11 @@ export default function page() {
                 {
                     onModal && <>{onModal}</>
                 }
+                
+               {
+                !mapOffline &&
                 <CamadaMap setType={handleTypeMap} />
+               }
             </View>
         </View>
 

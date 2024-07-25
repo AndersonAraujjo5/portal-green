@@ -7,7 +7,7 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
     cep, tecnico, email, telefone, cordenadas, status, plano, vencimento, Fotos, Comentarios, associado, id, fatura
 }: any, update: any) {
     const { width } = Dimensions.get('window');
-    const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "vencimento", "tecnico"];
+    const vars = ["pppoe", "telefone", "email", "plano", "fidelidade", "tecnico"];
     const obj: any = { pppoe, telefone, email, plano, fidelidade, vencimento, tecnico };
 
     return (
@@ -24,6 +24,7 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
                     <Text style={styles.title}>{cliente || nome}</Text>
                     <Text>Status: {status}</Text>
                     <Text>Vendedor: {associado}</Text>
+                    <Text>Vencimento: {vencimento} - {fatura}</Text>
                     <Text>{endereco}, {casa} – {bairro} - {cidade} - {cep}</Text>
                     {
                         vars.map((item, index) => {

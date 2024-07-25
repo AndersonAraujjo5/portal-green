@@ -5,7 +5,6 @@ import * as Location from 'expo-location'
 import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import Loader from '@/components/Loader';
 import { useFocusEffect } from 'expo-router';
-import { useNetInfo } from '@react-native-community/netinfo';
 import axios from 'axios';
 
 function MapDownload() {
@@ -16,7 +15,7 @@ function MapDownload() {
   const [statusDown, setStatusDown] = useState(0);
   const [mapOffline, setMapOffline] = useState();
   const [stateConnect, setStateConnect] = useState(false)
-  const { isConnected } = useNetInfo();
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -28,35 +27,28 @@ function MapDownload() {
 
   }, []);
 
-  const activeMapOffilne = async () => {
-    const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
-    if (offlinePack) {
-      setMapOffline(offlinePack)
-      getLocalizacao();
-      setStateConnect(true);
-      return
-    };
-    getLocalizacao();
-    setStateConnect(true);
-  }
+  const checkIsOffline = async () => {
 
-
-  const checkIsOffline = () => {
-    if (!isConnected) {
-      activeMapOffilne();
-    } else {
-      axios.get('https://google.com', { timeout: 5000 }).then(e => {
-        getLocalizacao();
-        setStateConnect(true);
-      }).catch(e => {
-        activeMapOffilne();
+    try {
+      await axios.get('https://google.com', {
+        timeout: 3000
       })
+      setMapOffline(null)
+      setStateConnect(true)
+    } catch (error) {
+      Mapbox.offlineManager.getPack("mapOffline").then(offlinePack => {
+        if (offlinePack) setMapOffline(offlinePack)
+        setStateConnect(true)
+      }).catch(e => e)
+
     }
+
+    getLocalizacao()
   }
 
   useFocusEffect(useCallback(() => {
     checkIsOffline();
-  }, [isConnected]))
+  }, []))
 
 
   const handleTypeMap = (styleUrl: string) => {
@@ -84,7 +76,11 @@ function MapDownload() {
   const downloadMapData = async () => {
     setLoading(true)
     setStatusDown(0)
+    
     try {
+      await axios.get('https://google.com', {
+        timeout: 3000
+      })
       const bounds = await captureVisibleBounds()
       const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
       if (offlinePack) await Mapbox.offlineManager.deletePack('mapOffline')
@@ -111,11 +107,10 @@ function MapDownload() {
         }))
       }
     } catch (e) {
-      alert(`Não foi possivel fazer o download, tente novamente mais tarde, ou entre em contato com o desenvolvedor
+      setLoading(false);
+      alert(`Não foi possivel fazer o download, tente novamente mais tarde.
         \n\n`+ e)
     }
-
-
   };
 
   if (!stateConnect) {

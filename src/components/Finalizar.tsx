@@ -8,6 +8,7 @@ import LoginBD from "@/database/LoginBD";
 import { StyleSheet } from "react-native";
 import Cliente from "@/database/Cliente";
 import SignatureScreen from "./SignatureScreen";
+import { AntDesign } from "@expo/vector-icons";
 
 type ComentarProps = {
     id: number
@@ -25,7 +26,7 @@ export default function Finalizar({ id, update, handleFinalizar }: ComentarProps
     const salvarComentarios = () => {
         const associado = LoginBD.find()?.usuario
         Cliente.addComentario(id, {
-            body: comentario ? comentario: '',
+            body: comentario ? comentario : '',
             associado: associado?.nome,
             foto: foto ? foto[0].uri : '',
             url: foto ? foto[0].uri : '',
@@ -66,7 +67,11 @@ export default function Finalizar({ id, update, handleFinalizar }: ComentarProps
             <Modal
                 visible={isModal}
             >
-
+                <View style={styles.btnClose}>
+                    <Pressable onPress={() => setIsModal(false)}>
+                        <AntDesign name="close" size={25} />
+                    </Pressable>
+                </View>
                 <ScrollView style={{ padding: 20, flex: 1 }}>
                     <View style={styles.boxInput}>
                         <TextInput

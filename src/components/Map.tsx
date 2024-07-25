@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
-import { useNetInfo } from '@react-native-community/netinfo'
 import { useFocusEffect } from "expo-router";
 import Loader from "./Loader";
 import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";
-import axios from "axios";
 import SafeStatusBar from "./SafeStatusBar";
 import Comentario from "@/database/Comentario";
 import Status from "@/database/Status";
 import InfoMap from "@/components/InfoMap";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import axios from "axios";
 
 export enum ClienteStatus {
     SincronizacaoPendente = "Sincronização Pendente",
@@ -31,7 +30,7 @@ export enum ClienteStatus {
     CarneEntregue = "Carnê Entregue"
 }
 
-function LocationPin({ status, fatura, size=40, ...rest }) {
+function LocationPin({ status, fatura, size = 40, ...rest }) {
     return (
         <>
             {
@@ -65,15 +64,14 @@ function LocationPin({ status, fatura, size=40, ...rest }) {
     )
 }
 
-export default function Map({param}:any) {
+export default function Map({ param }: any) {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);
     const [clientesData, setClientesData] = useState<any>([])
-    const [mapOffline, setMapOffline] = useState();
-    const { isConnected } = useNetInfo();
+    const [mapOffline, setMapOffline] = useState(null);
     const [update, setUpdate] = useState(0)
-   
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -97,57 +95,54 @@ export default function Map({param}:any) {
         PreCadastro.asyncEnviar();
         Comentario.asyncEnviar()
         Status.asyncEnviar();
-        if(param && param === 'carnê') return setClientesData(Cliente.findBy((item) => {
-            if(item.status === ClienteStatus.InstalacaoConcluida && item.fatura === "Carnê") return item;
+
+        if (param && param === 'carnê') return setClientesData(Cliente.findBy((item) => {
+            if (item.status === ClienteStatus.InstalacaoConcluida && item.fatura === "Carnê") return item;
         }))
         else if (param == "all" && Cliente.findAll()) {
             return setClientesData(Cliente.findAll())
         }
-        else if(param) return setClientesData(Cliente.findBy((item) => {
-            if(item.status === param) return item;
+        else if (param) return setClientesData(Cliente.findBy((item) => {
+            if (item.status === param) return item;
         }))
-       
+
     }
 
     const getLocalizacao = async () => {
-       try {
-        let getLocation = await Location.getCurrentPositionAsync({});
-        setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
-       } catch (error) {
-        getLocalizacao();
-       }
+        try {
+            let getLocation = await Location.getCurrentPositionAsync({});
+            setLocation([getLocation.coords.longitude, getLocation.coords.latitude])
+        } catch (error) {
+            getLocalizacao();
+        }
     }
 
     const activeMapOffilne = async () => {
-        const offlinePack = await Mapbox.offlineManager.getPack("mapOffline")
-
-        if (offlinePack) {
-            setMapOffline(offlinePack)
-            getLocalizacao();
-            return
-        };
-        getLocalizacao();
-    }
-
-    useFocusEffect(useCallback(() => {
-        setOnModal(null)
-        sincronizar();
-
-        if (!isConnected) {
-            activeMapOffilne();
-        } else {
-            axios.get('https://google.com', { timeout: 5000 }).then(e => {
-                getLocalizacao();
-            }).catch(e => {
-                activeMapOffilne();
+        try {
+            await axios.get('https://google.com', {
+                timeout: 3000
             })
+            setMapOffline(null) 
+        } catch (error) {
+            Mapbox.offlineManager.getPack("mapOffline").then(offlinePack => {
+                if (offlinePack) setMapOffline(offlinePack)
+            }).catch(e => e)
         }
-    }, [isConnected, param]))
+        getLocalizacao()
+    }
 
 
     const handleTypeMap = (styleUrl: string) => {
         setTypeMap(styleUrl)
     }
+
+    
+
+    useFocusEffect(useCallback(() => {
+        setOnModal(null)
+        sincronizar();
+        activeMapOffilne();
+    }, []))
 
     if (!location) {
         return (
@@ -172,19 +167,18 @@ export default function Map({param}:any) {
                             onPress={() => setOnModal(null)}
                             style={{ flex: 1 }} >
 
-                            <Mapbox.Camera maxBounds={{
+                            <Mapbox.Camera bounds={{
                                 ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
                                 sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
                             }}
-                                minZoomLevel={12}
-                                maxZoomLevel={18}
-                                centerCoordinate={location}
+
+
                                 animationMode="none" />
                             <Mapbox.UserLocation
                                 animated={true}
                                 visible={true} />
                             {
-                                clientesData && clientesData.map((item, index) => {
+                                clientesData.length !== 0 && clientesData.map((item, index) => {
                                     if (item.status === ClienteStatus.CadastroEnviado ||
                                         item.status === ClienteStatus.CadastroPendente
                                     ) return;
@@ -225,7 +219,7 @@ export default function Map({param}:any) {
                                 animated={true}
                                 visible={true} />
                             {
-                                clientesData && clientesData.map((item, index) => {
+                                clientesData.length !== 0 && clientesData.map((item, index) => {
                                     if (item.status === ClienteStatus.CadastroEnviado ||
                                         item.status === ClienteStatus.CadastroPendente
                                     ) return;
@@ -252,12 +246,15 @@ export default function Map({param}:any) {
                                 })
                             }
                         </Mapbox.MapView>
+
                     }
                 </View>
                 {
                     onModal && <>{onModal}</>
                 }
-                <CamadaMap setType={handleTypeMap} />
+                {
+                    !mapOffline && <CamadaMap setType={handleTypeMap} />
+                }
             </View>
         </SafeStatusBar>
 
