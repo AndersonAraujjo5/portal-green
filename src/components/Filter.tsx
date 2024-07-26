@@ -43,6 +43,13 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
         return getDateAtual();
     }
 
+    const handleLimpar = () => {
+        setDataIni('')
+        setDataFin('')
+        setIsPlano('')
+        setIsStatus('')
+    }
+
     const handlePesquisar = () => {
         const url = `/v1/cliente?size=100&${dataIni && `dataInicio=${formatDate(dataIni)}&`}${dataFin && `dataFim=${formatDate(dataFin)}&`}${isStatus && `status=${isStatus}&`}${isPlano && `plano=${isPlano}`}`
         api.get(url).
@@ -50,8 +57,8 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
                 setData(data.data)
                 Cliente.addAndRewrite(data.data)
             }).catch(erro => {
-                if(erro.errors) msgError(erro.errors)
                 console.log("error", erro)
+                if(erro.errors) msgError(erro.errors)
             })
         setFilter(true)
         setVisible(false)
@@ -62,6 +69,7 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
 
 
     const deleteFilter = () => {
+        handleLimpar();
         Filtro.delete();
         Cliente.syncronize()
             .then(item => {
@@ -105,8 +113,9 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
             }}>
                 <Search setData={setData} filter={setFilter} />
                 <TouchableOpacity 
+                style={{paddingHorizontal: 8}}
                 onPress={handleModal}>
-                    <Entypo name="sound-mix" size={16} />
+                    <Entypo name="sound-mix" size={20} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -130,6 +139,7 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
             </View>
         }
         <Modal 
+        onRequestClose={handleModal}
         animationType="slide"
         visible={visible}>
             <TouchableOpacity 
@@ -147,6 +157,7 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
                  }}>
                   <RNPickerSelect
                     items={status}
+                    value={isStatus}
                     placeholder={{ label: "Selecione uma das opções", value: '' }}
                     onValueChange={(value) => {setIsStatus(value)}}
                   />
@@ -168,6 +179,7 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
                       { label: "Mega Verde - 700MB", value: "Mega Verde - 700MB" },
                       { label: "Giga Verde - 1Gb", value: "Giga Verde - 1Gb" }
                     ]}
+                    value={isPlano}
                     placeholder={{ label: "Selecione uma das opções", value: '' }}
                     onValueChange={(value) => {setIsPlano(value)}}
                   />
@@ -179,6 +191,17 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
             setDataFin={setDataFin}
             dataIni={dataIni}
             dataFin={dataFin} />
+            <TouchableOpacity style={{
+                backgroundColor: Colors.gray,
+                width: '40%',
+                paddingVertical: 8,
+                borderRadius: 12,
+                position: 'absolute', bottom: 40,left:22
+            }}
+            onPress={handleLimpar}
+            >
+                <Text style={{textAlign:"center", color:"white"}}>Limpar</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={{
                 backgroundColor: Colors.green,
                 width: '40%',

@@ -42,6 +42,7 @@ export default function tabClientesScreen() {
                     setData(null)
                 }
             }).catch(e => {
+                if(e.errors) setMsgErro(e)
                 setData(Cliente.findAll());
             });
     }

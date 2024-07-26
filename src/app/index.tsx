@@ -28,6 +28,8 @@ export default function login() {
 
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
             LoginBD.add(data)
+            Cliente.syncronize();
+            Filtro.delete();
             return router.replace('/tabs/home')
         } catch (error) {
             setLoader(false)

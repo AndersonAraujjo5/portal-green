@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View, StatusBar as bar } from "react-native";
 import {StatusBar} from 'expo-status-bar'
-export default function SafeStatusBar({safe=true, style='dark', children}){
+export default function SafeStatusBar({safe=true, style='dark', color = '', children}){
     return <View style={{
       flex: 1,
       paddingTop: safe ? bar.currentHeight : 0,
 
     }}>
-        <StatusBar style={style} />
+        <StatusBar backgroundColor={color} style={style} />
         {children}
     </View>
 }

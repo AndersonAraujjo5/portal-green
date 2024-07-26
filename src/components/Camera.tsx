@@ -1,27 +1,35 @@
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Button, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
+import Colors from '@/constants/Colors';
 
 export default function Camera({ closed, setFotos, multipleSelection = true }: any) {
   const camRef = useRef(null)
   const [facing, setFacing] = useState('back');
-  const [permission, requestPermission] = useCameraPermissions();
-  // const [capturedPhoto, setCapturedPhoto] = useState();
-  if (!permission) {
-    return <View />;
+  const [permission, setPermission] = useState(true)
+
+  useEffect(()=> {
+    requestCameraPermissionsAsync();
+  },[])
+
+  const requestCameraPermissionsAsync = async () =>{
+    const { status} = await ImagePicker.requestCameraPermissionsAsync();
+    if(status === 'denied') setPermission(false)
+    else setPermission(true);
   }
 
-  if (!permission.granted) {
+  if (!permission) {
     return (
-      <View style={styles.container}>
+      <View style={{flex: 1, justifyContent: 'center', paddingHorizontal: 8}}>
         <Text style={{ textAlign: 'center' }}>Permita o acesso a camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={()=> Linking.openSettings()} title="Permitir" color={Colors.green} />
       </View>
     );
   }
+
 
   async function createAlbum(uri: any) {
     try {

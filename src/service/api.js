@@ -12,15 +12,17 @@ const api = axios.create({
 api.interceptors.response.use((response) => {
     return response;
 },(error) => {
- 
     if(error.response && error.response.status === 404){
         return Promise.reject({errors:["Algo deu errado tente novamente mais tarde"]});
     }
     
     if(error.response && error.response.status === 401){
-        console.log("redirecionar")
         LoginBD.delete();
         router.replace('/')
+    }
+    
+    if(error.response && error.response.code === 'ERR_NETWORK'){
+        return Promise.reject({errors:[`Verifique a sua conexão com a internet ou tente novamente mais tarde`]});
     }
 
     if(error.response === undefined && JSON.stringify(error).includes('Network Error')){

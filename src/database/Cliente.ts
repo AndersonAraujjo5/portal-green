@@ -13,7 +13,7 @@ export default new class Cliente implements ICadastro {
         this._storage = new MMKV();
     }
 
-    add(cadastro: ClienteProps): boolean {
+    add(cadastro: ClienteProps, id: number): boolean {
         
         if (typeof cadastro !== 'object') return false
         const cadastros = this.findAll()
@@ -23,7 +23,9 @@ export default new class Cliente implements ICadastro {
             cadastrosArray = cadastros;
         }
 
-        cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[0].id+1 : 0
+        if(id) cadastro.id = id;
+        else cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[0].id+1 : 0
+        
         cadastrosArray.push(cadastro)
         this._storage.set('cadastros', JSON.stringify(cadastrosArray));
         

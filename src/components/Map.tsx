@@ -142,7 +142,7 @@ export default function Map({ param }: any) {
         setOnModal(null)
         sincronizar();
         activeMapOffilne();
-    }, []))
+    }, [param]))
 
     if (!location) {
         return (

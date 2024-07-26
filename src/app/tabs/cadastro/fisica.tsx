@@ -1,7 +1,7 @@
 import MakerPoint from "@/components/MakerPoint";
 import Camera from "@/components/Camera";
 import { useRef, useState } from "react";
-import { Dimensions, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Dimensions, FlatList, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import RNPickerSelect from "react-native-picker-select";
 import ControllerInput from "@/components/ControllerInput";
@@ -233,10 +233,13 @@ export default function fisica() {
   return (
     <SafeStatusBar>
       <Loader show={showLoader} />
-      {
-        camera && <Camera closed={handleClosedCamera} setFotos={setFotos} />
-      }
-
+      <Modal 
+        visible={camera} 
+       onRequestClose={() => setCamera(false)}
+       >
+        <Camera closed={handleClosedCamera} setFotos={setFotos} />
+      </Modal>
+      
       <View style={{
         paddingLeft: 8,
         paddingRight: 8

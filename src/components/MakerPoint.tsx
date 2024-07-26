@@ -54,20 +54,17 @@ export default function MakerPoint({ setLocation }) {
             return
         };
         getLocalizacao();
-        // setMsg(`Você não tem mapa baixado, para utilizar offline!\nClick no seu perfil e depois em baixar mapa, escolha  area que deseja e aperte no botão baixar`)
     }
 
     const checkIsOffline = () => {
         setMsg(null)
-        if (!isConnected) {
+        axios.get('https://google.com', { timeout: 5000 }).then(e => {
+            getLocalizacao();
+            setMapOffline(null)
+        }).catch(e => {
             activeMapOffilne();
-        } else {    
-            axios.get('https://google.com', { timeout: 5000 }).then(e => {
-                getLocalizacao();
-            }).catch(e => {
-                activeMapOffilne();
-            })
-        }
+        })
+
     }
 
     useFocusEffect(useCallback(() => {
@@ -96,7 +93,8 @@ export default function MakerPoint({ setLocation }) {
 
             <View style={styles.containerModal}>
                 <Modal
-                    animationType='slide'
+                     onRequestClose={() => setIsVisible(!isVisible)}
+                    animationType='slide' 
                     transparent={false}
                     visible={isVisible}>
 
@@ -136,12 +134,10 @@ export default function MakerPoint({ setLocation }) {
 
                                     style={{ flex: 1 }}  >
                                     <Mapbox.Camera
-                                        maxBounds={{
+                                        bounds={{
                                             ne: [mapOffline?.bounds[0], mapOffline?.bounds[1]],
                                             sw: [mapOffline?.bounds[2], mapOffline?.bounds[3]]
                                         }}
-                                        minZoomLevel={12}
-                                        maxZoomLevel={18}
                                         centerCoordinate={locationAtual}
                                         animationMode="none" />
 

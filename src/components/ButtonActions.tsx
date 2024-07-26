@@ -1,5 +1,4 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import Comentar from "@/components/Comentar";
 import LoginBD from "@/database/LoginBD";
@@ -8,6 +7,7 @@ import { ScrollView } from "moti";
 import Colors from "@/constants/Colors";
 import Cliente from "@/database/Cliente";
 import Finalizar from "@/components/Finalizar";
+import Cancelar from "@/components/Cancelar";
 
 export enum ClienteStatus {
     SincronizacaoPendente = "Sincronização Pendente",
@@ -91,7 +91,7 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                 </Pressable>
 
                 {
-                    (statusValue == ClienteStatus.UsuarioCriado && cargo === "Tecnico") &&
+                    ((statusValue == ClienteStatus.UsuarioCriado && cargo === "Tecnico") && (tecnico == '' || tecnico === LoginBD.find()?.usuario.nome)) &&
                     <Pressable style={styles.buttons}
                         onPress={iniciar}>
                         <Text>iniciar atendimento</Text>
@@ -107,16 +107,10 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                     ) &&
                     <>
                         <Finalizar handleFinalizar={finalizar} id={id} update={update} />
-                        <Pressable
-                            onPress={cancelar}
-                            style={styles.buttons}>
-                            <Text>Cencelar</Text>
-                        </Pressable>
-                        <Pressable
-                            onPress={desistiu}
-                            style={styles.buttons}>
-                            <Text>Cliente desistiu</Text>
-                        </Pressable>
+                        <Cancelar handle={cancelar} id={id} update={update} btnTitle="Cancelar" 
+                        placeholder="Qual o motivo do cancelamento?" />
+                        <Cancelar handle={desistiu} id={id} update={update} btnTitle="Cliente desistiu" 
+                        placeholder="Qual o motivo da desistência do cliente?" />
                     </>
                 }
                 <Comentar update={update} id={id} />
