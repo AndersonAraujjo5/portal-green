@@ -35,30 +35,22 @@ export default new class Status {
         if (cadastros) {
             const dados = cadastros;
 
-            try {
-                dados.map(async (item: StatusProps, index: number) => {
-                  try {
-                    await api.put(`/v1/cliente/${item.clienteId}`, { status: item.status,
+                dados.map((item: StatusProps, index: number) => {
+        
+                    api.put(`/v1/cliente/${item.clienteId}`, { status: item.status,
                         tecnico: LoginBD.find()?.usuario.nome
-                    })
+                    }).then(e => this.deleteById(index))
+                    .catch(e => e)
                     
-                    this.deleteById(index)
-
                     const formData = new FormData();
                     formData.append('body', item.status)
 
-                    await api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
+                    api.post(`/v1/cliente/comentario/${item.clienteId}`, formData,{
                         headers: {
                           'Content-Type': 'multipart/form-data'
                         }
                       })
-                  } catch (error) {
-                    console.log('error',error)
-                  }
                 })
-            } catch (error) {
-                console.log("errors", error)
-            }
         }
     }
 

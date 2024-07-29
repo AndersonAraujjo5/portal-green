@@ -2,6 +2,7 @@ import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default new class Images {
     public async saveStorage(url: string) {
+       try{
         const fileUri = `${FileSystem.cacheDirectory}${url.split('/').pop()}`;
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
@@ -12,9 +13,13 @@ export default new class Images {
         } else {
             return fileInfo.uri;
         }
+       }catch(e){
+            
+       }
     }
 
     public async getImageStorage(url: string) {
+       try{
         const cachedUri = await AsyncStorage.getItem(url);
         if(!cachedUri){
             const uri = await this.saveStorage(url);
@@ -22,6 +27,7 @@ export default new class Images {
         }
         // return cachedUri ? cachedUri : this.saveStorage(url);
         return cachedUri;
+       }catch(e){}
     }
 
     public async deleteImage(url:string){
@@ -34,6 +40,7 @@ export default new class Images {
       
 
     public async cleanUpOldImages(imagesUrl: string[]){
+       try{
         const allKeys = await AsyncStorage.getAllKeys();
         const keysToDelete = allKeys.filter(key => !imagesUrl.includes(key));
         
@@ -41,5 +48,6 @@ export default new class Images {
            // CadastroBD.deleteImageStorage(key);
           await this.deleteImage(key);
         }
+       }catch(e){}
     }
 }

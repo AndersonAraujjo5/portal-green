@@ -53,6 +53,10 @@ function LocationPin({ status, fatura, size = 40, ...rest }) {
                 <Entypo name="location-pin" size={size} color={'black'} {...rest} />
             }
             {
+                (status === ClienteStatus.Cancelado) &&
+                <Entypo name="location-pin" size={size} color={'black'} {...rest} />
+            }
+            {
                 (status === ClienteStatus.InstalacaoConcluida && fatura === "Carnê") &&
                 <Entypo name="location-pin" size={size} color={Colors.green} {...rest} />
             }
@@ -92,10 +96,6 @@ export default function Map({ param }: any) {
 
 
     const sincronizar = () => {
-        PreCadastro.asyncEnviar();
-        Comentario.asyncEnviar()
-        Status.asyncEnviar();
-
         if (param && param === 'carnê') return setClientesData(Cliente.findBy((item) => {
             if (item.status === ClienteStatus.InstalacaoConcluida && item.fatura === "Carnê") return item;
         }))
@@ -120,10 +120,12 @@ export default function Map({ param }: any) {
     const activeMapOffilne = async () => {
         try {
             await axios.get('https://google.com', {
-                timeout: 3000
+                timeout: 2000
             })
-            setMapOffline(null) 
+
+            setMapOffline(null)
         } catch (error) {
+
             Mapbox.offlineManager.getPack("mapOffline").then(offlinePack => {
                 if (offlinePack) setMapOffline(offlinePack)
             }).catch(e => e)
@@ -136,7 +138,7 @@ export default function Map({ param }: any) {
         setTypeMap(styleUrl)
     }
 
-    
+
 
     useFocusEffect(useCallback(() => {
         setOnModal(null)

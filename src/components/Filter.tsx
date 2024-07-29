@@ -57,7 +57,6 @@ export default function Filter({ setData, setMsgErro, setFilter, msgError }: any
                 setData(data.data)
                 Cliente.addAndRewrite(data.data)
             }).catch(erro => {
-                console.log("error", erro)
                 if(erro.errors) msgError(erro.errors)
             })
         setFilter(true)

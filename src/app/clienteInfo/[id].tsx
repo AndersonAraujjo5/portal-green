@@ -60,7 +60,7 @@ export default function page() {
         if (!isConnected) {
             activeMapOffline();
         } else {
-            axios.get('https://google.com', { timeout: 5000 }).then(e => {
+            axios.get('https://google.com', { timeout: 2000 }).then(e => {
                 setStateConnect(true);
             }).catch(e => {
                 activeMapOffline();

@@ -21,9 +21,6 @@ export default function tabClientesScreen() {
     const [isFilter, setIsFilter] = useState(Filtro.find().filter)
 
     const syncronize = () => {
-        PreCadastro.asyncEnviar();
-        Comentario.asyncEnviar()
-        Status.asyncEnviar();
      
         if (Filtro.find().filter) { // se tiver filtro não consulta todos os dados
             if (Cliente.findAll()) setData(Cliente.findAll())
@@ -42,12 +39,15 @@ export default function tabClientesScreen() {
                     setData(null)
                 }
             }).catch(e => {
-                if(e.errors) setMsgErro(e)
+                if(e.errors) setMsgErro(e.errors)
                 setData(Cliente.findAll());
             });
     }
 
     useFocusEffect(useCallback(() => {
+        PreCadastro.asyncEnviar();
+        Comentario.asyncEnviar()
+        Status.asyncEnviar();
         syncronize();
         setMsgErro(null)
     }, []))
@@ -102,7 +102,7 @@ export default function tabClientesScreen() {
                     <View style={{ minHeight: height, paddingBottom: 18 }}>
                         {
                             msgError &&
-                            msgError.map((e, i) => <Text key={i}
+                            msgError.map((e: any, i:any) => <Text key={i}
                                 style={{
                                     fontSize: 24, lineHeight: 32, textAlign: 'center',
                                     marginTop: 50

@@ -38,42 +38,37 @@ export default new class PreCadastro implements ICadastro {
         if (cadastros) {
             const dados = cadastros;
 
-            try {
-                dados.map(async (item: ClienteProps, index: number) => {
-                    item.status = ClienteStatus.CadastroEnviado;
-                    const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
-                        "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
-                        'cordenadas', 'fidelidade', 'info', 'status', 'plano','nomeFantasia', 'razaoSocial', 'fatura']
+            dados.map((item: ClienteProps, index: number) => {
+                item.status = ClienteStatus.CadastroEnviado;
+                const arr = ["nome", "nomePai", "nomeMae", "cpf", "rg", "dataNascimento", "email",
+                    "telefone", "cep", "cidade", "endereco", "bairro", "numero", "complemento", "vencimento",
+                    'cordenadas', 'fidelidade', 'info', 'status', 'plano', 'nomeFantasia', 'razaoSocial', 'fatura']
 
-                    const formData = new FormData()
-                    arr.map((e: string) => {
-                        if (!item[e]) return;
-                        formData.append(e, item[e]);
-                    })
-
-                    if (item.foto) {
-                        item.foto.map((e, i) => {
-                            formData.append('foto', {
-                                uri: item.foto[i].uri,
-                                type: item.foto[i].mimeType,
-                                name: item.foto[i].fileName
-                            })
-                        })
-                    }
-
-
-                    api.post('/v1/cliente', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }).then(() => this.deleteByIndex(index))
-                    .catch(e=> e)
-
+                const formData = new FormData()
+                arr.map((e: string) => {
+                    if (!item[e]) return;
+                    formData.append(e, item[e]);
                 })
-            } catch (error) {
-                console.log("errors", error)
-                return error;
-            }
+
+                if (item.foto) {
+                    item.foto.map((e, i) => {
+                        formData.append('foto', {
+                            uri: item.foto[i].uri,
+                            type: item.foto[i].mimeType,
+                            name: item.foto[i].fileName
+                        })
+                    })
+                }
+
+
+                api.post('/v1/cliente', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then(() => this.deleteByIndex(index))
+                    .catch(e => e)
+
+            })
         }
     }
 
@@ -82,10 +77,10 @@ export default new class PreCadastro implements ICadastro {
 
         if (cadastros) {
             const dados = JSON.parse(cadastros)
-            if (dados.length === 0) return[];
+            if (dados.length === 0) return [];
             return dados;
         }
-        return[];
+        return [];
     }
 
     findById(id: number): object | undefined {

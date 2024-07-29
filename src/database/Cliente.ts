@@ -49,7 +49,7 @@ export default new class Cliente implements ICadastro {
             })
             this.deleteById(id)
             
-            this.add(cadastro)
+            this.add(cadastro, id)
 
             return cadastro
         }
@@ -72,7 +72,7 @@ export default new class Cliente implements ICadastro {
             })
             this.deleteById(id);
 
-            this.add(cadastro)
+            this.add(cadastro, id)
 
             return cadastro
         }

@@ -22,8 +22,11 @@ export default function login() {
     const handleSign = async () => {
         setLoader(true)
         try {
+            const getData = await fetch('https://api64.ipify.org/?format=json')
+            const {ip} = await getData.json();
+
             const { data } = await api.post<LoginProps>('/v1/auth/login', {
-                login, password,
+                login, password, ip
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${data.token}`;

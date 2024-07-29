@@ -19,8 +19,8 @@ export default new class Comentario implements ICadastro {
                 cadastrosArray = cadastros;
             }
             const index = cadastrosArray.length
-       
-            cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[index-1].id + 1 : 0
+
+            cadastro.id = cadastrosArray.length !== 0 ? cadastrosArray[index - 1].id + 1 : 0
 
             cadastrosArray.push(cadastro)
 
@@ -73,36 +73,27 @@ export default new class Comentario implements ICadastro {
         const cadastros = this.findAll()
         if (cadastros) {
             const dados = cadastros;
+            dados.map((item: ComentariosProps, index: number) => {
+                const formData = new FormData();
+                if (item.foto) {
+                    formData.append('file', {
+                        uri: item.foto,
+                        type: `image/${item.foto.split('.').pop()}`,
+                        name: item.foto.split('/').pop()
+                    })
 
-            try {
-                dados.map(async (item: ComentariosProps, index: number) => {
-                    try {
-                        const formData = new FormData();
-                        if (item.foto) {
-                            formData.append('file', {
-                                uri: item.foto,
-                                type: `image/${item.foto.split('.').pop()}`,
-                                name: item.foto.split('/').pop()
-                            })
+                }
 
-                        }
+                formData.append('body', item.body)
 
-                        formData.append('body', item.body)
-
-                        await api.post(`/v1/cliente/comentario/${item.clienteId}`, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        })
-                        this.deleteById(item.id)
-
-                    } catch (error) {
-                        console.log("errors", error)
+                api.post(`/v1/cliente/comentario/${item.clienteId}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
-                })
-            } catch (error) {
-                console.log("errors", error)
-            }
+                }).then(e => {
+                    this.deleteById(item.id)
+                }).catch(error => console.log("errors", error))
+            })
         }
     }
 }
