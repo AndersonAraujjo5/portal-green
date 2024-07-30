@@ -11,9 +11,9 @@ import DeviceInfo from 'react-native-device-info';
 
 
 const api = axios.create({
-    // baseURL:'https://fileprecadastro.greenet.net.br/api',
+    baseURL:'https://fileprecadastro.greenet.net.br/api',
     // baseURL:'http://192.168.18.12:3007/api',
-    baseURL:'http://10.129.0.228:3007/api',
+    // baseURL:'http://10.129.0.228:3007/api',
     timeout: 1000, // 5 segundos
 })
 

@@ -6,6 +6,7 @@ import CamadaMap, { StyleURL } from '@/components/CamadaMap';
 import Loader from '@/components/Loader';
 import { useFocusEffect } from 'expo-router';
 import axios from 'axios';
+import Colors from '@/constants/Colors';
 
 function MapDownload() {
   const mapRef = useRef(null);
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
-    backgroundColor: 'blue',
+    backgroundColor: Colors.green,
     padding: 10,
     borderRadius: 5,
     zIndex: 1,
