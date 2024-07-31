@@ -76,7 +76,7 @@ export default function Finalizar({ id, update, handleFinalizar }: ComentarProps
                     <View style={styles.boxInput}>
                         <TextInput
                             defaultValue={comentario}
-                            placeholder="Comentario"
+                            placeholder="MATERIAL UTILIZADO"
                             onChangeText={(value) => setComentario(value)}
                             multiline={true}
                             numberOfLines={10}

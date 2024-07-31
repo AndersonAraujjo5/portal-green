@@ -45,7 +45,7 @@ export default function InfoMap() {
             showsHorizontalScrollIndicator={false}>
                 <View style={{
                     display: 'flex', flexWrap: "wrap",
-                    flexDirection: "row", width: "100%", justifyContent: "space-between",
+                    flexDirection: "row", justifyContent: "space-between",
                     paddingHorizontal: 8, paddingVertical: 4
                 }}>
                     <View style={{ width: (width / 3.5) - 8, alignItems: "center" }}>

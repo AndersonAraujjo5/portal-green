@@ -3,6 +3,7 @@ import { View,  Text, Dimensions, Pressable, Modal } from 'react-native';
 import Signature from 'react-native-signature-canvas';
 import * as FileSystem from 'expo-file-system';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
 
 const {height} = Dimensions.get('window');
 
@@ -37,6 +38,12 @@ function SignatureScreen({style, assinatura}:any){
   const  styles  =  `.m-signature-pad
      { 
       height:${height -200}px;
+    }
+    .m-signature-pad .clear{
+      background-color: ${Colors.gray}
+    }
+    .m-signature-pad .save{
+      background-color: ${Colors.green}
     }` ; 
 
   return (

@@ -110,6 +110,7 @@ export default function page() {
                                         ne: [Number(mapOffline?.bounds[0]), Number(mapOffline?.bounds[1])],
                                         sw: [Number(mapOffline?.bounds[2]), Number(mapOffline?.bounds[3])]
                                     }}
+                                    centerCoordinate={clienteData.cordenadas.split(',')}
                                     animationMode="none" />
                                 <Mapbox.UserLocation
                                     animated={true}

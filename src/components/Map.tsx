@@ -76,14 +76,17 @@ export default function Map({ param }: any) {
     const [mapOffline, setMapOffline] = useState(null);
     const [update, setUpdate] = useState(0)
 
+    const requestForegroundPermissionsAsync = async ()=> {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert("Para ter acesso ao mapa, você precisa permitir o acesso a sua localização!")
+            requestForegroundPermissionsAsync()
+            return;
+        }
+    }
+
     useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return;
-            }
-        })();
+        requestForegroundPermissionsAsync();
 
     }, []);
 

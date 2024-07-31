@@ -20,7 +20,7 @@ export default function Search({ setData, filter }: any) {
     return <>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
             <AntDesign name="search1" size={16} />
-            <TextInput onChangeText={handlePesquisar} style={{ marginLeft: 8 }} placeholder="Pesquisa" />
+            <TextInput onChangeText={handlePesquisar} style={{ marginLeft: 8,height: 32, width: '88%' }} placeholder="Pesquisa" />
         </View>
     </>
 }
