@@ -113,7 +113,10 @@ export default function ButtonAction({ cordenadas, status, id, update, fatura, t
                         placeholder="Qual o motivo da desistência do cliente?" />
                     </>
                 }
-                <Comentar update={update} id={id} />
+                {
+                    statusValue !== ClienteStatus.SincronizacaoPendente &&
+                    <Comentar update={update} id={id} />
+                }
 
                 {
                     (statusValue == ClienteStatus.InstalacaoConcluida &&

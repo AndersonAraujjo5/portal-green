@@ -87,7 +87,7 @@ export default function tabClientesScreen() {
     }
 
     return (
-        <SafeStatusBar safe={false} style={'light'}>
+        <SafeStatusBar safe={false}>
 
             {
                 !data && <NoData/>

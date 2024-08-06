@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from '@/components/ModalDetalhesCliente';

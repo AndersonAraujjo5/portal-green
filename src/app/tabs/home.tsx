@@ -53,7 +53,7 @@ export default function tabHomeScreen() {
     }
 
     return (
-        <SafeStatusBar safe={false} style={'light'}>
+        <SafeStatusBar safe={false}>
             <ScrollView>
                 <View style={styles.card}>
                     <View style={{ paddingVertical: 18, marginTop: 12 }}>
