@@ -34,7 +34,7 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
                         })
                     }
                     <Text style={{marginBottom: 18}}>Mais info: {info} </Text>
-                    <ButtonAction fatura={fatura} tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
+                    <ButtonAction key={id} fatura={fatura} tecnico={tecnico} update={update} id={id} cordenadas={cordenadas} status={status} />
                     <ScrollView
                         style={{
                             paddingRight: 8,
@@ -62,7 +62,6 @@ export default function ModalDetalhesCliente({ nome,cliente, pppoe, endereco, ca
                                         name="user" size={25} />
                                     <View>
                                         <Text>{item.associado}</Text>
-                                        {/* <Text>{item.createAt}</Text> */}
                                     </View>
                                 </View>
                                 {

@@ -1,10 +1,11 @@
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
+import { statusColor } from "./Map";
 
 function Clientes({ data, nav=true }: any) {
     const { cliente, nome, endereco, casa, bairro, cidade, status,
-        id, vencimento, associado, plano}: any = data;
+        id, vencimento, associado, plano, fatura}: any = data;
     
     const vars = ["pppoe", 'tecnico',
         "telefone", "plano", "fidelidade"];
@@ -15,11 +16,15 @@ function Clientes({ data, nav=true }: any) {
     }
     return (
         <>
-            <Pressable style={styles.container} 
+            <Pressable style={{
+                 flex:1,
+                 paddingHorizontal: 12,
+                 marginTop: 4,
+            }} 
             onPress={handlePress}>
                 <View style={{
                         borderWidth: 1,
-                        borderColor: Colors.green,
+                        borderColor: statusColor(status, fatura),
                         paddingVertical: 18,
                         paddingHorizontal: 12,
                         marginTop: 12,
@@ -44,14 +49,6 @@ function Clientes({ data, nav=true }: any) {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        paddingHorizontal: 12,
-        marginTop: 4,
-    }
-})
 
 
 

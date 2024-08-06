@@ -3,9 +3,11 @@ import Filtro from "@/database/Filtro";
 import { api } from "@/service/api";
 import { AntDesign } from "@expo/vector-icons";
 import { View } from "moti";
-import { TextInput } from "react-native";
+import { useRef } from "react";
+import { Pressable, TextInput } from "react-native";
 
 export default function Search({ setData, filter }: any) {
+    const inputRef = useRef(null)
     const handlePesquisar = (value) => {
         api.get(`/v1/cliente?search=${value}`).
             then(({ data }) => {
@@ -17,10 +19,18 @@ export default function Search({ setData, filter }: any) {
         filter(true)
         Filtro.add({ pesquisa: value });
     }
+
+    const handleFocus = ()=>{
+        if (inputRef.current) {
+            inputRef.current.focus();
+          }
+    }
+
     return <>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Pressable onPress={handleFocus}
+         style={{ flexDirection: "row", alignItems: "center", width: '80%' }}>
             <AntDesign name="search1" size={16} />
-            <TextInput onChangeText={handlePesquisar} style={{ marginLeft: 8,height: 32, width: '88%' }} placeholder="Pesquisa" />
-        </View>
+            <TextInput ref={inputRef} onChangeText={handlePesquisar} style={{ marginLeft: 8,height: 32 }} placeholder="Pesquisa" />
+        </Pressable>
     </>
 }

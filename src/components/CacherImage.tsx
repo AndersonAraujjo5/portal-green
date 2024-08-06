@@ -1,13 +1,16 @@
 import Images from "@/utils/Images";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text } from "react-native";
+import { Dimensions, Modal, Pressable, StyleSheet, Text } from "react-native";
 import { Image, ScrollView } from "react-native";
 
 type CacherProps = {
     url: string
     width: number
 }
+
+const {height} = Dimensions.get('window')
+
 export default function CacherImage({ url, width }: CacherProps) {
     const [modal, setModal] = useState(false)
     const [uri, setUri] = useState<string>();
@@ -21,7 +24,10 @@ export default function CacherImage({ url, width }: CacherProps) {
                     <Pressable
                         onLongPress={() => setModal(true)}
                     >
-                        <Modal visible={modal}>
+                        <Modal visible={modal}
+                        onRequestClose={() => setModal(false)}
+                        >
+                        
                             <Pressable
                                 onPress={() => setModal(false)}
                                 style={styles.button}>
@@ -30,7 +36,7 @@ export default function CacherImage({ url, width }: CacherProps) {
                             <ScrollView>
                                 <Image
                                     style={styles.image}
-                                    width={width} height={500}
+                                    width={width -16} height={height-70}
                                     source={{ uri }}
                                     resizeMode="contain"
                                 />
@@ -59,7 +65,6 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 8,
         borderRadius: 8,
-        marginRight: 8,
         marginLeft: 8
     }
 })

@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Mapbox from "@/components/MapBox";
 import CamadaMap, { StyleURL } from "@/components/CamadaMap";
 import ModalDetalhesCliente from "./ModalDetalhesCliente";
 import { useFocusEffect } from "expo-router";
 import Loader from "./Loader";
-import PreCadastro from "@/database/PreCadastro";
 import Cliente from "@/database/Cliente";
 import SafeStatusBar from "./SafeStatusBar";
-import Comentario from "@/database/Comentario";
-import Status from "@/database/Status";
 import InfoMap from "@/components/InfoMap";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
@@ -30,45 +27,57 @@ export enum ClienteStatus {
     CarneEntregue = "Carnê Entregue"
 }
 
-function LocationPin({ status, fatura, size = 40, ...rest }) {
+
+export const statusColor = (status:string, fatura='') => {
+    if(ClienteStatus.UsuarioCriado === status) return 'red'
+    else if(status === ClienteStatus.InstalacaoEmAndamento ||
+        status === ClienteStatus.TecnicoACaminho ||
+        status === ClienteStatus.TecnicoDesignado) return 'orange'
+    else if(ClienteStatus.InstalacaoConcluida === status && fatura === 'Carnê') return Colors.green
+    else if(ClienteStatus.InstalacaoConcluida === status) return 'blue'
+    else if(ClienteStatus.CadastroPendente === status) return 'gray'
+    else if(ClienteStatus.ClienteDesistiu === status || ClienteStatus.Cancelado) return 'black'
+}
+
+export function LocationPin({ status, fatura, size = 40, ...rest }) {
     return (
         <>
             {
                 status === ClienteStatus.UsuarioCriado &&
-                <Entypo name="location-pin" size={size} color={'red'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.InstalacaoEmAndamento ||
                     status === ClienteStatus.TecnicoACaminho ||
                     status === ClienteStatus.TecnicoDesignado
                 ) &&
-                <Entypo name="location-pin" size={size} color={'orange'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.InstalacaoConcluida) &&
-                <Entypo name="location-pin" size={size} color={'blue'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.ClienteDesistiu) &&
-                <Entypo name="location-pin" size={size} color={'black'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.Cancelado) &&
-                <Entypo name="location-pin" size={size} color={'black'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.InstalacaoConcluida && fatura === "Carnê") &&
-                <Entypo name="location-pin" size={size} color={Colors.green} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
             {
                 (status === ClienteStatus.CarneEntregue) &&
-                <Entypo name="location-pin" size={size} color={'blue'} {...rest} />
+                <Entypo name="location-pin" size={size} color={statusColor(status, fatura)} {...rest} />
             }
         </>
     )
 }
 
-export default function Map({ param }: any) {
+export function Map({ param }: any) {
     const [location, setLocation] = useState<number[] | [number, number]>();
     const [onModal, setOnModal] = useState()
     const [typeMap, setTypeMap] = useState<String | StyleURL>(StyleURL.Street);

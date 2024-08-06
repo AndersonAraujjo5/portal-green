@@ -1,7 +1,7 @@
 {
   "name": "portal-green",
   "main": "expo-router/entry",
-  "version": "1.10.15",
+  "version": "1.10.16",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -38,6 +38,7 @@
     "expo-system-ui": "~3.0.7",
     "expo-web-browser": "~13.0.3",
     "moti": "^0.29.0",
+    "portal-green": "file:",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.51.5",

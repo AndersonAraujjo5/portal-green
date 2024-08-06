@@ -10,6 +10,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import axios from 'axios';
 import Loader from '@/components/Loader';
 import OfflinePack from '@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack';
+import { LocationPin } from '@/components/Map';
 
 export default function page() {
     const { id } = useLocalSearchParams<{ id?: string }>();
@@ -70,6 +71,7 @@ export default function page() {
 
     useFocusEffect(useCallback(() => {
         checkIsOffline();
+        setOnModal(ModalDetalhesCliente(clienteData, setUpdate))
     }, [isConnected, update]))
 
 
@@ -153,7 +155,9 @@ export default function page() {
                                     setOnModal(ModalDetalhesCliente(clienteData,setUpdate))
                                 }}
                                 coordinate={clienteData.cordenadas.split(',')}
-                            />
+                            >
+                                <LocationPin fatura={clienteData.fatura} status={clienteData.status} />
+                            </Mapbox.PointAnnotation>
 
                         </Mapbox.MapView>
                     }
